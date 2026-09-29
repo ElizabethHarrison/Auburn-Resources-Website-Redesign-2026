@@ -139,8 +139,8 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   Q-05, Q-07 and Q-08 remain open.
 
 ## D-017 · Mockup graphics kept in the design as indicative figures (preview only)
-- **Date:** 29 Sep 2026 · **Status:** Approved in part (owner: "keep the graphics that are shown here");
-  production display pending Q-18
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-18, 29 Sep 2026): preview only; production stays hidden
+  until approved GIS/technical figures replace them. The "mockup geometry never ships" rule is unchanged.
 - **Decision:** The Fig. 1 portfolio map and Fig. 2 schematic cross-section from the approved mockups
   ("1b · Survey Sheet — Century Gothic"; "Project page template — Nicholson") are cropped at full resolution
   into `apps/site/src/assets/figures/indicative/` and used as figure records with status `toVerify`, captioned
