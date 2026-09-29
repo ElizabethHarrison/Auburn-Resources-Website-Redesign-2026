@@ -129,3 +129,11 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   gradients, non-zero radius, weights other than 400, undocumented breakpoints, client scripts and inline
   styles in components. `src/lib/contrast.test.ts` checks every colour pairing components use.
   `scripts/check-js-budget.mjs` (`pnpm budget`) enforces the 30 KB page-load JS budget in CI.
+
+## D-016 · Homepage review decisions
+- **Date:** 29 Sep 2026 · **Status:** Approved (homepage review)
+- **Decision:** No additional homepage credibility or contact section; the approved section order stays
+  (WEBSITE-STRATEGY §5). The production homepage may stay sparse while content is unapproved — approval rules
+  are never weakened to fill it. The footer keeps the Contact heading/link; individual contact fields stay
+  hidden until their values are approved. Catalogue specimens are confirmed catalogue-only (Q-16).
+  Q-05, Q-07 and Q-08 remain open.

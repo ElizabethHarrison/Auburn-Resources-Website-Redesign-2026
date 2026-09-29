@@ -13,6 +13,8 @@
     "build": "pnpm --filter @auburn/site build",
     "build:preview": "pnpm --filter @auburn/site build:preview",
     "serve": "pnpm --filter @auburn/site serve",
+    "serve:production": "node tests/static-server.mjs apps/site/dist 4600",
+    "serve:preview": "node tests/static-server.mjs apps/site/dist-preview 4601",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",

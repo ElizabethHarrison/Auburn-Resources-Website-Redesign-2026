@@ -158,6 +158,8 @@ pnpm dev            # site dev server, preview mode (placeholders visible)
 pnpm build          # production build → apps/site/dist (Approved content only)
 pnpm build:preview  # preview build → apps/site/dist-preview (noindex)
 pnpm serve          # serve the last production build locally
+pnpm serve:production  # serve apps/site/dist at http://localhost:4600 (static, like Cloudflare)
+pnpm serve:preview     # serve apps/site/dist-preview at http://localhost:4601
 pnpm test           # unit tests (Vitest)
 pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
