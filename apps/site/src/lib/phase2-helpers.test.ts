@@ -158,3 +158,14 @@ describe('breakBeforeDots', () => {
     expect(breakBeforeDots('Report. Next')).toEqual(['Report. Next']);
   });
 });
+
+describe('isColumnVisible', () => {
+  it('shows a column in production only when every row has an approved value', async () => {
+    const { isColumnVisible } = await import('./content/visibility');
+    const rows = [{ v: fact(1) }, { v: fact(2, {}, 'toVerify') }];
+    expect(isColumnVisible(rows, (r) => r.v, 'production')).toBe(false);
+    expect(isColumnVisible(rows.slice(0, 1), (r) => r.v, 'production')).toBe(true);
+    expect(isColumnVisible(rows, (r) => r.v, 'preview')).toBe(true);
+    expect(isColumnVisible([], (r: { v: Fact<number> }) => r.v, 'preview')).toBe(false);
+  });
+});

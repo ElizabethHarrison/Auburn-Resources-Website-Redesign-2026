@@ -4,7 +4,7 @@
  * Formatting never changes a value: no rounding, no abbreviation.
  */
 import type { Fact, FactSlot } from './facts';
-import type { AustralianState, Commodity, DocType } from './content/types';
+import type { AustralianState, Commodity, DocType, ProjectStage } from './content/types';
 
 const numberFormat = new Intl.NumberFormat('en-AU', { maximumFractionDigits: 20 });
 
@@ -73,6 +73,21 @@ export const DOC_TYPE_LABELS: Record<DocType, string> = {
   thirdParty: 'Third-party document',
   other: 'Document',
 };
+
+/** Exploration stages in pipeline order (docs/SITEMAP.md §8, `project.stage`). */
+export const STAGE_LABELS: Record<ProjectStage, string> = {
+  targetGeneration: 'Target generation',
+  drillReady: 'Drill-ready',
+  drilling: 'Drilling',
+  resourceDefinition: 'Resource definition',
+};
+
+export const STAGE_ORDER: readonly ProjectStage[] = [
+  'targetGeneration',
+  'drillReady',
+  'drilling',
+  'resourceDefinition',
+];
 
 export function formatCommodities(values: readonly Commodity[]): string {
   return values.map((value) => COMMODITY_LABELS[value]).join(' · ');

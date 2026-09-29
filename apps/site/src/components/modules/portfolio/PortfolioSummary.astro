@@ -1,0 +1,32 @@
+---
+/**
+ * Portfolio summary facts (docs/SITEMAP.md 02: "total ground held (as-at)"): projects, ground held,
+ * commodities, jurisdictions. Cells drop individually; nothing renders when none is approved.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { KeyFacts } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { STATE_NAMES, factDisplay, formatCommodities } from '~/lib/format';
+import Container from '~/components/primitives/Container.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+
+export interface Props {
+  keyFacts: KeyFacts;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { keyFacts, sources, mode } = Astro.props;
+const items = [
+  factDisplay('Projects', keyFacts.projectCount),
+  factDisplay('Ground held', keyFacts.groundHeld),
+  factDisplay('Commodities', keyFacts.commodities, formatCommodities),
+  factDisplay('Jurisdictions', keyFacts.jurisdictions, (states) =>
+    states.map((state) => STATE_NAMES[state]).join(' · '),
+  ),
+];
+---
+
+<Container>
+  <FactStrip items={items} label="Portfolio summary" sources={sources} mode={mode} />
+</Container>

@@ -217,6 +217,15 @@ export interface HomePageContent {
   readonly sustainabilityLine: NarrativeSlot;
 }
 
+// ── Portfolio page (docs/SITEMAP.md 02) ────────────────────────────────────────────────────────
+
+export interface PortfolioPageContent {
+  /** One-paragraph portfolio summary (Narrative: no digits). */
+  readonly intro: NarrativeSlot;
+  /** Fig. 1 portfolio map — the same figure record the home page uses. */
+  readonly portfolioMap: FigureSlot;
+}
+
 // ── Re-exports so callers need one import ───────────────────────────────────────────────────────
 
 export type { DocumentRef };

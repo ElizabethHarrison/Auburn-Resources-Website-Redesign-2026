@@ -6,6 +6,7 @@ import type { ContentAdapter } from '../adapter';
 import { articles } from './data/articles';
 import { documents } from './data/documents';
 import { homePage } from './data/home-page';
+import { portfolioPage } from './data/portfolio-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
@@ -23,4 +24,5 @@ export const fixturesAdapter: ContentAdapter = {
     projectId === undefined ? workItems : workItems.filter((item) => item.projectId === projectId),
   getArticles: async () => articles,
   getHomePage: async () => homePage,
+  getPortfolioPage: async () => portfolioPage,
 };

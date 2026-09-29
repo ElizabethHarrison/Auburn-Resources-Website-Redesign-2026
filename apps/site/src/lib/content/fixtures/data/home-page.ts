@@ -7,15 +7,14 @@
 import { inputNeeded } from '../../../facts';
 import type { HomePageContent } from '../../types';
 import { draftNarrative, sourcedStatement, websiteStrategySource } from '../helpers';
+import { portfolioMap } from './figures';
 
 export const homePage: HomePageContent = {
   heroHeading: draftNarrative("Exploring the ground beside Australia's great base-metal deposits."),
   heroIntro: draftNarrative(
     "Auburn Resources is exploring for large zinc, copper and gold deposits in under-explored ground beside some of Australia's richest base-metal provinces.",
   ),
-  portfolioMap: inputNeeded(
-    'Fig. 1 portfolio map drawn from tenement GIS (Q-31). Mockup geometry is indicative only and must not ship.',
-  ),
+  portfolioMap,
   whyHeading: draftNarrative('Under-explored because the answer is under cover.'),
   whyText: sourcedStatement(
     'The best rocks are under cover. Prospective host sequences sit beneath younger sediments, which is why the ground is under-explored and why Auburn uses geophysics and geochemistry to see through it.',

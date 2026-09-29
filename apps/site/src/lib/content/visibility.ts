@@ -3,7 +3,7 @@
  * appear in a given mode. Built on the slot rules in lib/facts.ts — records are hidden, never
  * half-shown, in production.
  */
-import { isRenderable, isStatusRenderable, type ContentMode } from '../facts';
+import { isRenderable, isStatusRenderable, type ContentMode, type FactSlot } from '../facts';
 import type {
   Article,
   DocType,
@@ -97,4 +97,20 @@ export function latestArticles(
       ),
     );
   return limit === undefined ? listed : listed.slice(0, limit);
+}
+
+// ── Register columns ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Whether a register column may be shown. In production a column appears only when every listed
+ * record has an approved value — never a heading over empty cells. Preview shows it whenever there are
+ * rows, with placeholders.
+ */
+export function isColumnVisible<T>(
+  rows: readonly T[],
+  slotOf: (row: T) => FactSlot<unknown>,
+  mode: ContentMode,
+): boolean {
+  if (rows.length === 0) return false;
+  return mode === 'preview' || rows.every((row) => isRenderable(slotOf(row), mode));
 }

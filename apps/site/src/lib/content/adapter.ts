@@ -12,6 +12,7 @@ import type {
   Article,
   DocumentRecord,
   HomePageContent,
+  PortfolioPageContent,
   Person,
   Project,
   SiteSettings,
@@ -30,4 +31,5 @@ export interface ContentAdapter {
   getWorkItems(projectId?: string): Promise<readonly WorkItem[]>;
   getArticles(): Promise<readonly Article[]>;
   getHomePage(): Promise<HomePageContent>;
+  getPortfolioPage(): Promise<PortfolioPageContent>;
 }

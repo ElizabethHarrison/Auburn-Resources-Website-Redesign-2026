@@ -10,12 +10,22 @@ import { fixturesAdapter } from './index';
 import { articles } from './data/articles';
 import { documents } from './data/documents';
 import { homePage } from './data/home-page';
+import { portfolioPage } from './data/portfolio-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
 import { workItems } from './data/work-items';
 
-const all = { siteSettings, people, projects, documents, workItems, homePage, articles };
+const all = {
+  siteSettings,
+  people,
+  projects,
+  documents,
+  workItems,
+  homePage,
+  articles,
+  portfolioPage,
+};
 const slots = collectSlots(all);
 const documentIds = new Set(documents.map((document) => document.id));
 

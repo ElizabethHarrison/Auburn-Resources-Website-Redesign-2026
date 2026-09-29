@@ -1,0 +1,154 @@
+---
+/**
+ * Project register: the portfolio as a table — sheet, project, state, commodities, stage, area and
+ * ownership. It is also the text equivalent of the portfolio map (CLAUDE.md §6).
+ *
+ * Columns follow `isColumnVisible`: in production a column appears only when every listed project has
+ * an approved value, so no heading ever stands over empty cells. In a keyboard-scrollable region when
+ * narrower than the table.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Ownership, Project } from '~/lib/content/types';
+import { isColumnVisible } from '~/lib/content/visibility';
+import { STAGE_LABELS, STATE_NAMES, formatCommodities, formatNumber } from '~/lib/format';
+import { projectUrl } from '~/lib/urls';
+import Container from '~/components/primitives/Container.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+
+export interface Props {
+  projects: readonly Project[];
+  mode: ContentMode;
+}
+
+const { projects, mode } = Astro.props;
+
+const formatOwnership = (value: unknown) => {
+  const ownership = value as Ownership;
+  const jv = ownership.jvPartner ? `; JV with ${ownership.jvPartner}` : '';
+  return `${ownership.holder} ${formatNumber(ownership.percent)}%${jv}`;
+};
+
+const columns = [
+  {
+    key: 'state',
+    label: 'State',
+    slot: (p: Project) => p.state,
+    format: (v: unknown) => STATE_NAMES[v as keyof typeof STATE_NAMES],
+  },
+  {
+    key: 'commodities',
+    label: 'Commodities',
+    slot: (p: Project) => p.commodities,
+    format: (v: unknown) => formatCommodities(v as Parameters<typeof formatCommodities>[0]),
+  },
+  {
+    key: 'stage',
+    label: 'Stage',
+    slot: (p: Project) => p.stage,
+    format: (v: unknown) => STAGE_LABELS[v as keyof typeof STAGE_LABELS],
+  },
+  { key: 'area', label: 'Area', slot: (p: Project) => p.areaKm2, format: undefined },
+  {
+    key: 'ownership',
+    label: 'Ownership',
+    slot: (p: Project) => p.ownership,
+    format: formatOwnership,
+  },
+].filter((column) => isColumnVisible(projects, column.slot, mode));
+---
+
+{projects.length > 0 && (
+  <section class="portfolio-section" aria-labelledby="portfolio-register">
+    <Container>
+      <SectionHeading id="portfolio-register" heading="Project register" />
+      <div class="register" role="region" aria-labelledby="portfolio-register-caption" tabindex="0">
+        <table>
+          <caption id="portfolio-register-caption" class="visually-hidden">
+            Project register: every project in the portfolio, with state, commodities, stage, area
+            and ownership where available
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Sheet</th>
+              <th scope="col">Project</th>
+              {columns.map((column) => (
+                <th scope="col">{column.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {projects.map((project) => (
+              <tr>
+                <td class="mono">{project.sheetNumber}</td>
+                <th scope="row">
+                  <a href={projectUrl(project)}>{project.name}</a>
+                </th>
+                {columns.map((column) => (
+                  <td>
+                    <FactValue
+                      fact={column.slot(project)}
+                      format={column.format}
+                      field={column.label}
+                      mode={mode}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .portfolio-section {
+    padding-block: var(--section-padding);
+  }
+
+  /* position: relative keeps absolutely positioned descendants inside the scroll region. */
+  .register {
+    position: relative;
+    margin-top: var(--space-4);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 44rem;
+    border-top: var(--rule);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+    border-bottom: var(--rule-secondary);
+    font-weight: var(--font-weight-regular);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    padding-block: var(--space-1);
+    border-bottom: var(--rule);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  tbody th a {
+    color: var(--ink-survey);
+  }
+
+  .mono {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    white-space: nowrap;
+  }
+</style>

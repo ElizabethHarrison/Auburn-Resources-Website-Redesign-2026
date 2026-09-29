@@ -7,6 +7,7 @@ import { projectUrl } from '~/lib/urls';
 import Breadcrumb from '~/components/patterns/Breadcrumb.astro';
 import Footer from '~/components/patterns/Footer.astro';
 import Header from '~/components/patterns/Header.astro';
+import PageTitle from '~/components/patterns/PageTitle.astro';
 import SectionBar from '~/components/patterns/SectionBar.astro';
 import CatalogueSection from '../CatalogueSection.astro';
 import Specimen from '../Specimen.astro';
@@ -75,6 +76,25 @@ const productionProjects = projects.filter((project) => isProjectListable(projec
       sheet="02.1"
       sheetLabel="Nicholson"
     />
+  </Specimen>
+
+  <Specimen
+    name="PageTitle"
+    ground="bleed"
+    notes="Title block for inner pages: breadcrumb (with the sheet reference below 1440 px), the page H1 and an optional introduction. Shown here at level 2 to keep the catalogue to one H1; pages always use level 1."
+  >
+    <PageTitle
+      heading="Specimen page title"
+      breadcrumbs={[
+        { name: 'Home', path: '/' },
+        { name: '02 Projects', path: '/projects' },
+      ]}
+      sheet="02"
+      sheetLabel="Projects"
+      level={2}
+    >
+      <p>Specimen introduction text for layout review.</p>
+    </PageTitle>
   </Specimen>
 
   <Specimen

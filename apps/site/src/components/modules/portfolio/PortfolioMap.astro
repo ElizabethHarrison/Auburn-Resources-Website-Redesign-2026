@@ -1,0 +1,72 @@
+---
+/**
+ * Fig. 1 — portfolio map (docs/SITEMAP.md 02). Static in Phase 3: a supplied, approved figure with its
+ * legend, or (preview only) the empty figure frame. MapLibre and filters arrive in Phase 4. No map is
+ * drawn from mockup geometry. The project register on this page is the map's text equivalent.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { FigureSlot } from '~/lib/content/types';
+import { resolveFigure } from '~/lib/content/visibility';
+import Container from '~/components/primitives/Container.astro';
+import Figure from '~/components/patterns/Figure.astro';
+import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
+import MapLegend from '~/components/patterns/MapLegend.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+
+export interface Props {
+  map: FigureSlot;
+  mode: ContentMode;
+}
+
+const { map, mode } = Astro.props;
+const resolved = resolveFigure(map, mode);
+---
+
+{resolved.kind !== 'hidden' && (
+  <section class="portfolio-section" aria-labelledby="portfolio-map">
+    <Container>
+      <SectionHeading id="portfolio-map" heading="Portfolio map" />
+      <div class="portfolio-map">
+        {resolved.kind === 'figure' && (
+          <>
+            <Figure
+              number={1}
+              caption={resolved.figure.caption}
+              alt={resolved.figure.alt}
+              image={{
+                src: resolved.figure.src,
+                width: resolved.figure.width,
+                height: resolved.figure.height,
+              }}
+              source={resolved.figure.source}
+              date={resolved.figure.date}
+              longDescription={resolved.figure.longDescription}
+            />
+            <MapLegend />
+          </>
+        )}
+        {resolved.kind === 'placeholder' && (
+          <FigurePlaceholder
+            number={1}
+            title="Auburn project portfolio, northern Australia."
+            brief={resolved.brief}
+            mode={mode}
+          />
+        )}
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .portfolio-section {
+    padding-block: var(--section-padding);
+  }
+
+  .portfolio-map {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 60rem;
+    margin-top: var(--space-4);
+  }
+</style>
