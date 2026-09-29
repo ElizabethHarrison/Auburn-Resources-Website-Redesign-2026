@@ -182,7 +182,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   so specs can import fixture records.
 
 ## D-019 · Fixed-page templates: every sitemap route exists in both builds
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 3 checkpoint, awaiting review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 3 review, 29 Sep 2026), with the refinement below
 - **Context:** The approved header, section bars and footer link to every page in docs/SITEMAP.md §1, so a
   route that is missing in either build is a broken link. Most of these pages have no approved content yet.
 - **Decision:**
@@ -204,13 +204,23 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
     before then (no file is approved yet, so none does).
   - Dossier review fixes: a result card shows its reporting announcement and date, and publishes only when that
     announcement is published; a photograph publishes only with place, photographer and consent recorded.
+- **Refinement on approval — "title and navigation only" pages:**
+  - It is an acceptable *temporary* production state while approved content is unavailable. It is **not** a
+    finished or launch-ready page.
+  - A page with no approved content never fabricates or infers content to look complete.
+  - Production keeps the title, breadcrumb and section navigation and any genuinely useful approved links, and
+    never renders empty headings, empty sections, fake statistics, placeholder copy, INPUT NEEDED markers or
+    unapproved claims.
+  - **Before launch**, generate a content-readiness report listing every production page still in this state
+    (launch checklist; not built yet).
 - **Tests:** `tests/e2e/pages.spec.ts` (every route: H1, outline, SEO, section marking, no scripts, no empty
   headings or orphan labels, no raw ISO dates, axe at 360/1280, no overflow at 360–1440; announcement pages;
   404) and `tests/e2e/links.spec.ts` (crawls each build from `/`: every internal link 200, every anchor has a
   target, sitemap lists only linked pages).
 
 ## D-020 · PersonCard responds to its column, not the viewport (bug fix under D-014)
-- **Date:** 29 Sep 2026 · **Status:** Proposed (implementation fix; no visual change where the card has room)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 3 review, 29 Sep 2026): keep the PersonCard container-query
+  fix and the investor section-bar fix; no unrelated design changes
 - **Context:** PersonCard switched to its portrait + text layout at a 48rem *viewport* width. In the three-column
   people grid on Company and Leadership (first real use outside the catalogue), each card is ~300 px wide at
   1024 px, so the two-column layout overflowed the page — a concrete bug, and contrary to D-014 (components
@@ -220,3 +230,25 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Also:** the desktop section bar used one 32 px gap for both columns and wrapped rows; section 03 (seven pages)
   is the first to wrap, leaving a large empty band. Wrapped rows now sit directly under each other
   (`row-gap: 0`); single-row bars are unchanged.
+
+## D-021 · Mobile menu: native modal dialog and a few lines of script, no framework
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 4.1 checkpoint, awaiting review)
+- **Context:** D-001 lists Preact for islands, including the mobile menu. The Phase 4 brief asks for the smallest
+  possible island, no framework unless the architecture requires it, and native HTML/CSS first. Native `<dialog>`
+  already provides everything a modal menu needs.
+- **Decision:**
+  - `components/islands/MobileMenu.astro`: a native modal `<dialog>` (the page behind is inert; Escape closes it
+    natively; "Close" is a `method="dialog"` form button) and one inline module (~430 B raw, ~270 B gzipped)
+    that calls `showModal()`, keeps `aria-expanded` in sync, returns focus to "Menu" on close, and closes the
+    menu if the window widens to 80rem. No Preact, no dependency.
+  - Section rows are native `<details>` disclosures (current section open, current page `aria-current`). Pinned
+    below: "Get investor updates", Contact, and tap-to-mail only when the email is approved.
+  - Without JavaScript, "Menu" remains the Phase 2 link to the footer navigation. CSS `@media (scripting)` picks
+    link or button, so nothing swaps after load (no layout shift). Desktop (from 80rem) is unchanged.
+  - No animation. The mini portfolio map in row 02 (SITEMAP §5) waits for approved GIS (Q-31) and the map item.
+- **Guards updated (not weakened):** client scripts are allowed only under `components/islands/`
+  (design-system test); e2e pages must carry exactly the approved menu script and nothing else
+  (`expectOnlyApprovedScripts`). **Bug fixed:** `scripts/check-js-budget.mjs` measured inline scripts' attribute
+  text instead of their code; it now counts the code (menu pages report 0.26 KB of the 30 KB budget).
+- **Consequences:** Later islands follow the same rule — native first; Preact only where state and rendering
+  justify it (Q-43).
