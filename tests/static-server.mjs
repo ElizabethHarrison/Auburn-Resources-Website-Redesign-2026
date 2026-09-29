@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /**
  * Minimal static server for end-to-end tests: serves a build directory the way Cloudflare static assets
- * will (`/company` → company.html, `/` → index.html, unknown paths → 404). No dependencies.
+ * will (`/company` → company.html, `/` → index.html, unknown paths → 404), behind the real edge Worker
+ * (workers/edge, D-023). No dependencies.
  *
  * Usage: node tests/static-server.mjs <dir> <port>
  */
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
+// Node 24 runs the Worker's TypeScript directly (type stripping); no build step, no dependencies.
+import worker from '../workers/edge/src/index.ts';
 
 const [dirArg, portArg] = process.argv.slice(2);
 const root = resolve(dirArg ?? 'dist');
@@ -49,15 +52,35 @@ async function locate(pathname) {
   return undefined;
 }
 
+/**
+ * The static-assets binding, as Cloudflare provides it to the Worker: `/x` → x.html, `/` → index.html,
+ * unknown paths → the 404 page with status 404.
+ */
+const ASSETS = {
+  async fetch(request) {
+    const { pathname } = new URL(request.url);
+    const file = await locate(pathname);
+    if (!file) {
+      const notFound = join(root, '404.html');
+      return new Response((await isFile(notFound)) ? await readFile(notFound) : 'Not found', {
+        status: 404,
+        headers: { 'Content-Type': TYPES['.html'] },
+      });
+    }
+    return new Response(await readFile(file), {
+      status: 200,
+      headers: { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' },
+    });
+  },
+};
+
+// Every request goes through the real edge Worker (D-023), exactly as `run_worker_first` routes would;
+// requests it does not handle fall through to ASSETS unchanged.
 createServer(async (request, response) => {
-  const { pathname } = new URL(request.url ?? '/', 'http://localhost');
-  const file = await locate(pathname);
-  if (!file) {
-    const notFound = join(root, '404.html');
-    response.writeHead(404, { 'Content-Type': TYPES['.html'] });
-    response.end((await isFile(notFound)) ? await readFile(notFound) : 'Not found');
-    return;
-  }
-  response.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
-  response.end(await readFile(file));
-}).listen(port, () => console.log(`Serving ${root} on http://localhost:${port}`));
+  const url = new URL(request.url ?? '/', `http://localhost:${port}`);
+  const result = await worker.fetch(new Request(url, { method: request.method }), { ASSETS });
+  response.writeHead(result.status, Object.fromEntries(result.headers));
+  response.end(request.method === 'HEAD' ? undefined : Buffer.from(await result.arrayBuffer()));
+}).listen(port, () =>
+  console.log(`Serving ${root} on http://localhost:${port} (via the edge Worker)`),
+);

@@ -1,0 +1,45 @@
+// Cloudflare Worker configuration — NOT DEPLOYED (D-023; docs/WORKER.md §8).
+// Deployment needs the owner's approval of the Cloudflare account (Q-09) and `wrangler` as a dev dependency.
+// No account ID, routes or secrets are committed; they are supplied at deploy time.
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "auburn-edge",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-29",
+  "assets": {
+    "directory": "../../apps/site/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash",
+    // Only these requests run the Worker; everything else is served from static assets directly.
+    "run_worker_first": [
+      "/investors/announcements",
+      "/investors/announcements.html",
+      "/investors/reports",
+      "/investors/reports.html",
+      "/investors/presentations",
+      "/investors/presentations.html",
+      "/filtered/*",
+    ],
+  },
+  "env": {
+    "preview": {
+      "name": "auburn-edge-preview",
+      "assets": {
+        "directory": "../../apps/site/dist-preview",
+        "binding": "ASSETS",
+        "not_found_handling": "404-page",
+        "html_handling": "drop-trailing-slash",
+        "run_worker_first": [
+          "/investors/announcements",
+          "/investors/announcements.html",
+          "/investors/reports",
+          "/investors/reports.html",
+          "/investors/presentations",
+          "/investors/presentations.html",
+          "/filtered/*",
+        ],
+      },
+    },
+  },
+}

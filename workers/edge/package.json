@@ -1,0 +1,14 @@
+{
+  "name": "@auburn/edge",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker. Scope for now (D-023): query-string routing for the investor document filters only.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.2"
+  }
+}
