@@ -294,3 +294,59 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Not deployed.** `workers/edge/wrangler.jsonc` documents the configuration; deployment needs Q-09 and `wrangler`.
 - **Also:** `Button` accepts `type="submit"`; layouts accept a `canonicalPath` override; `tests/static-server.mjs`
   runs the real Worker in front of the build so Playwright tests the same routing code.
+
+## D-024 · Phase 5: Sanity behind the existing content adapter
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 5 brief, 29 Sep 2026)
+- **Scope note:** Phase 4 items 1–2 are approved and merged; items 3–8 are intentionally deferred and are not part of
+  Phase 5.
+- **Decision:**
+  1. `ContentAdapter` stays the only boundary Astro consumes; templates never access Sanity.
+  2. A Sanity adapter sits behind it. The fixture adapter stays unchanged as the deterministic fallback and test source.
+  3. `Fact` / `isRenderable()` remain the final production gate. Publication in Sanity never implies approval.
+  4. Production reads **published** documents only, then applies the approval/renderability rules; missing
+     provenance or approval information fails closed.
+  5. Preview reads drafts over published, with the existing preview markers and INPUT NEEDED behaviour.
+  6. Dependencies: `@sanity/client`, `@sanity/image-url`, `groq` (site, build-time only); `sanity`, `react`,
+     `react-dom`, `styled-components` (only in `apps/studio`). Not added without a concrete requirement and approval:
+     `@sanity/astro`, Presentation / Visual Editing, Preact, `@sanity/vision`.
+  7. Private datasets; `production` and `staging` kept separate.
+  8. A `sanity-export` source reads an NDJSON snapshot so the full Sanity mapping and integrity pipeline runs
+     without credentials.
+  9. Fixture tests are kept; round-trip and hostile-snapshot tests are added.
+  10. No Sanity project, dataset, import, Studio deployment or Worker deployment without explicit approval.
+  11. Fixture content is never migrated as approved; statuses are preserved exactly.
+  12. Indicative mockup graphics stay out of Sanity (D-017).
+  13. PDFs stay unlinked until the PDF Worker is approved.
+
+## D-025 · Source records are internal `document` records (Q-07)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-07, 29 Sep 2026); confirms the D-009 interim approach
+- **Decision:** Provenance sources (website capture, third-party reports, internal planning documents) are `document`
+  records with `internal: true` and `docType` `sourceCapture` / `thirdParty`. `factMeta.sourceDocument` and
+  interpretation sources reference them. Internal records never appear in public registers.
+
+## D-026 · Review-by dates are reported, not hidden
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 5 brief, 29 Sep 2026)
+- **Decision:** An expired `reviewBy` date does not by itself hide content; visibility follows the approval rules only.
+  Overdue items are surfaced as review warnings (build log and content report), so stale content is never presented as
+  newly verified.
+
+## D-027 · Approval-role enforcement: build-time validation; CMS roles are a launch-control limitation
+- **Date:** 29 Sep 2026 · **Status:** Approved in principle (Phase 5 brief); plan choice open (Q-10, Q-46)
+- **Finding (Sanity documentation, checked 29 Sep 2026 via search summaries of the official Roles and Roles-and-permissions
+  pages; the docs site itself is blocked by this environment's egress policy):** custom roles are an **Enterprise**
+  feature; other plans have only the default roles. So on a non-Enterprise plan the CMS cannot restrict approval to
+  the company secretary (corporate facts) or competent person (technical facts).
+- **Decision:** Approval is validated at build time regardless of CMS roles. The adapter accepts `approved` only
+  with a resolvable source, as-at date, approver (a person flagged as an approver of the right kind: corporate or
+  technical) and approval date; otherwise production fails closed. This detects incomplete or mis-attributed
+  approvals but **cannot** detect an editor deliberately recording someone else's approval. Until roles are enforced
+  (Enterprise custom roles, or tightly limited write access plus audit), that is a recorded **launch-control
+  limitation**, not something the CMS is claimed to enforce.
+
+## D-028 · Assets: no real company assets in Sanity until exposure is approved
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 5 brief, 29 Sep 2026)
+- **Finding (as D-027):** standard Sanity asset URLs are public to anyone holding the URL, even for a private dataset.
+  Private assets with signed URLs are a Media Library feature available as an add-on for certain Enterprise plans.
+- **Decision:** The schemas and mapper support image and file assets, but **no real company asset is uploaded**. Before
+  any import of real assets, stop and ask (Q-47). Figures render from the Sanity image CDN only when approved;
+  PDFs stay unlinked (D-024 §13).
