@@ -99,7 +99,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   has no digits; data cells take Fact objects only).
 
 ## D-012 · Header breakpoints set by measurement
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-13, 29 Sep 2026)
 - **Context:** Measured with Didact Gothic, the full header row needs ~980 px of content width without the
   sheet reference and ~1,230 px with it. At a 64rem (1024 px) breakpoint it overflowed.
 - **Decision:** Full header navigation from 80rem (1280 px); sheet reference in the header from 90rem
@@ -108,7 +108,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   when Century Gothic is licensed (it is wider).
 
 ## D-013 · Design-system catalogue: preview-only route with artificial specimens
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-16, 29 Sep 2026)
 - **Decision:** `/_catalogue` is injected by `astro.config.ts` only in preview builds (source in
   `src/catalogue/`, outside `src/pages/`). To show production rendering it uses *specimens*: artificial
   values with status `approved`, labelled "Specimen", in `src/catalogue/specimens.ts`. Company fixtures stay
@@ -117,7 +117,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   outside preview.
 
 ## D-014 · Container queries for components that live in columns
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-16, 29 Sep 2026)
 - **Decision:** Page layout uses the four viewport breakpoints (48/64/80/90rem). Components placed in
   columns of varying width respond to their own width: DocumentRegister switches cards → table at 40rem;
   FactCell values and SheetCard names scale with the cell (`cqi`), capped at the approved token sizes, so

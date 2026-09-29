@@ -22,11 +22,11 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-10 | Sanity plan and seat count. | build (Phase 5) | Project owner | |
 | Q-11 | Email platform for alerts (does Auburn or DGR Global already use one?). | build (Phase 4 alerts form) | Project owner | |
 | Q-12 | Century Gothic web-font licence — buy, or keep Didact Gothic permanently? | none (fallback in use) | Project owner | |
-| Q-13 | Phase 2 review: approve D-012 (full header navigation from 1280 px, sheet reference from 1440 px), or prefer tighter nav spacing / smaller nav text so it fits from 1024 px? | none | Project owner | |
-| Q-14 | Home key-facts strip is specified as "Status (+ DGR holding)". Show the DGR holding inside the Status cell, as a sixth cell, or not on the home page? (Catalogue currently shows five cells, holding omitted.) | build (Phase 3 home) | Project owner | |
-| Q-15 | Source lines are 10.5 px mono (approved). Legible, but small for older readers — keep, or raise the minimum to 11–12 px? | none | Project owner | |
-| Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner | |
-| Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner | |
+| Q-13 | Phase 2 review: approve D-012 (full header navigation from 1280 px, sheet reference from 1440 px), or prefer tighter nav spacing / smaller nav text so it fits from 1024 px? | none | Project owner |  **Approved** 29 Sep 2026: full header navigation from 1280 px; sheet number joins at 1440 px; compact menu below 1280 px → D-012 |
+| Q-14 | Home key-facts strip is specified as "Status (+ DGR holding)". Show the DGR holding inside the Status cell, as a sixth cell, or not on the home page? (Catalogue currently shows five cells, holding omitted.) | build (Phase 3 home) | Project owner |  **Approved** 29 Sep 2026: no DGR holding in the homepage key-facts strip for now |
+| Q-15 | Source lines are 10.5 px mono (approved). Legible, but small for older readers — keep, or raise the minimum to 11–12 px? | none | Project owner |  **Keep 10.5 px for now**; reassess after seeing real pages |
+| Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner |  **Approved** with Phase 2 (29 Sep 2026) → D-013, D-014 |
+| Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner |  **Do not block**: the approved written design specification is the source of truth |
 
 ## Company secretary
 
