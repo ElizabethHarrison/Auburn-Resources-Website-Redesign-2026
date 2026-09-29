@@ -28,6 +28,7 @@ export interface Props {
   breadcrumbs?: readonly BreadcrumbItem[] | undefined;
   jsonLd?: readonly JsonLd[] | undefined;
   noindex?: boolean | undefined;
+  canonicalPath?: string | undefined;
 }
 
 const {
@@ -41,6 +42,7 @@ const {
   breadcrumbs,
   jsonLd,
   noindex,
+  canonicalPath,
 } = Astro.props;
 // Mobile menu data: listable dossiers, the current URL, and the company email only when approved.
 const projectLinks: NavLink[] = frame.projects.map((project) => ({
@@ -61,6 +63,7 @@ const email =
   {...(breadcrumbs === undefined ? {} : { breadcrumbs })}
   {...(jsonLd === undefined ? {} : { jsonLd })}
   {...(noindex === undefined ? {} : { noindex })}
+  {...(canonicalPath === undefined ? {} : { canonicalPath })}
 >
   <Fragment slot="header">
     <Header

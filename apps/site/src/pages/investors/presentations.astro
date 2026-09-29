@@ -9,9 +9,11 @@ import { content } from '~/lib/content';
 import { loadFrame } from '~/lib/content/frame';
 import Button from '~/components/primitives/Button.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
-import DocumentLibrary from '~/components/modules/investors/DocumentLibrary.astro';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+import { LISTINGS } from '~/lib/document-filters';
 
 const mode = config.contentMode;
+const listing = LISTINGS.presentations;
 const [frame, page, documents] = await Promise.all([
   loadFrame(content, mode),
   content.getPage('presentations'),
@@ -20,10 +22,10 @@ const [frame, page, documents] = await Promise.all([
 ---
 
 <ContentLayout
-  heading="Presentations"
-  description="Corporate presentations from Auburn Resources, newest first, with the archive of earlier presentations."
+  heading={listing.heading}
+  description={listing.description}
   frame={frame}
-  href="/investors/presentations"
+  href={listing.path}
   section="03"
   intro={page.intro}
   mode={mode}
@@ -39,11 +41,5 @@ const [frame, page, documents] = await Promise.all([
       mode={mode}
     />
   </Fragment>
-  <DocumentLibrary
-    documents={documents}
-    docTypes={['presentation']}
-    label="Presentations"
-    emptyBrief="Current corporate presentation and archive"
-    mode={mode}
-  />
+  <DocumentListingBody listing={listing} documents={documents} mode={mode} />
 </ContentLayout>

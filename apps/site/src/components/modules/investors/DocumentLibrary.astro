@@ -20,8 +20,8 @@ export interface Props {
   docTypes: readonly DocType[];
   /** Plural name of what is listed, e.g. "Announcements". */
   label: string;
-  /** Brief for the preview placeholder when nothing is recorded. */
-  emptyBrief: string;
+  /** Brief for the preview placeholder when nothing is recorded; omit for filtered views. */
+  emptyBrief?: string | undefined;
   mode: ContentMode;
 }
 
@@ -47,7 +47,7 @@ const idOf = (year: string) => `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-'
     </div>
   </PageBlock>
 ))}
-{rows.length === 0 && mode === 'preview' && (
+{rows.length === 0 && mode === 'preview' && emptyBrief !== undefined && (
   <Container>
     <div class="library__empty">
       <Placeholder brief={emptyBrief} field={label} mode={mode} />

@@ -32,11 +32,24 @@ export interface Props {
   intro?: NarrativeSlot | undefined;
   jsonLd?: readonly JsonLd[] | undefined;
   noindex?: boolean | undefined;
+  /** Canonical path for variants of another page (filtered listings, D-023). */
+  canonicalPath?: string | undefined;
   mode: ContentMode;
 }
 
-const { heading, title, description, frame, href, section, intro, jsonLd, noindex, mode } =
-  Astro.props;
+const {
+  heading,
+  title,
+  description,
+  frame,
+  href,
+  section,
+  intro,
+  jsonLd,
+  noindex,
+  canonicalPath,
+  mode,
+} = Astro.props;
 const sheetLabel = Astro.props.sheetLabel ?? heading;
 const projectLinks: NavLink[] = frame.projects.map((project) => ({
   sheet: project.sheetNumber,
@@ -60,6 +73,7 @@ const hasActions = Astro.slots.has('actions');
   breadcrumbs={breadcrumbs}
   jsonLd={jsonLd}
   noindex={noindex}
+  canonicalPath={canonicalPath}
 >
   {hasActions ? (
     <PageHeader

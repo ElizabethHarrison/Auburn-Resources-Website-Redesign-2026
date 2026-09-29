@@ -60,7 +60,7 @@ export function robotsDirective(mode: ContentMode, noindex = false): string {
 export function robotsTxt(mode: ContentMode, site: URL | string): string {
   if (mode === 'preview') return 'User-agent: *\nDisallow: /\n';
   const sitemap = new URL('/sitemap-index.xml', site).href;
-  return `User-agent: *\nAllow: /\nDisallow: /_catalogue\n\nSitemap: ${sitemap}\n`;
+  return `User-agent: *\nAllow: /\nDisallow: /_catalogue\nDisallow: /filtered/\n\nSitemap: ${sitemap}\n`;
 }
 
 // ── JSON-LD ─────────────────────────────────────────────────────────────────────────────────────

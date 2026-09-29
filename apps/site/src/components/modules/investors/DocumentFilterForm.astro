@@ -1,0 +1,191 @@
+---
+/**
+ * Document filters (D-023): a native GET form — no client JavaScript. Submitting it requests the
+ * listing's own URL with `?year=` / `?type=`; the edge Worker serves the prebuilt filtered page
+ * (docs/WORKER.md). Options come only from the documents visible in this build; with none, the form is
+ * not rendered (no controls over nothing).
+ *
+ * The current state is shown in the controls (selected options) and in words beneath them, never by
+ * colour alone. "Clear filters" is a plain link to the unfiltered listing.
+ */
+import type { ContentMode } from '~/lib/facts';
+import {
+  TYPE_SLUGS,
+  describeState,
+  isFiltered,
+  type FilterOptions,
+  type FilterState,
+  type Listing,
+} from '~/lib/document-filters';
+import { DOC_TYPE_LABELS } from '~/lib/format';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+
+export interface Props {
+  listing: Listing;
+  options: FilterOptions;
+  state: FilterState;
+  /** Number of documents shown for this state. */
+  count: number;
+  /** The requested filter could not be served (malformed or not in the dataset). */
+  unavailable?: boolean;
+  mode: ContentMode;
+}
+
+const { listing, options, state, count, unavailable = false } = Astro.props;
+const hasOptions = options.years.length > 0 || options.types.length > 0;
+const filtered = isFiltered(state);
+const singular = listing.noun.replace(/s$/, '');
+const id = `filters-${listing.key}`;
+const summary = unavailable
+  ? `That filter is not available for ${listing.noun}.`
+  : !filtered
+    ? `Showing all ${count} ${count === 1 ? singular : listing.noun}.`
+    : count === 0
+      ? `No ${listing.noun} match ${describeState(state)}.`
+      : `Showing ${count} ${count === 1 ? singular : listing.noun} for ${describeState(state)}.`;
+---
+
+{(hasOptions || unavailable) && (
+  <Container>
+    <div class="filters">
+      {hasOptions && (
+        <form
+          class="filters__form"
+          method="get"
+          action={listing.path}
+          aria-label={`Filter ${listing.noun}`}
+          aria-describedby={`${id}-status`}
+        >
+          {options.years.length > 0 && (
+            <div class="filters__field">
+              <label class="filters__label" for={`${id}-year`}>
+                Year
+              </label>
+              <select class="filters__select" id={`${id}-year`} name="year">
+                <option value="" selected={state.year === undefined}>
+                  All years
+                </option>
+                {options.years.map((year) => (
+                  <option value={year} selected={state.year === year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {options.types.length > 0 && (
+            <div class="filters__field">
+              <label class="filters__label" for={`${id}-type`}>
+                Report type
+              </label>
+              <select class="filters__select" id={`${id}-type`} name="type">
+                <option value="" selected={state.type === undefined}>
+                  All types
+                </option>
+                {options.types.map((type) => (
+                  <option value={TYPE_SLUGS[type]} selected={state.type === type}>
+                    {DOC_TYPE_LABELS[type]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div class="filters__actions">
+            <Button type="submit">Apply filters</Button>
+            {(filtered || unavailable) && (
+              <a class="filters__clear" href={listing.path}>
+                Clear filters
+              </a>
+            )}
+          </div>
+        </form>
+      )}
+      <p class="filters__status" id={`${id}-status`}>
+        {(filtered || unavailable) && <span class="filters__flag">Filtered</span>}
+        {summary}
+      </p>
+      {!hasOptions && unavailable && (
+        <p>
+          <a href={listing.path}>View all {listing.noun}</a>
+        </p>
+      )}
+    </div>
+  </Container>
+)}
+
+<style>
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+    border-top: var(--rule);
+    border-bottom: var(--rule-secondary);
+  }
+
+  .filters__form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .filters__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+
+  .filters__label {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .filters__select {
+    min-width: 10rem;
+    max-width: 100%;
+    min-height: var(--touch-target);
+    padding-inline: var(--space-2);
+    border: var(--rule);
+    border-radius: var(--radius);
+    background-color: var(--paper);
+    color: var(--ink-survey);
+    font: inherit;
+  }
+
+  .filters__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .filters__clear {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+  }
+
+  .filters__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1);
+    color: var(--ink-graphite);
+  }
+
+  .filters__flag {
+    padding: var(--tag-padding-block) var(--tag-padding-inline);
+    border: var(--rule);
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

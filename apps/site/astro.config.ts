@@ -18,7 +18,8 @@ const SITE_URL = process.env.SITE_URL ?? 'https://auburnresources.com.au';
 const isPreview = process.env.CONTENT_MODE === 'preview';
 
 // Paths that must never appear in the XML sitemap (noindex, internal or utility pages).
-const SITEMAP_EXCLUDE = ['/_catalogue', '/404'];
+// `/filtered/…`: prebuilt filter views served by the edge Worker at query-string URLs (D-023).
+const SITEMAP_EXCLUDE = ['/_catalogue', '/404', '/filtered/'];
 
 /**
  * The design-system catalogue (/_catalogue) exists only in preview builds. It is injected here rather

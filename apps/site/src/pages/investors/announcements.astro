@@ -1,16 +1,19 @@
 ---
 /**
  * Sheet 03.1 · Announcements (docs/SITEMAP.md 03.1): the complete record, grouped by year. Each row
- * links to its announcement page. Filters and search arrive with the Phase 4 islands.
+ * links to its announcement page. Year filtering is served by the edge Worker from prebuilt pages
+ * (D-023); search is a later Phase 4 item.
  */
 import ContentLayout from '~/layouts/ContentLayout.astro';
 import { config } from '~/lib/config';
 import { content } from '~/lib/content';
 import { loadFrame } from '~/lib/content/frame';
 import Button from '~/components/primitives/Button.astro';
-import DocumentLibrary from '~/components/modules/investors/DocumentLibrary.astro';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+import { LISTINGS } from '~/lib/document-filters';
 
 const mode = config.contentMode;
+const listing = LISTINGS.announcements;
 const [frame, page, documents] = await Promise.all([
   loadFrame(content, mode),
   content.getPage('announcements'),
@@ -19,10 +22,10 @@ const [frame, page, documents] = await Promise.all([
 ---
 
 <ContentLayout
-  heading="Announcements"
-  description="Every Auburn Resources announcement, newest first, each with its own page and PDF."
+  heading={listing.heading}
+  description={listing.description}
   frame={frame}
-  href="/investors/announcements"
+  href={listing.path}
   section="03"
   intro={page.intro}
   mode={mode}
@@ -32,11 +35,5 @@ const [frame, page, documents] = await Promise.all([
       Get investor updates
     </Button>
   </Fragment>
-  <DocumentLibrary
-    documents={documents}
-    docTypes={['announcement']}
-    label="Announcements"
-    emptyBrief="Announcements, each with its release date, reference and re-hosted PDF"
-    mode={mode}
-  />
+  <DocumentListingBody listing={listing} documents={documents} mode={mode} />
 </ContentLayout>
