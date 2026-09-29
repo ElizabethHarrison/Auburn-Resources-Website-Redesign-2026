@@ -154,7 +154,10 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   part of the approved stack).
 
 ## D-018 · Project dossier: one data-driven template
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 3C, awaiting dossier review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (dossier review, 29 Sep 2026), on conditions: Q-18 stays as decided
+  (indicative graphics preview-only); production approved-content rules, the compliance-block requirement and the
+  no-half-shown rule unchanged; no project-specific page logic; unverified fixture content preview-only. Q-34 and
+  Q-35 remain open.
 - **Decision:** `/projects/[slug]` renders every project through one template. `lib/content/dossier.ts` decides
   from data alone which of modules 01–09 appear (approved order, SITEMAP §8): preview shows all nine with
   INPUT NEEDED; production shows a module only with approved content — 01 needs an approved map; 02 and 04–06
@@ -177,3 +180,43 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   `tests/e2e/content-integrity.spec.ts` (scans the production build: HOLD wording, preview output, statuses,
   indicative assets, unapproved statements, no dossier routes). Playwright defines `__PREVIEW_BUILD__ = false`
   so specs can import fixture records.
+
+## D-019 · Fixed-page templates: every sitemap route exists in both builds
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 3 checkpoint, awaiting review)
+- **Context:** The approved header, section bars and footer link to every page in docs/SITEMAP.md §1, so a
+  route that is missing in either build is a broken link. Most of these pages have no approved content yet.
+- **Decision:**
+  - Every fixed route is generated in both builds. Copy comes from a `page` record per page (SITEMAP §8
+    `page`): a Narrative intro and sections whose headings are the section names from SITEMAP §6 (structure)
+    and whose paragraphs are Narrative/Interpretation slots. A section renders only when a paragraph renders.
+    Facts (status, holdings, addresses, contacts) are read from site settings, never copied into pages.
+  - In production a page with nothing approved shows its title block and structural navigation only
+    (extends D-016's "sparse production" to all pages; Q-19). Legal pages show only their title until the
+    company supplies the text (Q-24); nothing legal is drafted.
+  - Forms (email alerts, contact enquiry) are Phase 4: preview shows where they go; production shows none.
+  - Document libraries (announcements, reports, presentations) are registers grouped by year (static
+    "pagination"); filters and search are Phase 4. Governance lists the fourteen documents named on the old
+    site as records (`toVerify`, files INPUT NEEDED).
+  - An announcement page is generated only for an announcement listable in that build, so every register
+    link resolves. The article template exists but generates no page until an article exists.
+  - "Download latest presentation" and a featured "current presentation" follow Q-08 (omitted in production).
+  - `/documents/*.pdf` is served by the edge Worker (Phase 4+); the link crawler fails if any page links to it
+    before then (no file is approved yet, so none does).
+  - Dossier review fixes: a result card shows its reporting announcement and date, and publishes only when that
+    announcement is published; a photograph publishes only with place, photographer and consent recorded.
+- **Tests:** `tests/e2e/pages.spec.ts` (every route: H1, outline, SEO, section marking, no scripts, no empty
+  headings or orphan labels, no raw ISO dates, axe at 360/1280, no overflow at 360–1440; announcement pages;
+  404) and `tests/e2e/links.spec.ts` (crawls each build from `/`: every internal link 200, every anchor has a
+  target, sitemap lists only linked pages).
+
+## D-020 · PersonCard responds to its column, not the viewport (bug fix under D-014)
+- **Date:** 29 Sep 2026 · **Status:** Proposed (implementation fix; no visual change where the card has room)
+- **Context:** PersonCard switched to its portrait + text layout at a 48rem *viewport* width. In the three-column
+  people grid on Company and Leadership (first real use outside the catalogue), each card is ~300 px wide at
+  1024 px, so the two-column layout overflowed the page — a concrete bug, and contrary to D-014 (components
+  in variable-width columns use container queries).
+- **Decision:** The card is a size container; the two-column layout applies when the card itself is at least
+  36rem wide. Tokens, type, colours and markup order are unchanged.
+- **Also:** the desktop section bar used one 32 px gap for both columns and wrapped rows; section 03 (seven pages)
+  is the first to wrap, leaving a large empty band. Wrapped rows now sit directly under each other
+  (`row-gap: 0`); single-row bars are unchanged.
