@@ -1,4 +1,5 @@
 import { defineConfig, envField } from 'astro/config';
+import type { AstroIntegration } from 'astro';
 import sitemap from '@astrojs/sitemap';
 
 /**
@@ -22,6 +23,21 @@ const isPreview = process.env.CONTENT_MODE === 'preview';
 const SITEMAP_EXCLUDE = ['/_catalogue', '/404'];
 const SITEMAP_EXCLUDE_EXACT = ['/'];
 
+/**
+ * The design-system catalogue (/_catalogue) exists only in preview builds. It is injected here rather
+ * than living in src/pages, so a production build never contains it.
+ */
+const catalogue: AstroIntegration = {
+  name: 'auburn:catalogue',
+  hooks: {
+    'astro:config:setup': ({ injectRoute }) => {
+      if (isPreview) {
+        injectRoute({ pattern: '/_catalogue', entrypoint: './src/catalogue/CataloguePage.astro' });
+      }
+    },
+  },
+};
+
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
@@ -32,7 +48,7 @@ export default defineConfig({
   compressHTML: true,
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
   integrations: isPreview
-    ? []
+    ? [catalogue]
     : [
         sitemap({
           filter: (page) => {

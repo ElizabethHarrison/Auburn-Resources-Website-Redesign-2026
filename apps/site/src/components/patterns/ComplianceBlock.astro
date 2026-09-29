@@ -1,0 +1,94 @@
+---
+/**
+ * Compliance block (CLAUDE.md §2.3; docs/SITEMAP.md §8): competent person statement, link to the
+ * disclaimer, and the page's as-at date. Required on any page showing exploration results, targets
+ * or resources.
+ *
+ * The statement is legal/CP wording supplied by the company — never drafted here. In production the
+ * block renders only when an approved statement exists; pages must not show results, targets or
+ * resources without it. In preview a missing statement shows as INPUT NEEDED.
+ */
+import type { ContentMode, FactSlot, InterpretationSlot, IsoDate } from '~/lib/facts';
+import { isRenderable, resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { SourceIndex } from '~/lib/content/sources';
+import FactValue from './FactValue.astro';
+import Placeholder from './Placeholder.astro';
+import SourceLine from './SourceLine.astro';
+
+export interface Props {
+  statement: InterpretationSlot;
+  /** Page as-at date. */
+  asAt?: FactSlot<IsoDate> | undefined;
+  sources?: SourceIndex | undefined;
+  mode?: ContentMode | undefined;
+}
+
+const { statement, asAt, sources } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const resolved = resolve(statement, mode);
+---
+
+{isRenderable(statement, mode) && (
+  <aside class="compliance" aria-label="Competent person statement">
+    <h2 class="compliance__heading">Competent person statement</h2>
+    {resolved.kind === 'value' && (
+      <>
+        <p class="compliance__statement">{resolved.item.text}</p>
+        <SourceLine item={resolved.item} sources={sources} mode={mode} />
+      </>
+    )}
+    {resolved.kind === 'placeholder' && (
+      <Placeholder brief={resolved.brief} field="Competent person statement" mode={mode} />
+    )}
+    <p class="compliance__links">
+      <a href="/disclaimer">Disclaimer, forward-looking statements and JORC basis</a>
+      {asAt && isRenderable(asAt, mode) && (
+        <span class="compliance__as-at">
+          Page as at <FactValue fact={asAt} field="Page as-at date" mode={mode} />
+        </span>
+      )}
+    </p>
+  </aside>
+)}
+
+<style>
+  .compliance {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--rule);
+    background-color: var(--paper);
+  }
+
+  .compliance__heading {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .compliance__statement {
+    font-size: var(--text-small);
+  }
+
+  .compliance__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    max-width: none;
+    font-size: var(--text-small);
+  }
+
+  .compliance__as-at {
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

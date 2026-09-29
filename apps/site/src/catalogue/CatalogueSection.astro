@@ -1,0 +1,53 @@
+---
+/** A top-level catalogue section: numbered heading and anchor. */
+export interface Props {
+  id: string;
+  number: string;
+  title: string;
+  intro?: string;
+}
+
+const { id, number, title, intro } = Astro.props;
+---
+
+<section class="catalogue-section" id={id} aria-labelledby={`${id}-heading`}>
+  <h2 id={`${id}-heading`} class="catalogue-section__heading">
+    <span class="catalogue-section__number">{number}</span>
+    {title}
+  </h2>
+  {intro && <p class="catalogue-section__intro">{intro}</p>}
+  <div class="catalogue-section__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .catalogue-section {
+    padding-block: var(--section-padding);
+    border-top: var(--rule);
+  }
+
+  .catalogue-section__heading {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .catalogue-section__number {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .catalogue-section__intro {
+    margin-top: var(--space-2);
+  }
+
+  .catalogue-section__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    margin-top: var(--space-6);
+  }
+</style>

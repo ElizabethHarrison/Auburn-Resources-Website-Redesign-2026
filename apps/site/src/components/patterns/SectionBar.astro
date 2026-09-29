@@ -1,0 +1,103 @@
+---
+/**
+ * Section bar (docs/DESIGN-DIRECTION.md; docs/SITEMAP.md §3): a 44 px mono row of the section's pages
+ * with sheet numbers; the current page is underlined and marked aria-current="page". On mobile it
+ * becomes a row of horizontally scrolling chips. Each chip is a link, so the row is reachable and
+ * scrollable by keyboard without an extra tab stop.
+ */
+import type { NavLink } from '~/lib/navigation';
+
+export interface Props {
+  /** Section name for the accessible label, e.g. `03 Investors`. */
+  sectionLabel: string;
+  pages: readonly NavLink[];
+  /** URL of the current page. */
+  currentHref: string;
+}
+
+const { sectionLabel, pages, currentHref } = Astro.props;
+---
+
+<nav class="section-bar" aria-label={`${sectionLabel} pages`}>
+  <div class="l-container">
+    <ul class="section-bar__list" role="list">
+      {pages.map((page) => (
+        <li>
+          <a
+            class="section-bar__link"
+            href={page.href}
+            aria-current={page.href === currentHref ? 'page' : undefined}
+          >
+            {page.sheet && <span class="section-bar__sheet">{page.sheet}</span>}
+            {page.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .section-bar {
+    border-bottom: var(--rule-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .section-bar__list {
+    display: flex;
+    gap: var(--space-1);
+    margin: 0;
+    padding: var(--space-1) 0;
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: thin;
+  }
+
+  .section-bar__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    padding-inline: var(--space-2);
+    border: var(--rule-width) solid var(--ink-contour);
+    color: var(--ink-survey);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .section-bar__link[aria-current='page'] {
+    border-color: var(--ink-survey);
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.35em;
+  }
+
+  .section-bar__sheet {
+    color: var(--color-label);
+  }
+
+  .section-bar__link:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.35em;
+  }
+
+  /* Desktop: a plain ruled row, no chip borders. */
+  @media (min-width: 64rem) {
+    .section-bar__list {
+      gap: var(--space-4);
+      min-height: var(--section-bar-height);
+      padding: 0;
+      overflow-x: visible;
+      flex-wrap: wrap;
+    }
+
+    .section-bar__link {
+      padding-inline: 0;
+      border: 0;
+    }
+  }
+</style>

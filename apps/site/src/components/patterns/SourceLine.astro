@@ -1,0 +1,54 @@
+---
+/**
+ * Provenance line under a fact or interpretation: `SOURCE — ANNUAL REPORT · AS AT 29 SEP 2026`,
+ * mono 10.5 px, muted. In preview it adds the status dot.
+ */
+import type { ContentMode, Fact, Interpretation } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import { provenanceOf, type SourceIndex } from '~/lib/content/sources';
+import DateMono from '../primitives/DateMono.astro';
+import StatusDot from './StatusDot.astro';
+
+export interface Props {
+  item: Fact<unknown> | Interpretation;
+  sources?: SourceIndex | undefined;
+  /** `on-dark` for Survey Blue grounds. */
+  tone?: 'default' | 'on-dark';
+  mode?: ContentMode | undefined;
+}
+
+const { item, sources, tone = 'default' } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const provenance = provenanceOf(item);
+const source = sources?.get(provenance.source.documentId);
+---
+
+<p class:list={['source-line', `source-line--${tone}`]}>
+  {source && <span>Source — {source.title}</span>}
+  <span>
+    As at <DateMono date={provenance.asAt} />
+  </span>
+  {mode === 'preview' && <StatusDot status={provenance.status} mode={mode} />}
+</p>
+
+<style>
+  .source-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-1);
+    max-width: none;
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+    /* Source titles can contain long unbroken words (domains, file names). */
+    overflow-wrap: anywhere;
+  }
+
+  .source-line--on-dark {
+    color: var(--on-survey-muted);
+  }
+</style>

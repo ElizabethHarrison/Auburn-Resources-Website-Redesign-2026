@@ -1,0 +1,100 @@
+---
+/**
+ * Review status marker — PREVIEW ONLY; renders nothing in production (docs/DESIGN-DIRECTION.md).
+ * Shape and text carry the meaning, not colour alone: ● verified · ◐ to verify · ○ input needed.
+ */
+import type { ContentMode, ContentStatus } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+
+export type DotStatus = ContentStatus | 'inputNeeded';
+
+export interface Props {
+  status: DotStatus;
+  /** `compact` shows only the shape; the text is kept for assistive technology. */
+  compact?: boolean;
+  mode?: ContentMode;
+}
+
+const { status, compact = false } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+
+const LABELS: Record<DotStatus, string> = {
+  approved: 'Verified',
+  toVerify: 'To verify',
+  draft: 'Draft',
+  superseded: 'Superseded',
+  inputNeeded: 'Input needed',
+};
+---
+
+{mode === 'preview' && (
+  <span class:list={['status-dot', `status-dot--${status}`]} data-preview-only>
+    <svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true" focusable="false">
+      {status === 'approved' && <circle cx="5" cy="5" r="4.25" class="fill" />}
+      {status === 'toVerify' && (
+        <>
+          <circle cx="5" cy="5" r="4" class="stroke" />
+          <path d="M5 1a4 4 0 0 0 0 8Z" class="fill" />
+        </>
+      )}
+      {status === 'inputNeeded' && <circle cx="5" cy="5" r="4" class="stroke dashed" />}
+      {(status === 'draft' || status === 'superseded') && (
+        <circle cx="5" cy="5" r="4" class="stroke" />
+      )}
+    </svg>
+    <span class:list={['status-dot__text', { 'visually-hidden': compact }]}>{LABELS[status]}</span>
+  </span>
+)}
+
+<style>
+  .status-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  svg {
+    width: var(--status-dot-size);
+    height: var(--status-dot-size);
+  }
+
+  .fill {
+    fill: var(--dot-colour);
+    stroke: none;
+  }
+
+  .stroke {
+    fill: none;
+    stroke: var(--dot-colour);
+    stroke-width: 1.25;
+  }
+
+  .dashed {
+    stroke-dasharray: 1.6 1.4;
+  }
+
+  .status-dot--approved {
+    --dot-colour: var(--status-approved);
+    color: var(--ink-survey);
+  }
+  .status-dot--toVerify {
+    --dot-colour: var(--status-to-verify);
+    color: var(--copper-text);
+  }
+  .status-dot--inputNeeded {
+    --dot-colour: var(--status-input-needed);
+    color: var(--copper-text);
+  }
+  .status-dot--draft,
+  .status-dot--superseded {
+    --dot-colour: var(--ink-survey);
+    color: var(--ink-survey);
+  }
+</style>

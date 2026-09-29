@@ -19,9 +19,12 @@ Read these before writing code, in this order:
 - **Phase 0** (housekeeping) — done.
 - **Phase 1** (scaffold) — done: pnpm workspace, Astro site in `apps/site`, tokens and base CSS, `BaseLayout`,
   SEO helpers, content adapter with typed fixtures, `Fact` rendering rules, unit tests, CI.
-- **Not yet built:** components (Phase 2), real pages and templates (Phase 3), islands (Phase 4), Sanity
-  Studio (Phase 5), `workers/edge`, Playwright/axe/Lighthouse. `src/pages/index.astro` is a temporary noindex
-  development scaffold, replaced by the Home template in Phase 3.
+- **Phase 2** (design system) — done, awaiting review: tokens tagged approved/derived, 11 primitives, static
+  patterns and page frame in `apps/site/src/components/`, preview-only catalogue at `/_catalogue`
+  (`src/catalogue/`), design-system/contrast tests, JS budget check. Review: `docs/reviews/phase-2-design-review.md`.
+- **Not yet built:** real pages and templates (Phase 3), islands (Phase 4), Sanity Studio (Phase 5),
+  `workers/edge`, Playwright/axe/Lighthouse in CI. `src/pages/index.astro` is a temporary noindex development
+  scaffold, replaced by the Home template in Phase 3.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
@@ -156,6 +159,7 @@ pnpm test           # unit tests (Vitest)
 pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
+pnpm budget         # JS-on-page-load budget (30 KB compressed) against the production build
 pnpm check          # all of the above plus both builds — run before pushing
 ```
 Planned: `pnpm test:e2e` (Playwright + axe, Phase 3), `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also
@@ -184,9 +188,9 @@ start the Studio from Phase 5.
 - Layering: **Tokens → Primitives → Patterns → Modules → Templates**. Each layer imports only from layers below it.
   Islands are the only client-side components.
   - *Primitives*: Button, ArrowLink, Tag, MonoLabel, Rule, Container, Grid, DateMono, SheetRef, VisuallyHidden, Icon.
-  - *Patterns*: Header, NavPanel, SectionBar, Breadcrumb, FactCell, FactStrip, SourceLine, StatusDot, Placeholder,
-    Figure, MapLegend, SheetCard, DocumentRegister, PersonCard, Timeline, CounterRow, MilestoneTrack, Accordion,
-    InPageIndex, CTABand, ComplianceBlock, SignupStrip, Footer.
+  - *Patterns*: Header, NavPanel, SectionBar, Breadcrumb, FactCell, FactValue, FactStrip, SourceLine, StatusDot,
+    Placeholder, Figure, MapLegend, SheetCard, DocumentRegister, PersonCard, Timeline, CounterRow, MilestoneTrack,
+    Accordion, InPageIndex, CTABand, ComplianceBlock, SignupStrip, Footer. (NavPanel and InPageIndex: Phase 4.)
   - *Modules*: page sections (home modules, project modules 01–09, investor modules).
   - *Templates*: Home, SectionLanding, Portfolio, ProjectDossier, ContentPage, DocumentLibrary, DocumentDetail,
     ArticleIndex, Article, Form, Legal, Utility.
@@ -197,8 +201,12 @@ start the Studio from Phase 5.
 - Fact components accept `Fact` objects only, never raw strings or numbers.
 - Islands: Preact, hydrate with the least eager directive (`client:visible` / `client:idle`) and work without JS
   where possible (links and native forms first).
-- Keep a hidden, `noindex` component catalogue page (`/_catalogue`) showing every pattern with sample data; add each
-  new pattern to it.
+- Keep the `noindex`, preview-only component catalogue (`/_catalogue`, source in `src/catalogue/`) showing every
+  pattern with sample data; add each new pattern to it. Catalogue specimens never leave `src/catalogue/` (D-013).
+- Fact-aware components take an optional `mode` prop and call `renderMode()` from `lib/config.ts`: a production
+  build always renders production, whatever the prop says. Labels are never rendered without their value.
+- Viewport breakpoints are 48/64/80/90rem only (tests enforce it); components in variable-width columns use
+  container queries (D-014).
 
 ## 6. Accessibility requirements
 

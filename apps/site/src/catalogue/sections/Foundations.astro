@@ -1,0 +1,384 @@
+---
+/** Foundations: colours, type, spacing, rules, focus, motion and breakpoints — read from tokens.css. */
+import tokensCss from '~/styles/tokens.css?raw';
+import { parseTokens, resolveColour } from '~/lib/tokens';
+import { contrastRatio } from '~/lib/contrast';
+import Button from '~/components/primitives/Button.astro';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+const tokens = parseTokens(tokensCss);
+const tagOf = (name: string) => tokens.find((token) => token.name === name)?.tag;
+const valueOf = (name: string) => tokens.find((token) => token.name === name)?.value ?? '';
+const paper = resolveColour(tokens, '--paper') ?? '#ffffff';
+
+const colours = [
+  '--ink-survey',
+  '--ink-cyanotype',
+  '--ink-contour',
+  '--ink-graphite',
+  '--ink-muted',
+  '--paper',
+  '--paper-deep',
+  '--water',
+  '--band-grey',
+  '--copper',
+  '--copper-text',
+  '--copper-tint',
+  '--on-survey',
+  '--on-survey-muted',
+  '--placeholder-fill',
+].map((name) => {
+  const hex = resolveColour(tokens, name) ?? '';
+  return { name, hex, tag: tagOf(name), onPaper: contrastRatio(hex, paper) };
+});
+
+const typeScale = [
+  ['--text-hero', 'Hero H1'],
+  ['--text-project-title', 'Project H1'],
+  ['--text-h2', 'H2'],
+  ['--text-h3', 'H3'],
+  ['--text-card-title', 'Sheet card name'],
+  ['--text-fact-value', 'Fact value'],
+  ['--text-lead', 'Lead'],
+  ['--text-body', 'Body'],
+  ['--text-small', 'Small'],
+] as const;
+
+const monoScale = [
+  ['--text-mono-lg', 'Mono 13'],
+  ['--text-mono', 'Mono 12'],
+  ['--text-mono-sm', 'Mono 11 (tags)'],
+  ['--text-mono-xs', 'Mono 10.5 (source lines)'],
+] as const;
+
+const spacing = tokens.filter(
+  (token) => token.name.startsWith('--space-') && token.name !== '--space-0',
+);
+
+const other = [
+  '--leading-tight',
+  '--leading-heading',
+  '--leading-body',
+  '--leading-mono',
+  '--measure',
+  '--gutter',
+  '--grid-gap',
+  '--section-padding',
+  '--header-height',
+  '--header-height-mobile',
+  '--focus-width',
+  '--focus-offset',
+  '--duration-fast',
+  '--duration-base',
+  '--easing',
+  '--status-dot-size',
+].map((name) => ({ name, value: valueOf(name), tag: tagOf(name) }));
+
+const breakpoints = [
+  [
+    'Mobile',
+    '< 48rem (768 px)',
+    'Single column; header shows wordmark + Menu; registers as cards; section bar as chips',
+  ],
+  [
+    'Tablet',
+    '≥ 48rem (768 px)',
+    'Two/three-column grids; registers as tables; milestone track horizontal',
+  ],
+  [
+    'Desktop',
+    '≥ 64rem (1024 px)',
+    'Fact strips on one row; section bar as a ruled row; CTA band in one row',
+  ],
+  ['Wide', '≥ 80rem (1280 px)', 'Full header navigation'],
+  [
+    'Container',
+    'register ≥ 40rem wide',
+    'Document register switches cards → table by its own width (container query)',
+  ],
+  [
+    'Artboard',
+    '≥ 90rem (1440 px)',
+    'Sheet reference in the header (otherwise in the breadcrumb line)',
+  ],
+] as const;
+
+const TAG_LABELS = { A: 'Approved', D: 'Derived' } as const;
+const ratio = (value: number) => `${value.toFixed(2)}:1`;
+---
+
+<CatalogueSection
+  id="foundations"
+  number="A"
+  title="Foundations"
+  intro="Values are read from src/styles/tokens.css. Approved = stated in docs/DESIGN-DIRECTION.md; Derived = chosen in Phase 1–2 for review."
+>
+  <Specimen
+    name="Colour"
+    notes="Contrast is against Paper. Copper is for map fills, tags and large type only; small copper text uses Copper text."
+  >
+    <ul class="swatches" role="list">
+      {colours.map((colour) => (
+        <li class="swatch">
+          <span class="swatch__chip" style={`background-color: var(${colour.name})`} />
+          <span class="swatch__name">{colour.name}</span>
+          <span class="swatch__meta">
+            {colour.hex} · {colour.tag ? TAG_LABELS[colour.tag] : 'Alias'} · {ratio(colour.onPaper)}{' '}
+            on paper
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Specimen>
+
+  <Specimen
+    name="Typography"
+    notes="Century Gothic (licence pending) falls back to self-hosted Didact Gothic; IBM Plex Mono for labels. Weight 400 throughout. Sizes are fluid between 360 px and 1440 px."
+  >
+    <div class="type-scale">
+      {typeScale.map(([name, label]) => (
+        <div class="type-row">
+          <p class="type-row__meta">
+            {label} · {name} · {tagOf(name) ? TAG_LABELS[tagOf(name) ?? 'D'] : ''}
+          </p>
+          <p class="type-row__sample" style={`font-size: var(${name})`}>
+            The best rocks are under cover.
+          </p>
+        </div>
+      ))}
+      {monoScale.map(([name, label]) => (
+        <div class="type-row">
+          <p class="type-row__meta">
+            {label} · {name}
+          </p>
+          <p class="type-row__sample type-row__sample--mono" style={`font-size: var(${name})`}>
+            Sheet 02.1 · Fig. 1 — Specimen caption
+          </p>
+        </div>
+      ))}
+    </div>
+  </Specimen>
+
+  <Specimen name="Spacing" notes="8 px scale. The 4 px half-step is derived, for tag padding only.">
+    <ul class="spacing" role="list">
+      {spacing.map((token) => (
+        <li>
+          <span class="spacing__bar" style={`width: var(${token.name})`} />
+          <span class="spacing__label">
+            {token.name} · {token.value}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Specimen>
+
+  <Specimen
+    name="Rules and shape"
+    notes="1 px Survey Blue for structure; 1 px Contour Blue for secondary divisions (decorative only: 1.66:1 on paper). Radius 0; no shadows; no gradients."
+  >
+    <div class="rules">
+      <div class="rules__structure">Structure rule</div>
+      <div class="rules__secondary">Secondary rule</div>
+      <div class="rules__dashed">Placeholder border (preview only)</div>
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Focus"
+    notes="Tab to these. 2 px Cyanotype ring with 2 px offset on light grounds; 2 px Paper ring on Survey Blue (Cyanotype would be 1.74:1 there)."
+  >
+    <div class="focus-demo">
+      <Button href="#foundations">Focus on paper</Button>
+      <div class="focus-demo__dark">
+        <Button href="#foundations" variant="light">
+          Focus on Survey Blue
+        </Button>
+      </div>
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Other tokens"
+    notes="Line heights, layout, focus, motion. Motion durations collapse to 0 when the user prefers reduced motion."
+  >
+    <table class="token-table">
+      <caption class="visually-hidden">Other tokens</caption>
+      <thead>
+        <tr>
+          <th scope="col">Token</th>
+          <th scope="col">Value</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {other.map((token) => (
+          <tr>
+            <th scope="row">{token.name}</th>
+            <td>{token.value}</td>
+            <td>{token.tag ? TAG_LABELS[token.tag] : 'Composite'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Specimen>
+
+  <Specimen
+    name="Breakpoints"
+    notes="Derived. Layouts gain columns as space allows rather than shrinking the desktop layout. A unit test rejects any other breakpoint."
+  >
+    <table class="token-table">
+      <caption class="visually-hidden">Breakpoints</caption>
+      <thead>
+        <tr>
+          <th scope="col">Range</th>
+          <th scope="col">Min width</th>
+          <th scope="col">What changes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {breakpoints.map(([range, width, change]) => (
+          <tr>
+            <th scope="row">{range}</th>
+            <td>{width}</td>
+            <td>{change}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </Specimen>
+</CatalogueSection>
+
+<style>
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+  }
+
+  .swatch__chip {
+    height: var(--space-8);
+    border: var(--rule);
+  }
+
+  .swatch__name {
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+  }
+
+  .swatch__meta,
+  .type-row__meta,
+  .spacing__label {
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .type-scale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .type-row__sample {
+    max-width: none;
+    color: var(--ink-survey);
+    line-height: var(--leading-heading);
+  }
+
+  .type-row__sample--mono {
+    font-family: var(--font-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .spacing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .spacing li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .spacing__bar {
+    height: var(--space-2);
+    background-color: var(--ink-survey);
+  }
+
+  .rules {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .rules > div {
+    padding-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .rules__structure {
+    border-top: var(--rule);
+  }
+
+  .rules__secondary {
+    border-top: var(--rule-secondary);
+  }
+
+  .rules__dashed {
+    border-top: var(--placeholder-border-width) dashed var(--placeholder-border);
+  }
+
+  .focus-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .focus-demo__dark {
+    padding: var(--space-3);
+    background-color: var(--ink-survey);
+  }
+
+  .token-table {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+  }
+
+  .token-table th,
+  .token-table td {
+    padding: var(--space-1) var(--space-2) var(--space-1) 0;
+    border-bottom: var(--rule-secondary);
+    font-weight: var(--font-weight-regular);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .token-table thead th {
+    color: var(--color-label);
+    border-bottom: var(--rule);
+    text-transform: uppercase;
+  }
+</style>

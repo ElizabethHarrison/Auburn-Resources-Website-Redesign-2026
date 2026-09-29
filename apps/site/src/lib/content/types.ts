@@ -43,6 +43,8 @@ export type DocType =
 export interface DocumentRecord {
   readonly id: string;
   readonly slug: string;
+  /** Document reference number (docs/SITEMAP.md §8 `ref`), when one exists. */
+  readonly ref?: FactSlot<string>;
   readonly title: string;
   readonly docType: DocType;
   /** Release date. A Fact, because dates are facts. */

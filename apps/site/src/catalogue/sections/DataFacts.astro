@@ -1,0 +1,173 @@
+---
+/** Data and fact components. Fixture facts are all “to verify”, so their production panes are empty. */
+import { factDisplay, formatCommodities, STATE_NAMES } from '~/lib/format';
+import type { SourceIndex } from '~/lib/content/sources';
+import type { SiteSettings, WorkItem } from '~/lib/content/types';
+import CounterRow from '~/components/patterns/CounterRow.astro';
+import FactCell from '~/components/patterns/FactCell.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Timeline from '~/components/patterns/Timeline.astro';
+import { specimenFacts } from '../specimens';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  settings: SiteSettings;
+  workItems: readonly WorkItem[];
+  sources: SourceIndex;
+}
+
+const { settings, workItems, sources } = Astro.props;
+const { keyFacts } = settings;
+
+// Home key-facts strip: Projects · Ground held · Commodities · Jurisdictions · Status (WEBSITE-STRATEGY §5).
+const homeStrip = [
+  factDisplay('Projects', keyFacts.projectCount),
+  factDisplay('Ground held', keyFacts.groundHeld),
+  factDisplay('Commodities', keyFacts.commodities, formatCommodities),
+  factDisplay('Jurisdictions', keyFacts.jurisdictions, (states) =>
+    states.map((state) => STATE_NAMES[state]).join(' · '),
+  ),
+  factDisplay('Status', keyFacts.companyStatus),
+];
+
+const specimenStrip = [
+  factDisplay('Specimen quantity', specimenFacts.number),
+  factDisplay('Specimen share', specimenFacts.percent),
+  factDisplay('Specimen area', specimenFacts.qualified),
+  factDisplay('Specimen text', specimenFacts.text),
+  factDisplay('Specimen gap', { kind: 'inputNeeded', brief: 'A value not yet supplied' }),
+];
+
+const nicholsonWork = workItems.filter((item) => item.projectId === 'project-nicholson');
+const counters = nicholsonWork.map((item) => factDisplay(item.method, item.quantity));
+const timeline = nicholsonWork.map((item) => ({
+  when: factDisplay(item.method, item.year, String),
+}));
+const specimenTimeline = [
+  { when: factDisplay('Specimen event with a year', specimenFacts.year, String) },
+  { when: factDisplay('Specimen event with a date', specimenFacts.date) },
+  { when: factDisplay('Specimen event without a date', { kind: 'inputNeeded', brief: 'Date' }) },
+];
+---
+
+<CatalogueSection
+  id="data"
+  number="E"
+  title="Data and fact components"
+  intro="Facts render only through these components. Production shows approved facts only; preview adds status and INPUT NEEDED placeholders. Company fixtures are all “to verify”; specimens are approved catalogue-only values so the production state can be reviewed."
+>
+  <Specimen
+    name="FactCell"
+    notes="Mono label, value in Survey Blue (20–44 px), source line. Accepts a Fact slot only."
+  >
+    <div class="cells">
+      <FactCell
+        item={factDisplay('Ground held (fixture)', keyFacts.groundHeld)}
+        sources={sources}
+      />
+      <FactCell item={factDisplay('ACN (fixture)', settings.acn)} sources={sources} />
+      <FactCell item={factDisplay('Specimen quantity', specimenFacts.number)} sources={sources} />
+    </div>
+    <div slot="production" class="cells">
+      <FactCell
+        item={factDisplay('Ground held (fixture)', keyFacts.groundHeld)}
+        sources={sources}
+        mode="production"
+      />
+      <FactCell
+        item={factDisplay('ACN (fixture)', settings.acn)}
+        sources={sources}
+        mode="production"
+      />
+      <FactCell
+        item={factDisplay('Specimen quantity', specimenFacts.number)}
+        sources={sources}
+        mode="production"
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="FactStrip — home key facts (fixtures)"
+    notes="Five ruled cells. Cells drop individually in production; the strip disappears when none remain."
+  >
+    <FactStrip items={homeStrip} label="Key facts" sources={sources} />
+    <div slot="production">
+      <FactStrip items={homeStrip} label="Key facts" sources={sources} mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="FactStrip — specimens"
+    notes="Approved specimen values show the production appearance; the gap cell drops in production."
+  >
+    <FactStrip items={specimenStrip} label="Specimen facts" sources={sources} asAt="2026-09-29" />
+    <div slot="production">
+      <FactStrip
+        items={specimenStrip}
+        label="Specimen facts"
+        sources={sources}
+        asAt="2026-09-29"
+        mode="production"
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="CounterRow — Nicholson work (fixtures)"
+    notes="Quantities as stated on the old site, all “to verify”. Value first, label beneath."
+  >
+    <CounterRow items={counters} label="Nicholson exploration work" sources={sources} />
+    <div slot="production">
+      <CounterRow
+        items={counters}
+        label="Nicholson exploration work"
+        sources={sources}
+        mode="production"
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Timeline"
+    notes="In sequence, not to scale (to-scale variant deferred until real dated data exists). Events without an approved date are dropped in production."
+  >
+    <div class="stack">
+      <Timeline items={timeline} label="Nicholson work (fixtures)" />
+      <Timeline items={specimenTimeline} label="Specimen timeline" />
+    </div>
+    <div slot="production" class="stack">
+      <Timeline items={timeline} label="Nicholson work (fixtures)" mode="production" />
+      <Timeline items={specimenTimeline} label="Specimen timeline" mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="FactValue (inline)"
+    notes="A fact inside running text or a card, with a compact status shape in preview."
+  >
+    <p>
+      Ground held: <FactValue fact={keyFacts.groundHeld} field="Ground held" />. Specimen:{' '}
+      <FactValue fact={specimenFacts.qualified} />.
+    </p>
+    <p slot="production">
+      Specimen: <FactValue fact={specimenFacts.qualified} mode="production" />.
+    </p>
+  </Specimen>
+</CatalogueSection>
+
+<style>
+  .cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-4);
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+</style>

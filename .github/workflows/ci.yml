@@ -50,11 +50,20 @@ jobs:
       - name: Build (preview mode)
         run: pnpm build:preview
 
-      # Production must never contain preview-only output (CLAUDE.md §2.1, docs/DECISIONS.md D-005).
+      # JS loaded on page load < 30 KB compressed on every page (CLAUDE.md §8, D-006).
+      - name: JavaScript budget
+        run: pnpm budget
+
+      # Production must never contain preview-only output (CLAUDE.md §2.1, docs/DECISIONS.md D-005):
+      # placeholders, status dots, the preview banner, catalogue specimens or the catalogue itself.
       - name: Guard against preview content in production output
         run: |
-          if grep -rIl -e 'INPUT NEEDED' -e 'data-content-mode="preview"' -e 'Preview build' apps/site/dist; then
+          if grep -rIl -e 'INPUT NEEDED' -e 'data-preview-only' -e 'data-content-mode="preview"' -e 'Preview build' -e 'Specimen' apps/site/dist; then
             echo "::error::Preview-only content found in the production build (files listed above)."
+            exit 1
+          fi
+          if find apps/site/dist -path '*_catalogue*' | grep .; then
+            echo "::error::The design-system catalogue must not exist in the production build."
             exit 1
           fi
 

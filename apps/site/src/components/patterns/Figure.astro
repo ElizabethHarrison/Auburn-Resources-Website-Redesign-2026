@@ -1,0 +1,129 @@
+---
+/**
+ * Numbered figure (docs/DESIGN-DIRECTION.md): 1 px Survey Blue frame; caption beneath in mono caps
+ * `FIG. n — CAPTION`; source and date. `alt` and `caption` are required props, so a figure without
+ * them fails the type check and the build (CLAUDE.md §5).
+ *
+ * Pass an `image` (raster or SVG file) or put inline SVG in the default slot. A long description for
+ * complex figures (maps, sections) is offered in a native disclosure. Lightbox arrives in Phase 4.
+ */
+import type { IsoDate } from '~/lib/facts';
+import DateMono from '../primitives/DateMono.astro';
+
+export interface Props {
+  /** Figure number on this page. */
+  number: number;
+  /** Caption text; rendered in mono caps after `FIG. n —`. */
+  caption: string;
+  /** Text alternative for the image or inline SVG. Never empty for a content figure. */
+  alt: string;
+  image?: { src: string; width: number; height: number } | undefined;
+  source?: string | undefined;
+  date?: IsoDate | undefined;
+  /** Full text equivalent, e.g. the data a map shows. */
+  longDescription?: string | undefined;
+}
+
+const { number, caption, alt, image, source, date, longDescription } = Astro.props;
+if (alt.trim() === '') throw new Error(`Figure ${number}: alt text is required.`);
+if (caption.trim() === '') throw new Error(`Figure ${number}: caption is required.`);
+---
+
+<figure class="figure">
+  <div class="figure__frame">
+    {image ? (
+      <img
+        src={image.src}
+        alt={alt}
+        width={image.width}
+        height={image.height}
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="figure__art" role="img" aria-label={alt}>
+        <slot />
+      </div>
+    )}
+  </div>
+  <figcaption class="figure__caption">
+    <span class="figure__title">
+      Fig. {number} — {caption}
+    </span>
+    {(source || date) && (
+      <span class="figure__source">
+        {source && <span>Source — {source}</span>}
+        {date && <DateMono date={date} />}
+      </span>
+    )}
+  </figcaption>
+  {longDescription && (
+    <details class="figure__description">
+      <summary>Text description of figure {number}</summary>
+      <p>{longDescription}</p>
+    </details>
+  )}
+</figure>
+
+<style>
+  .figure {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  .figure__frame {
+    border: var(--figure-frame);
+    background-color: var(--paper);
+  }
+
+  .figure__frame img,
+  .figure__art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .figure__caption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+  }
+
+  .figure__title {
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .figure__source {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-1);
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .figure__description summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--color-link);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .figure__description p {
+    font-size: var(--text-small);
+  }
+</style>

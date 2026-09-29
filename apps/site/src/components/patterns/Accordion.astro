@@ -1,0 +1,81 @@
+---
+/**
+ * One accordion item on native <details>/<summary>: keyboard and screen-reader behaviour come from the
+ * browser, no JavaScript. Stack several for an FAQ. Items sharing a `group` name open one at a time
+ * (native exclusive accordion; older browsers simply allow several open).
+ */
+import Icon from '../primitives/Icon.astro';
+
+export interface Props {
+  summary: string;
+  open?: boolean;
+  group?: string;
+}
+
+const { summary, open = false, group } = Astro.props;
+---
+
+<details class="accordion" open={open} name={group}>
+  <summary class="accordion__summary">
+    <span class="accordion__title">{summary}</span>
+    <span class="accordion__marker accordion__marker--closed">
+      <Icon name="plus" />
+    </span>
+    <span class="accordion__marker accordion__marker--open">
+      <Icon name="minus" />
+    </span>
+  </summary>
+  <div class="accordion__body">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .accordion {
+    border-bottom: var(--rule);
+  }
+
+  .accordion:first-of-type {
+    border-top: var(--rule);
+  }
+
+  .accordion__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: var(--touch-target);
+    padding-block: var(--space-2);
+    color: var(--ink-survey);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion__summary:hover .accordion__title {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.2em;
+  }
+
+  .accordion__marker {
+    display: inline-flex;
+    font-size: var(--text-body);
+  }
+
+  .accordion__marker--open,
+  .accordion[open] .accordion__marker--closed {
+    display: none;
+  }
+
+  .accordion[open] .accordion__marker--open {
+    display: inline-flex;
+  }
+
+  .accordion__body {
+    padding-bottom: var(--space-3);
+  }
+</style>

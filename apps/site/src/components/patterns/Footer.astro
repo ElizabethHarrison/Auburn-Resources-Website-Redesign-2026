@@ -1,0 +1,310 @@
+---
+/**
+ * Site footer (docs/SITEMAP.md §4; docs/DESIGN-DIRECTION.md): Survey Blue; sign-up strip; four columns
+ * with mono headings (01 Company · 02 Projects · 03 Investors · Contact); acknowledgement of Country;
+ * mono legal row. Also the no-JavaScript target of the header's "Menu" link (#site-navigation).
+ *
+ * Company details are Facts: in production only approved values appear; in preview, missing ones are
+ * INPUT NEEDED. Pass only listable projects (`isProjectListable`). Status dots are not shown here:
+ * copper on Survey Blue is 2.8:1, below the 3:1 non-text minimum.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { PostalAddress, Project, SiteSettings } from '~/lib/content/types';
+import { toBrisbaneDate } from '~/lib/dates';
+import { CONTACT_LINK, LEGAL_LINKS, footerColumns } from '~/lib/navigation';
+import { projectUrl } from '~/lib/urls';
+import FactValue from './FactValue.astro';
+import Placeholder from './Placeholder.astro';
+import SignupStrip from './SignupStrip.astro';
+
+export interface Props {
+  settings: SiteSettings;
+  projects: readonly Project[];
+  /** Anchor for the header's no-JavaScript "Menu" link. Change only where two footers share a page. */
+  anchorId?: string;
+  mode?: ContentMode | undefined;
+}
+
+const { settings, projects, anchorId = 'site-navigation' } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+
+const columns = footerColumns(
+  projects.map((project) => ({ label: project.name, href: projectUrl(project) })),
+);
+const formatAddress = (value: unknown) => (value as PostalAddress).lines.join(', ');
+const email = resolve(settings.email, mode);
+const phone = resolve(settings.phone, mode);
+const social = resolve(settings.socialProfiles, mode);
+const linkedIn =
+  social.kind === 'value'
+    ? social.item.value.find((url) => url.includes('linkedin.com'))
+    : undefined;
+const acknowledgement = resolve(settings.acknowledgementOfCountry, mode);
+const acn = resolve(settings.acn, mode);
+const street = resolve(settings.streetAddress, mode);
+const postal = resolve(settings.postalAddress, mode);
+// Rows appear only when their value renders: never a label without a value (CLAUDE.md §2.1).
+const hasContactRows =
+  [street, postal, email, phone].some((row) => row.kind !== 'hidden') || Boolean(linkedIn);
+const year = toBrisbaneDate(new Date()).slice(0, 4);
+---
+
+<footer class="site-footer">
+  <div class="l-container">
+    <SignupStrip tone="dark" />
+
+    <nav id={anchorId} class="site-footer__nav" aria-label="Site" tabindex="-1">
+      {columns.map((column) => (
+        <div class="site-footer__column">
+          <h2 class="site-footer__heading">
+            {column.sheet && <span class="site-footer__sheet">{column.sheet}</span>}
+            {column.heading}
+          </h2>
+          <ul role="list">
+            {column.links.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      <div class="site-footer__column">
+        <h2 class="site-footer__heading">
+          <a href={CONTACT_LINK.href}>{CONTACT_LINK.label}</a>
+        </h2>
+        {hasContactRows && (
+          <dl class="site-footer__contact">
+            {street.kind !== 'hidden' && (
+              <div>
+                <dt>Street</dt>
+                <dd>
+                  <FactValue
+                    fact={settings.streetAddress}
+                    format={formatAddress}
+                    field="Street address"
+                    showStatus={false}
+                    mode={mode}
+                  />
+                </dd>
+              </div>
+            )}
+            {postal.kind !== 'hidden' && (
+              <div>
+                <dt>Postal</dt>
+                <dd>
+                  <FactValue
+                    fact={settings.postalAddress}
+                    format={formatAddress}
+                    field="Postal address"
+                    showStatus={false}
+                    mode={mode}
+                  />
+                </dd>
+              </div>
+            )}
+            {email.kind !== 'hidden' && (
+              <div>
+                <dt>Email</dt>
+                <dd>
+                  {email.kind === 'value' && (
+                    <a href={`mailto:${email.item.value}`}>{email.item.value}</a>
+                  )}
+                  {email.kind === 'placeholder' && (
+                    <Placeholder brief={email.brief} field="Email" variant="inline" mode={mode} />
+                  )}
+                </dd>
+              </div>
+            )}
+            {phone.kind !== 'hidden' && (
+              <div>
+                <dt>Phone</dt>
+                <dd>
+                  {phone.kind === 'value' && (
+                    <a href={`tel:${phone.item.value.replace(/\s+/g, '')}`}>{phone.item.value}</a>
+                  )}
+                  {phone.kind === 'placeholder' && (
+                    <Placeholder brief={phone.brief} field="Phone" variant="inline" mode={mode} />
+                  )}
+                </dd>
+              </div>
+            )}
+            {linkedIn && (
+              <div>
+                <dt>LinkedIn</dt>
+                <dd>
+                  <a href={linkedIn}>Auburn Resources on LinkedIn</a>
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
+      </div>
+    </nav>
+
+    {acknowledgement.kind === 'value' && (
+      <p class="site-footer__acknowledgement">{acknowledgement.item.text}</p>
+    )}
+    {acknowledgement.kind === 'placeholder' && (
+      <div class="site-footer__acknowledgement">
+        <Placeholder brief={acknowledgement.brief} field="Acknowledgement of Country" mode={mode} />
+      </div>
+    )}
+
+    <div class="site-footer__legal">
+      <FactValue fact={settings.legalName} field="Legal name" showStatus={false} mode={mode} />
+      {acn.kind !== 'hidden' && (
+        <span>
+          ACN <FactValue fact={settings.acn} field="ACN" showStatus={false} mode={mode} />
+        </span>
+      )}
+      <ul class="site-footer__legal-links" role="list">
+        {LEGAL_LINKS.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+      <span>© {year}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--ink-survey);
+    color: var(--on-survey);
+  }
+
+  .site-footer a {
+    color: var(--on-survey);
+    text-decoration-color: var(--on-survey-muted);
+  }
+
+  .site-footer a:focus-visible,
+  .site-footer__nav:focus-visible {
+    outline: var(--focus-ring-on-dark);
+  }
+
+  .site-footer__nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5) var(--grid-gap);
+    padding-block: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer__nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .site-footer__nav {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .site-footer__heading {
+    display: flex;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: var(--rule-on-dark);
+    color: var(--on-survey-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .site-footer__heading a {
+    color: var(--on-survey-muted);
+    text-decoration: none;
+  }
+
+  .site-footer__column ul {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__column li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    text-decoration: none;
+  }
+
+  .site-footer__column li a:hover {
+    text-decoration-line: underline;
+  }
+
+  .site-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .site-footer__contact dt {
+    color: var(--on-survey-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .site-footer__contact dd {
+    margin: 0;
+    font-size: var(--text-small);
+    overflow-wrap: break-word;
+  }
+
+  /* Email addresses may break anywhere rather than overflow a narrow column. */
+  .site-footer__contact a[href^='mailto:'] {
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__acknowledgement {
+    max-width: var(--measure);
+    padding-block: var(--space-4);
+    border-top: var(--rule-on-dark);
+    font-size: var(--text-small);
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    padding-block: var(--space-3);
+    border-top: var(--rule-on-dark);
+    color: var(--on-survey-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .site-footer__legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__legal-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--on-survey-muted);
+  }
+</style>

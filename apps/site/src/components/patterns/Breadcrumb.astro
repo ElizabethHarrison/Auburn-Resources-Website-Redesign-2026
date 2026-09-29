@@ -1,0 +1,97 @@
+---
+/**
+ * Breadcrumb (docs/DESIGN-DIRECTION.md): mono caps `HOME / 02 PROJECTS / 02.1 NICHOLSON`, the last item
+ * marked aria-current="page". Uses the same items as the BreadcrumbList JSON-LD in BaseLayout.
+ * Below 90rem it also carries the sheet reference, which the header shows only from 90rem.
+ */
+import type { SheetNumber } from '~/lib/content/types';
+import type { BreadcrumbItem } from '~/lib/seo';
+import SheetRef from '../primitives/SheetRef.astro';
+
+export interface Props {
+  items: readonly BreadcrumbItem[];
+  sheet?: SheetNumber | undefined;
+  sheetLabel?: string | undefined;
+}
+
+const { items, sheet, sheetLabel } = Astro.props;
+const last = items.length - 1;
+---
+
+<div class="breadcrumb">
+  {sheet && (
+    <p class="breadcrumb__sheet">
+      <SheetRef sheet={sheet} label={sheetLabel} />
+    </p>
+  )}
+  <nav aria-label="Breadcrumb">
+    <ol class="breadcrumb__list">
+      {items.map((item, index) => (
+        <li class="breadcrumb__item">
+          {index < last ? (
+            <a href={item.path}>{item.name}</a>
+          ) : (
+            <span aria-current="page">{item.name}</span>
+          )}
+          {index < last && (
+            <span class="breadcrumb__separator" aria-hidden="true">
+              /
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+</div>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 90rem) {
+    .breadcrumb__sheet {
+      display: none;
+    }
+  }
+
+  .breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumb__item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .breadcrumb__item a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  .breadcrumb__item a:hover {
+    text-decoration-line: underline;
+  }
+
+  .breadcrumb__item [aria-current='page'] {
+    color: var(--ink-survey);
+  }
+
+  .breadcrumb__separator {
+    padding-inline: var(--space-1);
+    color: var(--color-meta);
+  }
+</style>

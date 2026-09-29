@@ -1,0 +1,122 @@
+---
+/**
+ * One component specimen in the catalogue: name, notes, and a framed rendering. Components that depend
+ * on content status can show two panes: `preview` (what editors see) and `production` (what the public
+ * sees). An empty production pane is labelled "Renders nothing in production".
+ */
+export interface Props {
+  name: string;
+  notes?: string;
+  /** `dark` renders the frame on Survey Blue. */
+  ground?: 'paper' | 'dark' | 'bleed';
+}
+
+const { name, notes, ground = 'paper' } = Astro.props;
+const hasPanes = Astro.slots.has('production');
+const id = `specimen-${name
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '')}`;
+---
+
+<article class="specimen" aria-labelledby={id}>
+  <header class="specimen__header">
+    <h3 id={id} class="specimen__name">
+      {name}
+    </h3>
+    {notes && <p class="specimen__notes">{notes}</p>}
+  </header>
+  {hasPanes ? (
+    <div class="specimen__panes">
+      <div class="specimen__pane">
+        <p class="specimen__pane-label">Preview build</p>
+        <div class:list={['specimen__frame', `specimen__frame--${ground}`]}>
+          <slot />
+        </div>
+      </div>
+      <div class="specimen__pane">
+        <p class="specimen__pane-label">Production build (public)</p>
+        <div
+          class:list={[
+            'specimen__frame',
+            'specimen__frame--production',
+            `specimen__frame--${ground}`,
+          ]}
+        >
+          <slot name="production" />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class:list={['specimen__frame', `specimen__frame--${ground}`]}>
+      <slot />
+    </div>
+  )}
+</article>
+
+<style>
+  .specimen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .specimen__name {
+    font-size: var(--text-h3);
+  }
+
+  .specimen__notes {
+    margin-top: var(--space-1);
+    color: var(--ink-graphite);
+    font-size: var(--text-small);
+  }
+
+  /* Panes are stacked so each component renders at its real width. */
+  .specimen__panes {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .specimen__pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .specimen__pane-label {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .specimen__frame {
+    min-width: 0;
+    padding: var(--space-3);
+    border: var(--rule-width) dashed var(--ink-contour);
+  }
+
+  .specimen__frame--dark {
+    background-color: var(--ink-survey);
+  }
+
+  /* Full-bleed: break out of the catalogue container so page-frame components get real page width. */
+  .specimen__frame--bleed {
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 0;
+    border-inline: 0;
+  }
+
+  /* Label an empty production pane: nothing inside but wrapper <div>s (the component rendered no
+     elements of its own). */
+  .specimen__frame--production:not(:has(:not(div)))::before {
+    content: 'Renders nothing in production (no approved content)';
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

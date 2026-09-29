@@ -1,0 +1,54 @@
+---
+/**
+ * Inline rendering of one fact slot: the formatted value, an inline INPUT NEEDED placeholder (preview),
+ * or nothing. Used inside cards, tables and address blocks. For data cells use FactCell.
+ */
+import type { ContentMode, FactSlot } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import { isIsoDate } from '~/lib/dates';
+import { formatFactValue } from '~/lib/format';
+import DateMono from '../primitives/DateMono.astro';
+import Placeholder from './Placeholder.astro';
+import StatusDot from './StatusDot.astro';
+
+export interface Props {
+  fact: FactSlot<unknown> | undefined;
+  format?: ((value: unknown) => string) | undefined;
+  /** Field name for the placeholder label. */
+  field?: string | undefined;
+  /** Show the compact status shape after the value in preview. */
+  showStatus?: boolean;
+  mode?: ContentMode | undefined;
+}
+
+const { fact, format, field, showStatus = true } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const resolved = resolve(fact, mode);
+const isDate =
+  resolved.kind === 'value' &&
+  !format &&
+  typeof resolved.item.value === 'string' &&
+  isIsoDate(resolved.item.value);
+---
+
+{resolved.kind === 'value' && (
+  <span class="fact-value" data-fact>
+    {isDate ? (
+      <DateMono date={resolved.item.value as `${number}-${number}-${number}`} />
+    ) : (
+      formatFactValue(resolved.item, format)
+    )}
+    {showStatus && mode === 'preview' && <StatusDot status={resolved.status} compact mode={mode} />}
+  </span>
+)}
+{resolved.kind === 'placeholder' && (
+  <Placeholder brief={resolved.brief} field={field} variant="inline" mode={mode} />
+)}
+
+<style>
+  /* Inline, so long values (addresses) wrap with the surrounding text. */
+  .fact-value :global(.status-dot) {
+    margin-left: var(--space-half);
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+/**
+ * Button (docs/DESIGN-DIRECTION.md): square, 16×22 px padding, ≥ 44 px touch target.
+ * Renders a link when `href` is given (navigation), otherwise a real <button>. Hover shows an
+ * underline, never a colour block.
+ *
+ * Variants: `primary` solid Survey Blue · `secondary` 1 px Survey Blue outline · `light` and
+ * `outline-light` for Survey Blue grounds (CTA band, footer).
+ */
+export interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'light' | 'outline-light';
+  /** Submit buttons arrive with forms in Phase 4. */
+  type?: 'button';
+}
+
+const { href, variant = 'primary', type = 'button' } = Astro.props;
+const classes = ['button', `button--${variant}`];
+---
+
+{href ? (
+  <a class:list={classes} href={href}>
+    <slot />
+  </a>
+) : (
+  <button class:list={classes} type={type}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    padding: var(--button-padding-block) var(--button-padding-inline);
+    border: var(--rule-width) solid var(--button-border);
+    border-radius: var(--radius);
+    background-color: var(--button-bg);
+    color: var(--button-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-regular);
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: var(--rule-width);
+  }
+
+  .button:hover {
+    color: var(--button-ink);
+    text-decoration-line: underline;
+  }
+
+  .button--primary {
+    --button-bg: var(--ink-survey);
+    --button-border: var(--ink-survey);
+    --button-ink: var(--on-survey);
+  }
+
+  .button--secondary {
+    --button-bg: transparent;
+    --button-border: var(--ink-survey);
+    --button-ink: var(--ink-survey);
+  }
+
+  .button--light {
+    --button-bg: var(--on-survey);
+    --button-border: var(--on-survey);
+    --button-ink: var(--ink-survey);
+  }
+
+  .button--outline-light {
+    --button-bg: transparent;
+    --button-border: var(--on-survey);
+    --button-ink: var(--on-survey);
+  }
+
+  /* On Survey Blue grounds the default Cyanotype ring would be invisible (1.7:1). */
+  .button--light:focus-visible,
+  .button--outline-light:focus-visible {
+    outline: var(--focus-ring-on-dark);
+  }
+</style>

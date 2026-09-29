@@ -1,0 +1,87 @@
+---
+/**
+ * CTA band (docs/DESIGN-DIRECTION.md): full-width Survey Blue, mono kicker, one line, a light button and
+ * an outlined button. The line is narrative: keep it short and free of digits.
+ */
+import Button from '../primitives/Button.astro';
+import Container from '../primitives/Container.astro';
+
+interface Action {
+  readonly label: string;
+  readonly href: string;
+}
+
+export interface Props {
+  kicker: string;
+  heading: string;
+  primary: Action;
+  secondary?: Action | undefined;
+  headingLevel?: 2 | 3;
+}
+
+const { kicker, heading, primary, secondary, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<section class="cta-band" aria-label={heading}>
+  <Container>
+    <div class="cta-band__inner">
+      <div class="cta-band__text">
+        <p class="cta-band__kicker">{kicker}</p>
+        <Heading class="cta-band__heading">{heading}</Heading>
+      </div>
+      <div class="cta-band__actions">
+        <Button href={primary.href} variant="light">
+          {primary.label}
+        </Button>
+        {secondary && (
+          <Button href={secondary.href} variant="outline-light">
+            {secondary.label}
+          </Button>
+        )}
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: var(--section-padding);
+    background-color: var(--ink-survey);
+    color: var(--on-survey);
+  }
+
+  .cta-band__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 64rem) {
+    .cta-band__inner {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+
+  .cta-band__kicker {
+    margin-bottom: var(--space-1);
+    color: var(--on-survey-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .cta-band__heading {
+    color: var(--on-survey);
+    font-size: var(--text-h2);
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>

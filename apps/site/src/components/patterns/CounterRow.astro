@@ -1,0 +1,58 @@
+---
+/**
+ * Counter row (project module 03, "Exploration history"): quantities as large figures with a label
+ * beneath and a source line. Counters hidden in this mode drop out; none left renders nothing.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { FactDisplay } from '~/lib/format';
+import type { SourceIndex } from '~/lib/content/sources';
+import FactCell from './FactCell.astro';
+
+export interface Props {
+  items: readonly FactDisplay[];
+  /** Accessible name, e.g. "Exploration work completed". */
+  label: string;
+  sources?: SourceIndex | undefined;
+  mode?: ContentMode | undefined;
+}
+
+const { items, label, sources } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const visible = items.filter((item) => isRenderable(item.slot, mode));
+---
+
+{visible.length > 0 && (
+  <section class="counter-row" aria-label={label}>
+    <ul class="counter-row__items" role="list">
+      {visible.map((item) => (
+        <li class="counter-row__item">
+          <FactCell item={item} sources={sources} variant="counter" mode={mode} />
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .counter-row__items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .counter-row__item {
+    padding-top: var(--space-2);
+    border-top: var(--rule);
+  }
+
+  @media (min-width: 48rem) {
+    .counter-row__items {
+      grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    }
+  }
+</style>

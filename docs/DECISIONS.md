@@ -97,3 +97,35 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Decision:** Numbers inside approved Interpretation content are preserved as written. They are not
   Facts, are never extracted into data cells, and the existing content-class rules still apply (Narrative
   has no digits; data cells take Fact objects only).
+
+## D-012 · Header breakpoints set by measurement
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Context:** Measured with Didact Gothic, the full header row needs ~980 px of content width without the
+  sheet reference and ~1,230 px with it. At a 64rem (1024 px) breakpoint it overflowed.
+- **Decision:** Full header navigation from 80rem (1280 px); sheet reference in the header from 90rem
+  (1440 px, the artboard). Below those, the "Menu" link and the breadcrumb line carry them.
+- **Consequences:** 1024–1279 px (small laptops, landscape tablets) get the compact header. Re-measure
+  when Century Gothic is licensed (it is wider).
+
+## D-013 · Design-system catalogue: preview-only route with artificial specimens
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Decision:** `/_catalogue` is injected by `astro.config.ts` only in preview builds (source in
+  `src/catalogue/`, outside `src/pages/`). To show production rendering it uses *specimens*: artificial
+  values with status `approved`, labelled "Specimen", in `src/catalogue/specimens.ts`. Company fixtures stay
+  unapproved. Safeguards: unit test (specimens importable only from `src/catalogue`), CI guard (no
+  "Specimen", no catalogue, no `data-preview-only` in production output), and the page refuses to render
+  outside preview.
+
+## D-014 · Container queries for components that live in columns
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 2 review)
+- **Decision:** Page layout uses the four viewport breakpoints (48/64/80/90rem). Components placed in
+  columns of varying width respond to their own width: DocumentRegister switches cards → table at 40rem;
+  FactCell values and SheetCard names scale with the cell (`cqi`), capped at the approved token sizes, so
+  numbers and names never break mid-word.
+
+## D-015 · Build-time guards for the design system
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 2; extends D-006)
+- **Decision:** `src/lib/design-system.test.ts` rejects colour literals outside `tokens.css`, shadows,
+  gradients, non-zero radius, weights other than 400, undocumented breakpoints, client scripts and inline
+  styles in components. `src/lib/contrast.test.ts` checks every colour pairing components use.
+  `scripts/check-js-budget.mjs` (`pnpm budget`) enforces the 30 KB page-load JS budget in CI.

@@ -1,0 +1,56 @@
+---
+/** People: leadership cards. */
+import type { SourceIndex } from '~/lib/content/sources';
+import type { Person } from '~/lib/content/types';
+import { isPersonListable } from '~/lib/content/visibility';
+import PersonCard from '~/components/patterns/PersonCard.astro';
+import { specimenPerson } from '../specimens';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  people: readonly Person[];
+  sources: SourceIndex;
+}
+
+const { people, sources } = Astro.props;
+const sample = people.slice(0, 2);
+---
+
+<CatalogueSection id="people" number="G" title="People">
+  <Specimen
+    name="PersonCard (fixtures)"
+    notes="Names, roles and bios from the old site, all “to verify”. Portraits are INPUT NEEDED (new consistent portraits). In production a card appears only with an approved role."
+  >
+    <div class="stack">
+      {sample.map((person) => (
+        <PersonCard person={person} sources={sources} />
+      ))}
+    </div>
+    <div slot="production" class="stack">
+      {sample
+        .filter((person) => isPersonListable(person, 'production'))
+        .map((person) => (
+          <PersonCard person={person} sources={sources} mode="production" />
+        ))}
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="PersonCard (specimen)"
+    notes="Approved specimen role and bio; the portrait stays INPUT NEEDED, so production shows the card without an image."
+  >
+    <PersonCard person={specimenPerson} sources={sources} />
+    <div slot="production">
+      <PersonCard person={specimenPerson} sources={sources} mode="production" />
+    </div>
+  </Specimen>
+</CatalogueSection>
+
+<style>
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+</style>

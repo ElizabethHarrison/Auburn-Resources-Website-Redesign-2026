@@ -47,10 +47,12 @@ const structuredData: JsonLd[] = [
       Skip to content
     </a>
     {config.isPreview && (
-      <p class="preview-banner" role="note">
-        Preview build: unapproved content and input-needed placeholders are visible. Not for
-        publication.
-      </p>
+      <aside class="preview-banner" aria-label="Preview build notice">
+        <p>
+          Preview build: unapproved content and input-needed placeholders are visible. Not for
+          publication.
+        </p>
+      </aside>
     )}
     <slot name="header" />
     <main id="main" tabindex="-1">

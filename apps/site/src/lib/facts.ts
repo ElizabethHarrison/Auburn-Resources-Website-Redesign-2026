@@ -122,6 +122,16 @@ const RENDERABLE_STATUSES: Record<ContentMode, readonly ContentStatus[]> = {
   preview: ['draft', 'toVerify', 'approved'],
 };
 
+/**
+ * The mode a component may render in. A component may ask for `production` rendering inside a preview
+ * build (the catalogue does, to show what the public sees), but can never ask for `preview` rendering
+ * inside a production build: the build mode always wins in that direction.
+ */
+export function clampMode(buildMode: ContentMode, requested?: ContentMode): ContentMode {
+  if (buildMode === 'production') return 'production';
+  return requested ?? buildMode;
+}
+
 export function isStatusRenderable(status: ContentStatus, mode: ContentMode): boolean {
   return RENDERABLE_STATUSES[mode].includes(status);
 }

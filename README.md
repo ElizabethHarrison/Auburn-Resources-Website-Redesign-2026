@@ -2,7 +2,7 @@
 
 Source for the rebuild of **auburnresources.com.au** for Auburn Resources Limited.
 
-**Status:** Phase 1 (scaffold) complete. No public pages yet — see `CLAUDE.md` → "Current state".
+**Status:** Phase 2 (design system) complete, awaiting review. No public pages yet — see `CLAUDE.md` → "Current state". Design-system catalogue: run `pnpm dev` and open `/_catalogue` (preview builds only).
 
 ## Getting started
 
@@ -22,6 +22,7 @@ pnpm dev          # http://localhost:4321 — preview mode, placeholders visible
 | `pnpm test` | Unit tests |
 | `pnpm lint` / `pnpm format` | ESLint + Prettier check / fix |
 | `pnpm typecheck` | `astro check` |
+| `pnpm budget` | JavaScript budget check on the production build |
 | `pnpm check` | Everything CI runs — use before pushing |
 
 Environment variables: [`docs/ENV.md`](docs/ENV.md).
