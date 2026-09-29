@@ -11,16 +11,27 @@ import type { FigureSlot } from '../../types';
 
 const indicative = __PREVIEW_BUILD__ ? await import('./indicative-figures') : undefined;
 
+/**
+ * What each indicative figure stands in for. Production builds — and the CMS export, which never carries indicative
+ * graphics (D-024) — use these INPUT NEEDED briefs instead.
+ */
+export const FIGURE_BRIEFS = {
+  'figure-portfolio-map-indicative': 'Fig. 1 portfolio map drawn from tenement GIS (Q-31).',
+  'figure-cross-section-indicative':
+    'Fig. 2 cross-section approved by the competent person (Q-33).',
+  'figure-nicholson-setting-indicative':
+    'Fig. 1 Nicholson regional setting map from tenement GIS (Q-31).',
+} as const;
+
 /** Fig. 1 — Auburn project portfolio (home hero and the portfolio page). */
 export const portfolioMap: FigureSlot =
-  indicative?.portfolioMap ?? inputNeeded('Fig. 1 portfolio map drawn from tenement GIS (Q-31).');
+  indicative?.portfolioMap ?? inputNeeded(FIGURE_BRIEFS['figure-portfolio-map-indicative']);
 
 /** Fig. 2 — schematic cross-section (home "Why this ground"; later the Nicholson dossier). */
 export const crossSection: FigureSlot =
-  indicative?.crossSection ??
-  inputNeeded('Fig. 2 cross-section approved by the competent person (Q-33).');
+  indicative?.crossSection ?? inputNeeded(FIGURE_BRIEFS['figure-cross-section-indicative']);
 
 /** Nicholson regional setting (dossier module 01). */
 export const nicholsonSettingMap: FigureSlot =
   indicative?.nicholsonSettingMap ??
-  inputNeeded('Fig. 1 Nicholson regional setting map from tenement GIS (Q-31).');
+  inputNeeded(FIGURE_BRIEFS['figure-nicholson-setting-indicative']);

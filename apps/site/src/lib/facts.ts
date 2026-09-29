@@ -45,6 +45,8 @@ export interface FactMeta {
   readonly status: ContentStatus;
   /** Who approved it (company secretary for corporate facts, competent person for technical facts). */
   readonly approvedBy?: PersonRef;
+  /** When it was approved (ISO 8601). Required with `approved` when content comes from the CMS (D-027). */
+  readonly approvedAt?: string;
   /** When the value must be re-checked. Defaults to `asAt` + 12 months (see `reviewByDate`). */
   readonly reviewBy?: IsoDate;
   /** Internal note for editors and reviewers. Never rendered in production. */

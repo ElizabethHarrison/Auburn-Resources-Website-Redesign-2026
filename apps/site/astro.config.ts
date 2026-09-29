@@ -72,9 +72,24 @@ export default defineConfig({
       CONTENT_SOURCE: envField.enum({
         context: 'server',
         access: 'public',
-        // 'sanity' is added in Phase 5 (docs/DECISIONS.md D-003).
-        values: ['fixtures'],
+        // fixtures: typed fixtures (default, deterministic). sanity: live CMS (needs credentials).
+        // sanity-export: the Sanity mapping pipeline over an NDJSON snapshot, no credentials (D-024).
+        values: ['fixtures', 'sanity', 'sanity-export'],
         default: 'fixtures',
+      }),
+      SANITY_PROJECT_ID: envField.string({ context: 'server', access: 'public', optional: true }),
+      SANITY_DATASET: envField.string({ context: 'server', access: 'public', optional: true }),
+      SANITY_API_VERSION: envField.string({
+        context: 'server',
+        access: 'public',
+        default: '2026-09-29',
+      }),
+      // Build-time only; never sent to the browser. Required for CONTENT_SOURCE=sanity (private datasets).
+      SANITY_READ_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SANITY_EXPORT_PATH: envField.string({
+        context: 'server',
+        access: 'public',
+        default: 'src/lib/content/sanity/snapshot/fixtures.ndjson',
       }),
     },
   },
