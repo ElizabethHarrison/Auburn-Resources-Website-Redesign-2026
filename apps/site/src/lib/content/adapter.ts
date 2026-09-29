@@ -12,6 +12,10 @@ import type {
   Article,
   DocumentRecord,
   HomePageContent,
+  LegalPageContent,
+  LegalPageKey,
+  PageContent,
+  PageKey,
   PortfolioPageContent,
   Person,
   Project,
@@ -40,4 +44,6 @@ export interface ContentAdapter {
   getResourceEstimates(projectId: string): Promise<readonly ResourceEstimate[]>;
   getResults(projectId: string): Promise<readonly ResultRecord[]>;
   getMilestones(projectId: string): Promise<readonly ProjectMilestone[]>;
+  getPage(key: PageKey): Promise<PageContent>;
+  getLegalPage(key: LegalPageKey): Promise<LegalPageContent>;
 }

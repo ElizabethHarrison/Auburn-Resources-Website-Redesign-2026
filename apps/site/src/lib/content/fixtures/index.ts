@@ -6,6 +6,8 @@ import type { ContentAdapter } from '../adapter';
 import { articles } from './data/articles';
 import { documents } from './data/documents';
 import { homePage } from './data/home-page';
+import { legalPages } from './data/legal-pages';
+import { pages } from './data/pages';
 import { portfolioPage } from './data/portfolio-page';
 import { prospects } from './data/prospects';
 import { milestones, resourceEstimates, results } from './data/technical';
@@ -32,4 +34,6 @@ export const fixturesAdapter: ContentAdapter = {
     resourceEstimates.filter((item) => item.projectId === projectId),
   getResults: async (projectId) => results.filter((item) => item.projectId === projectId),
   getMilestones: async (projectId) => milestones.filter((item) => item.projectId === projectId),
+  getPage: async (key) => pages[key],
+  getLegalPage: async (key) => legalPages[key],
 };

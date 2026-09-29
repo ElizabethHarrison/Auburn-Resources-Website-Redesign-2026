@@ -7,7 +7,7 @@
  */
 import type { ContentMode } from './facts';
 import { isRenderable } from './facts';
-import type { FactSlot } from './facts';
+import type { FactSlot, IsoDate } from './facts';
 import type { Project, SiteSettings } from './content/types';
 import { STATE_NAMES } from './format';
 
@@ -148,5 +148,24 @@ export function placeJsonLd(project: Project, mode: ContentMode, url: string): J
     ...(state === undefined
       ? {}
       : { containedInPlace: { '@type': 'AdministrativeArea', name: STATE_NAMES[state] } }),
+  };
+}
+
+/**
+ * Article JSON-LD for announcements and news (CLAUDE.md §7). The publication date is included only
+ * when it is approved (renderable in production); nothing unapproved enters structured data.
+ */
+export function articleJsonLd(
+  headline: string,
+  date: FactSlot<IsoDate>,
+  mode: ContentMode,
+  url: string,
+): JsonLd {
+  const published = renderedValue(date, mode);
+  return {
+    '@type': 'Article',
+    headline,
+    url,
+    ...(published === undefined ? {} : { datePublished: published }),
   };
 }

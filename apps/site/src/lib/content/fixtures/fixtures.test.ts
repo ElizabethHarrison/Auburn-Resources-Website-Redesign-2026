@@ -10,6 +10,8 @@ import { fixturesAdapter } from './index';
 import { articles } from './data/articles';
 import { documents } from './data/documents';
 import { homePage } from './data/home-page';
+import { legalPages } from './data/legal-pages';
+import { pages } from './data/pages';
 import { portfolioPage } from './data/portfolio-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
@@ -27,6 +29,8 @@ const all = {
   articles,
   portfolioPage,
   prospects,
+  pages,
+  legalPages,
 };
 const slots = collectSlots(all);
 const documentIds = new Set(documents.map((document) => document.id));
@@ -148,6 +152,24 @@ describe('record integrity', () => {
     for (const record of [...projects, ...documents]) {
       if (record.legacyPath !== undefined) expect(record.legacyPath).toMatch(/^\/[^/]/);
     }
+  });
+});
+
+describe('page copy', () => {
+  it('gives every page section a heading and a unique id', () => {
+    for (const page of Object.values(pages)) {
+      const ids = page.sections.map((section) => section.id);
+      expect(new Set(ids).size, page.key).toBe(ids.length);
+      for (const section of page.sections) {
+        expect(section.heading.trim(), `${page.key}.${section.id}`).not.toBe('');
+        expect(section.paragraphs.length, `${page.key}.${section.id}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('drafts no legal text', () => {
+    for (const page of Object.values(legalPages))
+      expect(page.clauses).toHaveProperty('kind', 'inputNeeded');
   });
 });
 

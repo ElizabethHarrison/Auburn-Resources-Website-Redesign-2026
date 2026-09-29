@@ -153,13 +153,13 @@ export interface Project {
   /** Module 01 fact list. */
   readonly setting: ProjectSetting;
   /** Hero field photograph; the hero falls back to the setting map without one. */
-  readonly heroPhoto: FigureSlot;
+  readonly heroPhoto: PhotoSlot;
   /** Module 01 map (Fig. 1). Required for module 01 to publish. */
   readonly settingMap: FigureSlot;
   /** Module 02 cross-section (Fig. 2), competent-person approved. */
   readonly sectionFigure: FigureSlot;
   /** Module 07 field photography. */
-  readonly photos: readonly FigureSlot[];
+  readonly photos: readonly PhotoSlot[];
   /** Competent person statement covering this project's technical content (modules 02, 04–06). */
   readonly cpStatement: InterpretationSlot;
   /**
@@ -257,6 +257,21 @@ export interface FigureRecord {
 
 export type FigureSlot = FigureRecord | InputNeeded;
 
+/**
+ * Documentary photograph (docs/SITEMAP.md §8 `photo`; DESIGN-DIRECTION "Photography"): every photo needs
+ * caption, date, place, photographer and a consent note. Never stock imagery; never cultural sites
+ * without permission.
+ */
+export interface PhotoRecord extends FigureRecord {
+  readonly figureType: 'photo';
+  readonly place: string;
+  readonly photographer: string;
+  /** Record of consent (people pictured, landholder, Traditional Owners where relevant). */
+  readonly consentNote: string;
+}
+
+export type PhotoSlot = PhotoRecord | InputNeeded;
+
 // ── Articles (docs/SITEMAP.md §8, `article`) ───────────────────────────────────────────────────
 
 export interface Article {
@@ -300,6 +315,65 @@ export interface PortfolioPageContent {
   readonly intro: NarrativeSlot;
   /** Fig. 1 portfolio map — the same figure record the home page uses. */
   readonly portfolioMap: FigureSlot;
+}
+
+// ── Content pages (docs/SITEMAP.md §8 `page`: a fixed set of modules per page) ─────────────────
+
+/** Every fixed page with editable copy. Keys, not slugs: URLs are fixed by the sitemap (lib/navigation.ts). */
+export type PageKey =
+  | 'company'
+  | 'leadership'
+  | 'howWeExplore'
+  | 'investors'
+  | 'announcements'
+  | 'reports'
+  | 'presentations'
+  | 'shareholders'
+  | 'governance'
+  | 'alerts'
+  | 'sustainability'
+  | 'community'
+  | 'environmentSafety'
+  | 'news'
+  | 'media'
+  | 'contact';
+
+/** A paragraph of page copy: Narrative (plain, no digits) or Interpretation (claims, with sources). */
+export type TextSlot = NarrativeSlot | InterpretationSlot;
+
+/**
+ * A titled block of page copy. The heading is structural (the section name from docs/SITEMAP.md §6),
+ * so it is template text; the paragraphs are content and follow the approval rules. A section with no
+ * renderable paragraph is not rendered at all — never a heading over nothing.
+ */
+export interface PageSection {
+  readonly id: string;
+  readonly heading: string;
+  readonly paragraphs: readonly TextSlot[];
+  /** Forward-looking content (plans, strategy): the section links to the disclaimer. */
+  readonly forwardLooking?: boolean;
+}
+
+export interface PageContent {
+  readonly key: PageKey;
+  /** One-paragraph introduction under the H1. */
+  readonly intro: NarrativeSlot;
+  readonly sections: readonly PageSection[];
+}
+
+/** Legal pages (docs/SITEMAP.md §6): text supplied by the company, never drafted by the web team. */
+export type LegalPageKey = 'disclaimer' | 'privacy' | 'terms';
+
+export interface LegalClause {
+  readonly heading: string;
+  readonly text: InterpretationSlot;
+}
+
+export interface LegalPageContent {
+  readonly key: LegalPageKey;
+  readonly lastUpdated: FactSlot<IsoDate>;
+  /** Numbered clauses, or INPUT NEEDED until the company supplies the text (Q-24). */
+  readonly clauses: readonly LegalClause[] | InputNeeded;
 }
 
 // ── Re-exports so callers need one import ───────────────────────────────────────────────────────
