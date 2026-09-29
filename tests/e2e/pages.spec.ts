@@ -12,7 +12,7 @@ import {
   expectNoAxeViolations,
   expectNoHorizontalOverflow,
   expectNoPreviewOutput,
-  expectNoScripts,
+  expectOnlyApprovedScripts,
   expectSeoBasics,
   isPreview,
 } from './helpers';
@@ -64,13 +64,15 @@ const announcements = documents.filter(
 
 for (const route of ROUTES) {
   test.describe(route.path, () => {
-    test('resolves with its H1, outline, SEO tags and no scripts', async ({ page }, testInfo) => {
+    test('resolves with its H1, outline, SEO tags and only approved scripts', async ({
+      page,
+    }, testInfo) => {
       const response = await page.goto(route.path);
       expect(response?.status()).toBe(200);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(route.h1);
       await expectHeadingOutline(page);
       await expectSeoBasics(page, route.path);
-      await expectNoScripts(page);
+      await expectOnlyApprovedScripts(page);
       if (route.current) {
         await expect(page.locator('.section-bar [aria-current="page"]')).toContainText(
           route.current,
@@ -209,7 +211,7 @@ test.describe('404', () => {
       await expect(page.locator(`main a[href="${href}"]`).first()).toBeAttached();
     }
     await expectHeadingOutline(page);
-    await expectNoScripts(page);
+    await expectOnlyApprovedScripts(page);
   });
 
   for (const width of [360, 1280] as const) {

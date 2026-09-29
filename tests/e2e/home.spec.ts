@@ -9,7 +9,7 @@ import {
   expectNoAxeViolations,
   expectNoHorizontalOverflow,
   expectNoPreviewOutput,
-  expectNoScripts,
+  expectOnlyApprovedScripts,
   expectSeoBasics,
   isPreview,
 } from './helpers';
@@ -31,8 +31,8 @@ test.describe('home page', () => {
     await expectSeoBasics(page, '/');
   });
 
-  test('ships no client JavaScript', async ({ page }) => {
-    await expectNoScripts(page);
+  test('ships only the approved mobile-menu script', async ({ page }) => {
+    await expectOnlyApprovedScripts(page);
   });
 
   test('links to the portfolio from the hero', async ({ page }) => {
@@ -102,10 +102,11 @@ test.describe('home page', () => {
   test('shows the full navigation from 1280 px and the compact menu below', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 });
     await page.goto('/');
-    await expect(page.getByRole('link', { name: 'Menu' })).toBeVisible();
+    // With JavaScript, "Menu" is the mobile-menu button (D-021); the no-JS link is covered in mobile-menu.spec.ts.
+    await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Main' })).toBeHidden();
     await page.setViewportSize({ width: 1280, height: 900 });
     await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Menu' })).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Menu' })).toBeHidden();
   });
 });

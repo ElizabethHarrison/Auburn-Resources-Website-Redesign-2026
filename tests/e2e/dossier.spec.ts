@@ -12,7 +12,7 @@ import {
   expectHeadingOutline,
   expectNoAxeViolations,
   expectNoHorizontalOverflow,
-  expectNoScripts,
+  expectOnlyApprovedScripts,
   expectSeoBasics,
   isPreview,
 } from './helpers';
@@ -57,7 +57,7 @@ test.describe('project dossier (preview)', () => {
       );
       await expectHeadingOutline(page);
       await expectSeoBasics(page, `/projects/${project.slug}`);
-      await expectNoScripts(page);
+      await expectOnlyApprovedScripts(page);
       await expect(page.locator('.section-bar [aria-current="page"]')).toContainText(project.name);
     });
   }

@@ -11,6 +11,9 @@ import type { BreadcrumbItem, JsonLd } from '~/lib/seo';
 import Footer from '~/components/patterns/Footer.astro';
 import Header from '~/components/patterns/Header.astro';
 import SectionBar from '~/components/patterns/SectionBar.astro';
+import { renderMode } from '~/lib/config';
+import { isRenderable } from '~/lib/facts';
+import { projectUrl } from '~/lib/urls';
 import BaseLayout from './BaseLayout.astro';
 
 export interface Props {
@@ -39,6 +42,17 @@ const {
   jsonLd,
   noindex,
 } = Astro.props;
+// Mobile menu data: listable dossiers, the current URL, and the company email only when approved.
+const projectLinks: NavLink[] = frame.projects.map((project) => ({
+  sheet: project.sheetNumber,
+  label: project.name,
+  href: projectUrl(project),
+}));
+const currentHref = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+const email =
+  frame.settings.email.kind === 'fact' && isRenderable(frame.settings.email, renderMode())
+    ? frame.settings.email.value
+    : undefined;
 ---
 
 <BaseLayout
@@ -49,7 +63,14 @@ const {
   {...(noindex === undefined ? {} : { noindex })}
 >
   <Fragment slot="header">
-    <Header sheet={sheet} sheetLabel={sheetLabel} currentSection={currentSection} />
+    <Header
+      sheet={sheet}
+      sheetLabel={sheetLabel}
+      currentSection={currentSection}
+      projectLinks={projectLinks}
+      currentHref={currentHref}
+      email={email}
+    />
     {sectionBar && <SectionBar {...sectionBar} />}
   </Fragment>
   <slot />

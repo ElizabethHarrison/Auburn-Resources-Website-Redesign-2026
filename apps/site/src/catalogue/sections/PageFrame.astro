@@ -33,12 +33,12 @@ const productionProjects = projects.filter((project) => isProjectListable(projec
   id="page-frame"
   number="D"
   title="Page frame"
-  intro="Static versions. Navigation panels, the mobile menu and search are Phase 4 islands. Resize the window: the header switches to wordmark + Menu below 80rem, and the sheet reference moves to the breadcrumb below 90rem."
+  intro="Static versions, except the mobile menu (D-021). Navigation panels and search are later Phase 4 islands. Resize the window: the header switches to wordmark + Menu below 80rem, and the sheet reference moves to the breadcrumb below 90rem."
 >
   <Specimen
     name="Header"
     ground="bleed"
-    notes="Shown for Sheet 02.1 with 02 Projects current. Below 80rem, “Menu” jumps to the footer navigation until the Phase 4 menu island exists."
+    notes="Shown for Sheet 02.1 with 02 Projects current. Below 80rem, “Menu” opens the full-screen mobile menu (a native modal dialog; Escape or Close returns focus to Menu). Without JavaScript it jumps to the footer navigation."
   >
     <Header sheet="02.1" sheetLabel="Nicholson" currentSection="02" />
   </Specimen>

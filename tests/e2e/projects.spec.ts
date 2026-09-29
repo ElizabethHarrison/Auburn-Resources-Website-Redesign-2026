@@ -10,7 +10,7 @@ import {
   expectNoAxeViolations,
   expectNoHorizontalOverflow,
   expectNoPreviewOutput,
-  expectNoScripts,
+  expectOnlyApprovedScripts,
   expectSeoBasics,
   isPreview,
 } from './helpers';
@@ -37,8 +37,8 @@ test.describe('projects portfolio', () => {
     expect(jsonLd).toContain('BreadcrumbList');
   });
 
-  test('ships no client JavaScript', async ({ page }) => {
-    await expectNoScripts(page);
+  test('ships only the approved mobile-menu script', async ({ page }) => {
+    await expectOnlyApprovedScripts(page);
   });
 
   test('marks 02 Projects as the current section and the portfolio as the current page', async ({

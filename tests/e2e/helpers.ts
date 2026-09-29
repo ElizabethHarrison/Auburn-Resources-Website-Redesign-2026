@@ -60,11 +60,22 @@ export async function expectNoPreviewOutput(page: Page) {
   expect(text).not.toMatch(/input needed|preview build|specimen/i);
 }
 
-/** Zero client JavaScript at this stage (no islands before Phase 4). */
-export async function expectNoScripts(page: Page) {
-  const scripts = await page.$$eval(
-    'script:not([type="application/ld+json"])',
-    (nodes) => nodes.length,
+/**
+ * The only client JavaScript is the approved mobile-menu island (D-021): one small inline module. Any
+ * other script (or a second copy) fails, so new islands must be added here deliberately.
+ */
+export async function expectOnlyApprovedScripts(page: Page) {
+  const scripts = await page.$$eval('script:not([type="application/ld+json"])', (nodes) =>
+    nodes.map((node) => ({
+      type: node.getAttribute('type'),
+      src: node.getAttribute('src'),
+      text: node.textContent ?? '',
+    })),
   );
-  expect(scripts).toBe(0);
+  expect(scripts).toHaveLength(1);
+  const [menu] = scripts;
+  expect(menu?.type).toBe('module');
+  expect(menu?.src).toBeNull();
+  expect(menu?.text).toContain('mobile-menu');
+  expect(menu?.text.length ?? 0).toBeLessThan(1024);
 }
