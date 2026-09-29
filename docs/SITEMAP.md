@@ -249,13 +249,13 @@ can approve; slug change auto-creates a redirect; production renders Approved fa
 | `/home`, `/home-1`, `/home-2`, `/home-impact`, `/welcome` | `/` |
 | `/board-of-directors-and-management` | `/company/leadership` |
 | `/corporate-governance`, `/corporate-governance-1`, `/corporate-governance-2` | `/investors/governance` |
-| `/project-portfolio`, `/projects` | `/projects` |
+| `/project-portfolio` | `/projects` |
 | `/nicholson-project` | `/projects/nicholson` |
 | `/calgoa-project` | `/projects/calgoa` |
 | `/tanumbirini-project` | `/projects/tanumbirini` |
 | `/hawkwood-project` | `/projects/hawkwood` |
 | `/victoria-river-downs` | `/projects/victoria-river-downs` |
-| `/investor-centre`, `/investor-center`, `/investors` | `/investors` |
+| `/investor-centre`, `/investor-center` | `/investors` |
 | `/presentations` | `/investors/presentations` |
 | `/email-alerts`, `/auburnresources` | `/investors/alerts` |
 | `/media-coverage` | `/news/media` |
@@ -265,3 +265,6 @@ can approve; slug change auto-creates a redirect; production renders Approved fa
 | `/s/*.pdf` (old Squarespace files) | matching `/documents/[slug].pdf` once re-hosted |
 
 If a project is confirmed no longer held, keep its redirect target and mark the page "No longer held".
+
+`/projects` and `/investors` exist on both the old and new sites at the same URL, so they need no redirect (listing
+them would create a redirect loop). Corrected 29 Sep 2026 — see `docs/DECISIONS.md` D-004.
