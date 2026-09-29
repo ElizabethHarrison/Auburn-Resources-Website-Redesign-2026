@@ -14,6 +14,8 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   Cloudflare static assets + Workers. Details in `docs/WEBSITE-STRATEGY.md` §6 and `CLAUDE.md`.
 - **Consequences:** No public server or database. Content changes need a rebuild (target: live in under 3 minutes).
   A shareholder portal would need revisiting this.
+- **Amended by D-022 (29 Sep 2026):** "Preact islands" no longer means every interactive component uses Preact.
+  Interactivity is native HTML/CSS first; Preact only where it gives a clear benefit (D-022).
 
 ## D-002 · Repository root is the monorepo; documents live in `docs/`
 - **Date:** 29 Sep 2026 · **Status:** Approved (Phase 0)
@@ -232,7 +234,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   (`row-gap: 0`); single-row bars are unchanged.
 
 ## D-021 · Mobile menu: native modal dialog and a few lines of script, no framework
-- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 4.1 checkpoint, awaiting review)
+- **Date:** 29 Sep 2026 · **Status:** Approved (Phase 4.1 review, 29 Sep 2026)
 - **Context:** D-001 lists Preact for islands, including the mobile menu. The Phase 4 brief asks for the smallest
   possible island, no framework unless the architecture requires it, and native HTML/CSS first. Native `<dialog>`
   already provides everything a modal menu needs.
@@ -252,3 +254,19 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   text instead of their code; it now counts the code (menu pages report 0.26 KB of the 30 KB budget).
 - **Consequences:** Later islands follow the same rule — native first; Preact only where state and rendering
   justify it (Q-43).
+
+## D-022 · Interactivity: native HTML/CSS first; Preact only with a demonstrated benefit
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-43, 29 Sep 2026); amends D-001
+- **Decision:** "Native HTML/CSS first. Use Preact only where interaction/state/rendering complexity provides a clear
+  benefit that cannot be achieved cleanly with native browser capabilities."
+  - Mobile menu: native dialog + minimal script (D-021).
+  - Disclosure/accordion behaviour: native `<details>`/`<summary>` where appropriate.
+  - Document filters: normal links/forms/query parameters and server/static rendering first.
+  - Pagefind search: the smallest appropriate client-side integration.
+  - Map: a map library only when interactive GIS functionality is actually required.
+  - Forms: progressive enhancement and minimal client-side behaviour.
+  - Preact is not added merely because the architecture originally mentioned it; a component that genuinely needs it
+    is explained (why native is insufficient) before Preact is introduced.
+- **Consequences:** D-001's stack is otherwise unchanged; Preact remains available, not required. CLAUDE.md §4.1 and
+  §5 updated. `docs/WEBSITE-STRATEGY.md` §6 (approved document) still says "Preact islands only where interactive";
+  read it together with this decision.

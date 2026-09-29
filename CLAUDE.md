@@ -27,9 +27,9 @@ Read these before writing code, in this order:
   Pages use `layouts/SiteLayout.astro` + `loadFrame()` (fixed pages via `layouts/ContentLayout.astro`); modules
   live in `components/modules/<page>/` (shared page modules in `modules/page/`). Page copy comes from `page`
   records (`getPage`, `getLegalPage`). Dossier module rules are in `lib/content/dossier.ts`.
-- **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** built, awaiting
-  review (`components/islands/MobileMenu.astro`, native dialog, D-021). Order: mobile menu → document filters →
-  Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
+- **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** approved
+  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters**: architecture proposed,
+  awaiting a decision (Q-44). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
   `components/islands/`. Playwright + axe tests in `tests/e2e` run against both builds;
   `content-integrity.spec.ts` scans the production build; `links.spec.ts` crawls every internal link.
 - **Not yet built:** Phase 4 items 2–8, Sanity Studio (Phase 5), `workers/edge`,
@@ -129,7 +129,7 @@ geological survey sheet: precise, methodical, authored by geologists, never hype
 | Concern | Choice |
 | --- | --- |
 | Framework | **Astro** (static output), TypeScript strict |
-| Interactivity | **Preact** islands only (map, doc filters, mobile menu, nav panels, strat-column nav, lightbox, forms) |
+| Interactivity | Islands only (menu, doc filters, search, nav panels, strat-column nav, lightbox, forms, map): **native HTML/CSS first**; **Preact** only where it gives a clear benefit (D-022) |
 | Styling | Plain CSS + design tokens (`src/styles/tokens.css`) + Astro scoped styles. **No Tailwind / utility framework** |
 | CMS | **Sanity** (hosted), customised Studio in `apps/studio` |
 | Images | Sanity image CDN (AVIF/WebP, srcset) + Astro `<Image>`; figures as SVG where possible |
@@ -210,7 +210,8 @@ Planned: `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also start the Studio 
 - **Modules render nothing when their content is empty** (no empty tables, no empty headings).
 - Every `Figure` requires `alt` and `caption` (a missing prop is a type error; the build fails).
 - Fact components accept `Fact` objects only, never raw strings or numbers.
-- Islands: Preact, hydrate with the least eager directive (`client:visible` / `client:idle`) and work without JS
+- Islands: native HTML/CSS and minimal script first; Preact only with a demonstrated benefit, explained before it
+  is introduced (D-022). Preact islands hydrate with the least eager directive (`client:visible` / `client:idle`). All work without JS
   where possible (links and native forms first).
 - Keep the `noindex`, preview-only component catalogue (`/_catalogue`, source in `src/catalogue/`) showing every
   pattern with sample data; add each new pattern to it. Catalogue specimens never leave `src/catalogue/` (D-013).
