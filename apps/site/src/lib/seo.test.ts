@@ -66,6 +66,7 @@ describe('robots', () => {
     expect(robotsDirective('production', true)).toBe('noindex, nofollow');
     expect(robotsTxt('production', SITE)).toContain(`Sitemap: ${SITE}/sitemap-index.xml`);
     expect(robotsTxt('production', SITE)).toContain('Disallow: /_catalogue');
+    expect(robotsTxt('production', SITE)).toContain('Disallow: /filtered/');
   });
 });
 

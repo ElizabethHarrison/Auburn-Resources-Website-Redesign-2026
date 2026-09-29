@@ -1,0 +1,34 @@
+---
+/**
+ * Home §3 — Key-facts strip: Projects · Ground held · Commodities · Jurisdictions · Status
+ * (docs/WEBSITE-STRATEGY.md §5). The DGR holding is not shown here (Q-14). Cells drop individually;
+ * the strip disappears when none is approved.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { KeyFacts } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { STATE_NAMES, factDisplay, formatCommodities } from '~/lib/format';
+import Container from '~/components/primitives/Container.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+
+export interface Props {
+  keyFacts: KeyFacts;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { keyFacts, sources, mode } = Astro.props;
+const items = [
+  factDisplay('Projects', keyFacts.projectCount),
+  factDisplay('Ground held', keyFacts.groundHeld),
+  factDisplay('Commodities', keyFacts.commodities, formatCommodities),
+  factDisplay('Jurisdictions', keyFacts.jurisdictions, (states) =>
+    states.map((state) => STATE_NAMES[state]).join(' · '),
+  ),
+  factDisplay('Status', keyFacts.companyStatus),
+];
+---
+
+<Container>
+  <FactStrip items={items} label="Key facts" sources={sources} mode={mode} />
+</Container>

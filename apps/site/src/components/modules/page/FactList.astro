@@ -1,0 +1,60 @@
+---
+/**
+ * A titled list of facts (fact cells in rows). Facts not renderable in this mode drop out; with none
+ * left the block — heading included — renders nothing. Labels never appear without their value.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import type { FactDisplay } from '~/lib/format';
+import type { SourceIndex } from '~/lib/content/sources';
+import FactCell from '~/components/patterns/FactCell.astro';
+import PageBlock from './PageBlock.astro';
+
+export interface Props {
+  id: string;
+  heading: string;
+  items: readonly FactDisplay[];
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { id, heading, items, sources, mode } = Astro.props;
+const visible = items.filter((item) => isRenderable(item.slot, mode));
+---
+
+{visible.length > 0 && (
+  <PageBlock id={id} heading={heading}>
+    <ul class="fact-list" role="list">
+      {visible.map((item) => (
+        <li>
+          <FactCell item={item} sources={sources} variant="row" mode={mode} />
+        </li>
+      ))}
+    </ul>
+    <slot />
+  </PageBlock>
+)}
+
+<style>
+  .fact-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    list-style: none;
+  }
+
+  @container (min-width: 48rem) {
+    .fact-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+    }
+  }
+
+  .fact-list li {
+    padding-block: var(--space-2);
+    border-bottom: var(--rule-secondary);
+  }
+</style>

@@ -62,10 +62,30 @@ jobs:
             echo "::error::Preview-only content found in the production build (files listed above)."
             exit 1
           fi
+          # Indicative mockup graphics (src/assets/figures/indicative) are preview-only.
+          if find apps/site/dist -iname '*indicative*' | grep .; then
+            echo "::error::Indicative mockup artwork found in the production build."
+            exit 1
+          fi
           if find apps/site/dist -path '*_catalogue*' | grep .; then
             echo "::error::The design-system catalogue must not exist in the production build."
             exit 1
           fi
+
+      # End-to-end, responsive and axe (WCAG 2.2 AA) tests against both builds (CLAUDE.md §6, §10).
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end and accessibility tests
+        run: pnpm test:e2e
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
 
       # The preview build must never be indexable.
       - name: Guard against indexable preview output

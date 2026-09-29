@@ -1,0 +1,319 @@
+---
+/**
+ * Mobile menu (docs/SITEMAP.md §5; CLAUDE.md §6). The only client-side code on the site so far (D-021):
+ * a native modal <dialog> plus a few lines of script, no framework.
+ *
+ * - Below 80rem the header shows "Menu". With JavaScript it is a button (aria-expanded, aria-controls,
+ *   aria-haspopup="dialog") that opens a full-screen modal dialog; without JavaScript it stays a link to the
+ *   full site navigation in the footer. CSS `@media (scripting)` chooses which one shows, so nothing
+ *   swaps after load (no layout shift).
+ * - The dialog is modal: the page behind is inert, so focus can never reach content behind the menu.
+ *   Escape closes it (native); "Close" is a native `method="dialog"` form button and receives focus on open. On close, focus returns
+ *   to the Menu button and aria-expanded is reset. Widening the window to desktop closes it.
+ * - Five numbered rows are native <details> disclosures (the current section open), each listing the
+ *   section's pages with sheet numbers; pinned below: "Get investor updates", Contact and, once
+ *   approved, tap-to-mail. No motion.
+ * - Desktop (from 80rem) is unchanged: the trigger and dialog never show there.
+ *
+ * Deferred: the mini portfolio map in row 02 (needs approved GIS; Phase 4 map, Q-31).
+ */
+import type { SectionId } from '~/lib/navigation';
+import {
+  CONTACT_LINK,
+  INVESTOR_UPDATES_LINK,
+  SECTIONS,
+  projectSectionPages,
+  type NavLink,
+} from '~/lib/navigation';
+import Button from '../primitives/Button.astro';
+
+export interface Props {
+  /** Project dossiers listable in this mode (inserted into row 02). */
+  projectLinks?: readonly NavLink[] | undefined;
+  currentSection?: SectionId | undefined;
+  /** URL of the current page, marked aria-current="page". */
+  currentHref?: string | undefined;
+  /** Company email, only when approved for this build. */
+  email?: string | undefined;
+}
+
+const { projectLinks = [], currentSection, currentHref, email } = Astro.props;
+const rows = SECTIONS.map((section) => ({
+  ...section,
+  pages: section.id === '02' ? projectSectionPages(projectLinks) : section.pages,
+}));
+---
+
+<a class="menu-trigger menu-trigger--link" href="#site-navigation">
+  Menu
+</a>
+<button
+  class="menu-trigger menu-trigger--button"
+  type="button"
+  aria-haspopup="dialog"
+  aria-expanded="false"
+  aria-controls="mobile-menu"
+  data-menu-open
+>
+  Menu
+</button>
+
+<dialog id="mobile-menu" class="mobile-menu" aria-label="Menu">
+  <div class="mobile-menu__bar l-container">
+    <a class="mobile-menu__home" href="/">
+      Home
+    </a>
+    <form method="dialog">
+      <button class="menu-trigger mobile-menu__close" type="submit" data-menu-close>
+        Close
+      </button>
+    </form>
+  </div>
+
+  <nav class="mobile-menu__nav l-container" aria-label="Main">
+    <ol class="mobile-menu__rows" role="list">
+      {rows.map((section) => (
+        <li class="mobile-menu__row">
+          <details open={section.id === currentSection}>
+            <summary class="mobile-menu__summary">
+              <span class="mobile-menu__number">{section.id}</span>
+              {section.label}
+            </summary>
+            <ul class="mobile-menu__pages" role="list">
+              {section.pages.map((page) => (
+                <li>
+                  <a
+                    class="mobile-menu__link"
+                    href={page.href}
+                    aria-current={page.href === currentHref ? 'page' : undefined}
+                  >
+                    {page.sheet && <span class="mobile-menu__sheet">{page.sheet}</span>}
+                    {page.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <div class="mobile-menu__footer l-container">
+    <Button href={INVESTOR_UPDATES_LINK.href}>Get investor updates</Button>
+    <p class="mobile-menu__contact">
+      <a href={CONTACT_LINK.href}>{CONTACT_LINK.label}</a>
+      {email && <a href={`mailto:${email}`}>{email}</a>}
+    </p>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('mobile-menu');
+  const trigger = document.querySelector('[data-menu-open]');
+  if (dialog instanceof HTMLDialogElement && trigger instanceof HTMLButtonElement) {
+    trigger.addEventListener('click', () => {
+      dialog.showModal();
+      trigger.setAttribute('aria-expanded', 'true');
+      // Start at "Close", in the same place as "Menu".
+      dialog.querySelector<HTMLButtonElement>('[data-menu-close]')?.focus();
+    });
+    dialog.addEventListener('close', () => {
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.focus();
+    });
+    // The menu exists only below 80rem: widening the window closes it.
+    window.matchMedia('(min-width: 80rem)').addEventListener('change', (event) => {
+      if (event.matches && dialog.open) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  /* ── Trigger: "Menu" (and "Close" inside the dialog), same box as the Phase 2 header link ── */
+  .menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding-inline: var(--space-2);
+    border: var(--rule);
+    border-radius: var(--radius);
+    background-color: var(--paper);
+    color: var(--ink-survey);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .menu-trigger--link,
+  .menu-trigger--button {
+    margin-left: auto;
+  }
+
+  /* Without JavaScript the link (to the footer navigation) shows; with it, the button. */
+  .menu-trigger--button {
+    display: none;
+  }
+
+  @media (scripting: enabled) {
+    .menu-trigger--link {
+      display: none;
+    }
+    .menu-trigger--button {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .menu-trigger--link,
+    .menu-trigger--button,
+    .mobile-menu {
+      display: none;
+    }
+  }
+
+  .menu-trigger:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.35em;
+  }
+
+  /* ── Dialog: full screen on paper; scrolls itself, never the page ── */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: var(--paper);
+    color: var(--ink-graphite);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-menu::backdrop {
+    background-color: var(--paper);
+  }
+
+  .mobile-menu__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--header-height-mobile);
+    border-bottom: var(--rule);
+  }
+
+  .mobile-menu__home {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .mobile-menu__rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-menu__row {
+    border-bottom: var(--rule);
+  }
+
+  .mobile-menu__summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: var(--touch-target);
+    padding-block: var(--space-2);
+    color: var(--ink-survey);
+    font-size: var(--text-h3);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mobile-menu__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Open/closed shown by a mono sign as well as the native expanded state. */
+  .mobile-menu__summary::after {
+    content: '+';
+    margin-left: auto;
+    color: var(--color-label);
+    font-family: var(--font-mono);
+  }
+
+  details[open] > .mobile-menu__summary::after {
+    content: '−';
+  }
+
+  .mobile-menu__number,
+  .mobile-menu__sheet {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .mobile-menu__pages {
+    margin: 0;
+    padding: 0 0 var(--space-2);
+    list-style: none;
+  }
+
+  .mobile-menu__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: var(--touch-target);
+    padding-block: var(--space-1);
+    color: var(--ink-survey);
+    text-decoration: none;
+  }
+
+  .mobile-menu__link:hover,
+  .mobile-menu__link[aria-current='page'] {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.35em;
+  }
+
+  .mobile-menu__footer {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-block: var(--space-4);
+  }
+
+  .mobile-menu__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-menu__contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+  }
+</style>

@@ -80,8 +80,12 @@ describe('record visibility', () => {
     expect(isDocumentListable({ ...approved, status: 'toVerify' }, 'production')).toBe(false);
   });
 
-  it('lists a project in production only when confirmed held', () => {
-    const base = projects[0] as Project;
+  it('lists a project in production only when held, with approved area and ownership (SITEMAP §8)', () => {
+    const base: Project = {
+      ...(projects[0] as Project),
+      areaKm2: fact(100, { unit: 'km²' }),
+      ownership: fact({ holder: 'Holder', percent: 100 }),
+    };
     expect(isProjectListable({ ...base, holding: fact('active' as const) }, 'production')).toBe(
       true,
     );
@@ -91,6 +95,12 @@ describe('record visibility', () => {
     expect(
       isProjectListable(
         { ...base, holding: fact('active' as const, {}, 'toVerify') },
+        'production',
+      ),
+    ).toBe(false);
+    expect(
+      isProjectListable(
+        { ...base, holding: fact('active' as const), areaKm2: inputNeeded('Area') },
         'production',
       ),
     ).toBe(false);
@@ -143,5 +153,29 @@ describe('navigation (docs/SITEMAP.md)', () => {
     expect(
       footerColumns([{ label: 'X', href: '/projects/x' }])[1]?.links.map((l) => l.label),
     ).toEqual(['Portfolio map', 'X', 'How we explore']);
+  });
+});
+
+describe('breakBeforeDots', () => {
+  it('offers wrap points before each dot in a domain, and keeps plain text whole', async () => {
+    const { breakBeforeDots } = await import('./format');
+    expect(breakBeforeDots('Capture of the current auburnresources.com.au website')).toEqual([
+      'Capture of the current auburnresources',
+      '.com',
+      '.au website',
+    ]);
+    expect(breakBeforeDots('Annual Report')).toEqual(['Annual Report']);
+    expect(breakBeforeDots('Report. Next')).toEqual(['Report. Next']);
+  });
+});
+
+describe('isColumnVisible', () => {
+  it('shows a column in production only when every row has an approved value', async () => {
+    const { isColumnVisible } = await import('./content/visibility');
+    const rows = [{ v: fact(1) }, { v: fact(2, {}, 'toVerify') }];
+    expect(isColumnVisible(rows, (r) => r.v, 'production')).toBe(false);
+    expect(isColumnVisible(rows.slice(0, 1), (r) => r.v, 'production')).toBe(true);
+    expect(isColumnVisible(rows, (r) => r.v, 'preview')).toBe(true);
+    expect(isColumnVisible([], (r: { v: Fact<number> }) => r.v, 'preview')).toBe(false);
   });
 });

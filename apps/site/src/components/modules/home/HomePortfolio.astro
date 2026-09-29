@@ -1,0 +1,52 @@
+---
+/**
+ * Home §4 — 02 Projects, "The portfolio, sheet by sheet": one sheet card per listable project. The list
+ * comes from content (the verified project list is still open, Q-20); nothing renders when no project
+ * is confirmed for this mode.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Project } from '~/lib/content/types';
+import Container from '~/components/primitives/Container.astro';
+import Grid from '~/components/primitives/Grid.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import SheetCard from '~/components/patterns/SheetCard.astro';
+
+export interface Props {
+  projects: readonly Project[];
+  mode: ContentMode;
+}
+
+const { projects, mode } = Astro.props;
+---
+
+{projects.length > 0 && (
+  <section class="home-section" aria-labelledby="home-portfolio">
+    <Container>
+      <SectionHeading
+        id="home-portfolio"
+        kicker="02 Projects"
+        heading="The portfolio, sheet by sheet"
+        action={{ label: 'All projects and the full map', href: '/projects' }}
+      />
+      <div class="home-section__body">
+        <Grid as="ul" layout="thirds">
+          {projects.map((project) => (
+            <li>
+              <SheetCard project={project} mode={mode} />
+            </li>
+          ))}
+        </Grid>
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .home-section {
+    padding-block: var(--section-padding);
+  }
+
+  .home-section__body {
+    margin-top: var(--space-5);
+  }
+</style>

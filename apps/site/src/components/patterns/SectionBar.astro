@@ -87,8 +87,10 @@ const { sectionLabel, pages, currentHref } = Astro.props;
 
   /* Desktop: a plain ruled row, no chip borders. */
   @media (min-width: 64rem) {
+    /* Wrapped rows sit directly under each other (seven investor pages need two rows below 90rem). */
     .section-bar__list {
-      gap: var(--space-4);
+      column-gap: var(--space-4);
+      row-gap: 0;
       min-height: var(--section-bar-height);
       padding: 0;
       overflow-x: visible;

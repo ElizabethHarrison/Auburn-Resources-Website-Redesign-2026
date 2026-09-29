@@ -1,0 +1,45 @@
+---
+/**
+ * Sheet 03.3 · Presentations (docs/SITEMAP.md 03.3): presentations grouped by year. Featuring a
+ * "current" presentation depends on Q-08 (what counts as current), so it is not built yet.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import Button from '~/components/primitives/Button.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+import { LISTINGS } from '~/lib/document-filters';
+
+const mode = config.contentMode;
+const listing = LISTINGS.presentations;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('presentations'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading={listing.heading}
+  description={listing.description}
+  frame={frame}
+  href={listing.path}
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts" variant="secondary">
+      Get investor updates
+    </Button>
+    <Placeholder
+      brief="Featuring a current presentation depends on Q-08; the newest on record is from Feb 2022"
+      field="Current presentation"
+      variant="inline"
+      mode={mode}
+    />
+  </Fragment>
+  <DocumentListingBody listing={listing} documents={documents} mode={mode} />
+</ContentLayout>

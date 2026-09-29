@@ -19,11 +19,12 @@ export interface Props {
   title?: string;
   description: string;
   noindex?: boolean;
+  canonicalPath?: string;
   breadcrumbs?: readonly BreadcrumbItem[];
   jsonLd?: readonly JsonLd[];
 }
 
-const { title, description, noindex, breadcrumbs, jsonLd = [] } = Astro.props;
+const { title, description, noindex, breadcrumbs, jsonLd = [], canonicalPath } = Astro.props;
 
 const site = Astro.site;
 if (!site) throw new Error('`site` must be set in astro.config.ts.');
@@ -40,7 +41,13 @@ const structuredData: JsonLd[] = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <SeoHead title={title} description={description} noindex={noindex} jsonLd={structuredData} />
+    <SeoHead
+      title={title}
+      description={description}
+      noindex={noindex}
+      jsonLd={structuredData}
+      canonicalPath={canonicalPath}
+    />
   </head>
   <body>
     <a class="skip-link" href="#main">

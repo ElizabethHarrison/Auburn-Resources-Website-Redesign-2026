@@ -1,0 +1,84 @@
+---
+/**
+ * Sheet 02 · Projects — the portfolio (docs/SITEMAP.md 02).
+ *
+ * Sections: title + summary · Fig. 1 portfolio map · project sheets · project register (the map's text
+ * equivalent) · exploration pipeline · How we explore + disclaimer note. Filters (commodity, state,
+ * stage) arrive with the Phase 4 islands.
+ *
+ * The project list comes from the content adapter and is filtered by `isProjectListable` (via
+ * loadFrame): in production only projects confirmed as held appear (Q-20 is open, so currently none).
+ */
+import SiteLayout from '~/layouts/SiteLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { resolve } from '~/lib/facts';
+import { projectSectionPages } from '~/lib/navigation';
+import { projectUrl } from '~/lib/urls';
+import PageTitle from '~/components/patterns/PageTitle.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+import PortfolioLinks from '~/components/modules/portfolio/PortfolioLinks.astro';
+import PortfolioMap from '~/components/modules/portfolio/PortfolioMap.astro';
+import PortfolioPipeline from '~/components/modules/portfolio/PortfolioPipeline.astro';
+import PortfolioRegister from '~/components/modules/portfolio/PortfolioRegister.astro';
+import PortfolioSheets from '~/components/modules/portfolio/PortfolioSheets.astro';
+import PortfolioSummary from '~/components/modules/portfolio/PortfolioSummary.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPortfolioPage(),
+  content.getDocuments(),
+]);
+const { settings, projects } = frame;
+const sources = createSourceIndex(documents);
+const intro = resolve(page.intro, mode);
+
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: '02 Projects', path: '/projects' },
+];
+const sectionPages = projectSectionPages(
+  projects.map((project) => ({
+    sheet: project.sheetNumber,
+    label: project.name,
+    href: projectUrl(project),
+  })),
+);
+
+// Claim-free: published before any project fact is approved.
+const description =
+  "Auburn Resources' exploration projects: the portfolio map, project sheets and how we explore.";
+---
+
+<SiteLayout
+  title="Projects"
+  description={description}
+  frame={frame}
+  sheet="02"
+  sheetLabel="Projects"
+  currentSection="02"
+  sectionBar={{ sectionLabel: '02 Projects', pages: sectionPages, currentHref: '/projects' }}
+  breadcrumbs={breadcrumbs}
+>
+  <PageTitle heading="Project portfolio" breadcrumbs={breadcrumbs} sheet="02" sheetLabel="Projects">
+    {intro.kind === 'value' && (
+      <p>
+        {intro.item.text}
+        {mode === 'preview' && <StatusDot status={intro.status} compact mode={mode} />}
+      </p>
+    )}
+    {intro.kind === 'placeholder' && (
+      <Placeholder brief={intro.brief} field="Introduction" mode={mode} />
+    )}
+  </PageTitle>
+  <PortfolioSummary keyFacts={settings.keyFacts} sources={sources} mode={mode} />
+  <PortfolioMap map={page.portfolioMap} mode={mode} />
+  <PortfolioSheets projects={projects} mode={mode} />
+  <PortfolioRegister projects={projects} mode={mode} />
+  <PortfolioPipeline projects={projects} mode={mode} />
+  <PortfolioLinks />
+</SiteLayout>

@@ -1,0 +1,70 @@
+---
+/**
+ * Module 07 — Photography (docs/SITEMAP.md §8): documentary field photographs, each a numbered figure
+ * with caption, date, place and photographer; no stock imagery. The gallery is a static grid in
+ * Phase 3; the lightbox arrives with the Phase 4 islands.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { PhotoSlot } from '~/lib/content/types';
+import { figureSource, resolvePhoto } from '~/lib/content/visibility';
+import Figure from '~/components/patterns/Figure.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  photos: readonly PhotoSlot[];
+  /** Number of the first photograph's figure on the page. */
+  firstFigureNumber: number;
+  mode: ContentMode;
+}
+
+const { module, projectName, photos, firstFigureNumber, mode } = Astro.props;
+const figures = photos
+  .map((photo) => resolvePhoto(photo, mode))
+  .flatMap((photo) => (photo.kind === 'figure' ? [photo.figure] : []));
+---
+
+<DossierSection module={module}>
+  {figures.length > 0 && (
+    <div class="photos">
+      {figures.map((photo, index) => (
+        <Figure
+          number={firstFigureNumber + index}
+          caption={photo.caption}
+          alt={photo.alt}
+          image={{ src: photo.src, width: photo.width, height: photo.height }}
+          sizes="(min-width: 64rem) 40vw, 100vw"
+          source={figureSource(photo)}
+          date={photo.date}
+          status={photo.status}
+          mode={mode}
+        />
+      ))}
+    </div>
+  )}
+  {figures.length === 0 && (
+    <Placeholder
+      brief={`Documentary photographs at ${projectName}: landscape, field work, core. Commissioned, each with caption, date, place, photographer and consent; no cultural sites without permission`}
+      field="Photography"
+      mode={mode}
+    />
+  )}
+</DossierSection>
+
+<style>
+  .photos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  @container (min-width: 48rem) {
+    .photos {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+    }
+  }
+</style>

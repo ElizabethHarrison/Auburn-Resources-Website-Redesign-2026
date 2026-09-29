@@ -28,54 +28,66 @@ const portrait = resolve(person.portrait, mode);
 const bio = resolve(person.bio, mode);
 ---
 
-<article class:list={['person-card', { 'person-card--with-portrait': portrait.kind !== 'hidden' }]}>
-  {portrait.kind === 'value' && (
-    <img
-      class="person-card__portrait"
-      src={portrait.item.value}
-      alt={`Portrait of ${person.name}`}
-      loading="lazy"
-      decoding="async"
-    />
-  )}
-  {portrait.kind === 'placeholder' && (
-    <div class="person-card__portrait person-card__portrait--missing">
-      <Placeholder brief={portrait.brief} field="Portrait" mode={mode} />
-    </div>
-  )}
-  <div class="person-card__body">
-    <Heading class="person-card__name">{person.name}</Heading>
-    {isRenderable(person.role, mode) && (
-      <p class="person-card__role">
-        <FactValue fact={person.role} field="Role" mode={mode} />
-      </p>
+<article class="person-card">
+  <div
+    class:list={[
+      'person-card__grid',
+      { 'person-card__grid--with-portrait': portrait.kind !== 'hidden' },
+    ]}
+  >
+    {portrait.kind === 'value' && (
+      <img
+        class="person-card__portrait"
+        src={portrait.item.value}
+        alt={`Portrait of ${person.name}`}
+        loading="lazy"
+        decoding="async"
+      />
     )}
-    {isRenderable(person.qualifications, mode) && (
-      <p class="person-card__qualifications">
-        <FactValue fact={person.qualifications} field="Qualifications" mode={mode} />
-      </p>
-    )}
-    {bio.kind === 'value' && (
-      <div class="person-card__bio">
-        <p>{bio.item.text}</p>
-        <SourceLine item={bio.item} sources={sources} mode={mode} />
+    {portrait.kind === 'placeholder' && (
+      <div class="person-card__portrait person-card__portrait--missing">
+        <Placeholder brief={portrait.brief} field="Portrait" mode={mode} />
       </div>
     )}
-    {bio.kind === 'placeholder' && <Placeholder brief={bio.brief} field="Bio" mode={mode} />}
+    <div class="person-card__body">
+      <Heading class="person-card__name">{person.name}</Heading>
+      {isRenderable(person.role, mode) && (
+        <p class="person-card__role">
+          <FactValue fact={person.role} field="Role" mode={mode} />
+        </p>
+      )}
+      {isRenderable(person.qualifications, mode) && (
+        <p class="person-card__qualifications">
+          <FactValue fact={person.qualifications} field="Qualifications" mode={mode} />
+        </p>
+      )}
+      {bio.kind === 'value' && (
+        <div class="person-card__bio">
+          <p>{bio.item.text}</p>
+          <SourceLine item={bio.item} sources={sources} mode={mode} />
+        </div>
+      )}
+      {bio.kind === 'placeholder' && <Placeholder brief={bio.brief} field="Bio" mode={mode} />}
+    </div>
   </div>
 </article>
 
 <style>
+  /* A size container: the layout follows the card's own width (D-014, D-020). */
   .person-card {
-    display: grid;
-    gap: var(--space-2);
+    container-type: inline-size;
     padding-top: var(--space-2);
     border-top: var(--rule);
   }
 
-  /* Two columns only when there is a portrait (or, in preview, its placeholder). */
-  @media (min-width: 48rem) {
-    .person-card--with-portrait {
+  .person-card__grid {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  /* Two columns only when there is a portrait (or, in preview, its placeholder) and room for it. */
+  @container (min-width: 36rem) {
+    .person-card__grid--with-portrait {
       grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr);
       gap: var(--grid-gap);
     }

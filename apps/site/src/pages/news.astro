@@ -1,0 +1,106 @@
+---
+/**
+ * Sheet 05 · News (docs/SITEMAP.md 05): featured article · list · link to Media. No articles exist and
+ * none may be invented, so preview shows what is needed and production shows the title and links only.
+ * Category filters arrive with the Phase 4 islands.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { latestArticles } from '~/lib/content/visibility';
+import { resolve } from '~/lib/facts';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import PageBlock from '~/components/modules/page/PageBlock.astro';
+
+const mode = config.contentMode;
+const [frame, page, articles] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('news'),
+  content.getArticles(),
+]);
+const listed = latestArticles(articles, mode).map((article) => ({
+  article,
+  lead: resolve(article.lead, mode),
+}));
+---
+
+<ContentLayout
+  heading="News"
+  description="News from Auburn Resources: exploration updates, company news and media coverage."
+  frame={frame}
+  href="/news"
+  section="05"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts">Get investor updates</Button>
+    <ArrowLink href="/news/media">Media</ArrowLink>
+  </Fragment>
+  {listed.length > 0 && (
+    <PageBlock id="articles" heading="Latest news">
+      <ol class="articles" role="list">
+        {listed.map(({ article, lead }) => (
+          <li class="articles__item">
+            <p class="articles__date">
+              <FactValue fact={article.date} field="Date" mode={mode} />
+            </p>
+            <h3 class="articles__title">
+              <a href={`/news/${article.slug}`}>{article.title}</a>
+            </h3>
+            {lead.kind === 'value' && <p>{lead.item.text}</p>}
+          </li>
+        ))}
+      </ol>
+    </PageBlock>
+  )}
+  {listed.length === 0 && mode === 'preview' && (
+    <Container>
+      <div class="empty">
+        <Placeholder
+          brief="News articles: none exist yet and none may be invented; each needs a date, lead and linked announcement or project"
+          field="Articles"
+          mode={mode}
+        />
+      </div>
+    </Container>
+  )}
+</ContentLayout>
+
+<style>
+  .articles {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    list-style: none;
+  }
+
+  .articles__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: var(--measure);
+    padding-block: var(--space-3);
+    border-bottom: var(--rule-secondary);
+  }
+
+  .articles__date {
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+  }
+
+  .articles__title {
+    font-size: var(--text-h3);
+  }
+
+  .empty {
+    padding-block: var(--space-4);
+  }
+</style>

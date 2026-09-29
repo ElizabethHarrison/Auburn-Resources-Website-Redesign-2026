@@ -1,0 +1,127 @@
+---
+/**
+ * Exploration pipeline by stage (docs/SITEMAP.md 02): projects grouped under target generation,
+ * drill-ready, drilling and resource definition. Only stages that hold at least one project with an
+ * approved stage are shown — never an empty stage heading. In preview, projects without a stage are
+ * listed in one INPUT NEEDED note.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { Project } from '~/lib/content/types';
+import { STAGE_LABELS, STAGE_ORDER } from '~/lib/format';
+import { projectUrl } from '~/lib/urls';
+import Container from '~/components/primitives/Container.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+
+export interface Props {
+  projects: readonly Project[];
+  mode: ContentMode;
+}
+
+const { projects, mode } = Astro.props;
+const resolved = projects.map((project) => ({ project, stage: resolve(project.stage, mode) }));
+const stages = STAGE_ORDER.map((stage) => ({
+  stage,
+  entries: resolved.filter(
+    (entry) => entry.stage.kind === 'value' && entry.stage.item.value === stage,
+  ),
+})).filter((group) => group.entries.length > 0);
+const missing = resolved
+  .filter((entry) => entry.stage.kind === 'placeholder')
+  .map((entry) => entry.project.name);
+const visible = stages.length > 0 || (mode === 'preview' && missing.length > 0);
+---
+
+{visible && (
+  <section class="portfolio-section" aria-labelledby="portfolio-pipeline">
+    <Container>
+      <SectionHeading id="portfolio-pipeline" heading="Exploration pipeline" />
+      <div class="pipeline">
+        {stages.length > 0 && (
+          <ol class="pipeline__stages">
+            {stages.map((group) => (
+              <li class="pipeline__stage">
+                <h3 class="pipeline__label">{STAGE_LABELS[group.stage]}</h3>
+                <ul class="pipeline__projects" role="list">
+                  {group.entries.map((entry) => (
+                    <li>
+                      <a href={projectUrl(entry.project)}>{entry.project.name}</a>
+                      {mode === 'preview' && entry.stage.kind === 'value' && (
+                        <StatusDot status={entry.stage.status} compact mode={mode} />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        )}
+        {missing.length > 0 && (
+          <Placeholder
+            brief={`Exploration stage not supplied for: ${missing.join(', ')}`}
+            field="Stage"
+            mode={mode}
+          />
+        )}
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .portfolio-section {
+    padding-block: var(--section-padding);
+  }
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .pipeline__stages {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .pipeline__stages {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      border-left: var(--rule);
+    }
+  }
+
+  .pipeline__stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+
+  .pipeline__label {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .pipeline__projects {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

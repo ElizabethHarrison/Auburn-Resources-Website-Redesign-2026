@@ -1,0 +1,91 @@
+---
+/**
+ * Module 01 — Setting (docs/SITEMAP.md §8): Fig. 1 inset map beside the fact list (neighbouring
+ * deposits, nearest town, access, infrastructure, Traditional Owners). The map is required: in
+ * production the module appears only with an approved map (`visibleModules`). Mockup-derived maps are
+ * indicative, preview-only records (D-017) and never reach production.
+ *
+ * Traditional Owner groups are named only with recorded consent (CLAUDE.md §2.3): the value is a Fact
+ * like any other and publishes only when approved.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { Project } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { resolveFigure } from '~/lib/content/visibility';
+import { factDisplay } from '~/lib/format';
+import FactCell from '~/components/patterns/FactCell.astro';
+import DossierSection from './DossierSection.astro';
+import FigureFromRecord from './FigureFromRecord.astro';
+
+export interface Props {
+  module: DossierModule;
+  project: Project;
+  figureNumber: number;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, project, figureNumber, sources, mode } = Astro.props;
+const map = resolveFigure(project.settingMap, mode);
+const facts = [
+  factDisplay('Neighbouring deposits', project.setting.neighbouringDeposits),
+  factDisplay('Nearest town', project.setting.nearestTown),
+  factDisplay('Access', project.setting.access),
+  factDisplay('Infrastructure', project.setting.infrastructure),
+  factDisplay('Traditional Owners', project.setting.traditionalOwners),
+].filter((item) => isRenderable(item.slot, mode));
+---
+
+<DossierSection module={module}>
+  <div class:list={['setting', { 'setting--facts': facts.length > 0 }]}>
+    <div class="setting__figure">
+      <FigureFromRecord
+        figure={map}
+        number={figureNumber}
+        placeholderTitle={`${project.name} regional setting.`}
+        mode={mode}
+      />
+    </div>
+    {facts.length > 0 && (
+      <ul class="setting__facts" role="list" aria-label={`${project.name} setting`}>
+        {facts.map((item) => (
+          <li>
+            <FactCell item={item} sources={sources} variant="row" mode={mode} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</DossierSection>
+
+<style>
+  .setting {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @container (min-width: 48rem) {
+    .setting--facts {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+    }
+  }
+
+  .setting__figure {
+    min-width: 0;
+  }
+
+  .setting__facts {
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    list-style: none;
+  }
+
+  .setting__facts li {
+    padding-block: var(--space-2);
+    border-bottom: var(--rule-secondary);
+  }
+</style>

@@ -12,7 +12,7 @@ export interface Props {
   status: DotStatus;
   /** `compact` shows only the shape; the text is kept for assistive technology. */
   compact?: boolean;
-  mode?: ContentMode;
+  mode?: ContentMode | undefined;
 }
 
 const { status, compact = false } = Astro.props;
@@ -47,7 +47,10 @@ const LABELS: Record<DotStatus, string> = {
 )}
 
 <style>
+  /* position: relative anchors the visually hidden label to the dot, so it can never escape a scroll
+     container (it widened the page at 360 px inside a scrollable table). */
   .status-dot {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--space-half);

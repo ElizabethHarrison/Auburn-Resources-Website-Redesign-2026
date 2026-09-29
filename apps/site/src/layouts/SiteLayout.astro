@@ -1,0 +1,81 @@
+---
+/**
+ * Page frame for every public page: header (with sheet number and current section), optional section
+ * bar, the page content, and the footer. Pages load `FrameData` once (lib/content/frame.ts) and pass it
+ * in; the layout never fetches.
+ */
+import type { FrameData } from '~/lib/content/frame';
+import type { SheetNumber } from '~/lib/content/types';
+import type { NavLink, SectionId } from '~/lib/navigation';
+import type { BreadcrumbItem, JsonLd } from '~/lib/seo';
+import Footer from '~/components/patterns/Footer.astro';
+import Header from '~/components/patterns/Header.astro';
+import SectionBar from '~/components/patterns/SectionBar.astro';
+import { renderMode } from '~/lib/config';
+import { isRenderable } from '~/lib/facts';
+import { projectUrl } from '~/lib/urls';
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  /** Page title without the site name; omit on the home page. */
+  title?: string | undefined;
+  description: string;
+  frame: FrameData;
+  sheet?: SheetNumber | undefined;
+  sheetLabel?: string | undefined;
+  currentSection?: SectionId | undefined;
+  sectionBar?: { sectionLabel: string; pages: readonly NavLink[]; currentHref: string } | undefined;
+  breadcrumbs?: readonly BreadcrumbItem[] | undefined;
+  jsonLd?: readonly JsonLd[] | undefined;
+  noindex?: boolean | undefined;
+  canonicalPath?: string | undefined;
+}
+
+const {
+  title,
+  description,
+  frame,
+  sheet,
+  sheetLabel,
+  currentSection,
+  sectionBar,
+  breadcrumbs,
+  jsonLd,
+  noindex,
+  canonicalPath,
+} = Astro.props;
+// Mobile menu data: listable dossiers, the current URL, and the company email only when approved.
+const projectLinks: NavLink[] = frame.projects.map((project) => ({
+  sheet: project.sheetNumber,
+  label: project.name,
+  href: projectUrl(project),
+}));
+const currentHref = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+const email =
+  frame.settings.email.kind === 'fact' && isRenderable(frame.settings.email, renderMode())
+    ? frame.settings.email.value
+    : undefined;
+---
+
+<BaseLayout
+  {...(title === undefined ? {} : { title })}
+  description={description}
+  {...(breadcrumbs === undefined ? {} : { breadcrumbs })}
+  {...(jsonLd === undefined ? {} : { jsonLd })}
+  {...(noindex === undefined ? {} : { noindex })}
+  {...(canonicalPath === undefined ? {} : { canonicalPath })}
+>
+  <Fragment slot="header">
+    <Header
+      sheet={sheet}
+      sheetLabel={sheetLabel}
+      currentSection={currentSection}
+      projectLinks={projectLinks}
+      currentHref={currentHref}
+      email={email}
+    />
+    {sectionBar && <SectionBar {...sectionBar} />}
+  </Fragment>
+  <slot />
+  <Footer slot="footer" settings={frame.settings} projects={frame.projects} />
+</BaseLayout>

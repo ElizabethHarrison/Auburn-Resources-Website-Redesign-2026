@@ -8,6 +8,8 @@ import Grid from '~/components/primitives/Grid.astro';
 import ComplianceBlock from '~/components/patterns/ComplianceBlock.astro';
 import MilestoneTrack from '~/components/patterns/MilestoneTrack.astro';
 import SheetCard from '~/components/patterns/SheetCard.astro';
+import StratColumn from '~/components/patterns/StratColumn.astro';
+import { moduleDefinitions } from '~/lib/content/dossier';
 import {
   specimenCompliance,
   specimenFacts,
@@ -75,6 +77,21 @@ const missingStatement = inputNeeded('Competent person statement, supplied by th
   </Specimen>
 
   <Specimen
+    name="StratColumn"
+    notes="Project-page index, 'On this sheet': one band per rendered module, heights varying 44–70 px, copper tint for Targets only. Static in Phase 3 (in-page links, CSS sticky, shown from 64rem); the Phase 4 island adds the current band and the mobile Sections chip. Anchors here point at dossier module ids, which exist only on project pages."
+  >
+    <div class="strat-specimen">
+      <StratColumn
+        bands={moduleDefinitions('Specimen').map(({ id, number, label }) => ({
+          id,
+          number,
+          label,
+        }))}
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
     name="ComplianceBlock"
     notes="The statement is company-supplied legal/CP wording, never drafted here. Production renders the block only with an approved statement; pages must not show results, targets or resources without it."
   >
@@ -95,6 +112,10 @@ const missingStatement = inputNeeded('Competent person statement, supplied by th
 </CatalogueSection>
 
 <style>
+  .strat-specimen {
+    max-width: 16rem;
+  }
+
   .narrow {
     max-width: 28rem;
   }

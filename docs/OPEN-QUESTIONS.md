@@ -22,11 +22,15 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-10 | Sanity plan and seat count. | build (Phase 5) | Project owner | |
 | Q-11 | Email platform for alerts (does Auburn or DGR Global already use one?). | build (Phase 4 alerts form) | Project owner | |
 | Q-12 | Century Gothic web-font licence — buy, or keep Didact Gothic permanently? | none (fallback in use) | Project owner | |
-| Q-13 | Phase 2 review: approve D-012 (full header navigation from 1280 px, sheet reference from 1440 px), or prefer tighter nav spacing / smaller nav text so it fits from 1024 px? | none | Project owner | |
-| Q-14 | Home key-facts strip is specified as "Status (+ DGR holding)". Show the DGR holding inside the Status cell, as a sixth cell, or not on the home page? (Catalogue currently shows five cells, holding omitted.) | build (Phase 3 home) | Project owner | |
-| Q-15 | Source lines are 10.5 px mono (approved). Legible, but small for older readers — keep, or raise the minimum to 11–12 px? | none | Project owner | |
-| Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner | |
-| Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner | |
+| Q-13 | Phase 2 review: approve D-012 (full header navigation from 1280 px, sheet reference from 1440 px), or prefer tighter nav spacing / smaller nav text so it fits from 1024 px? | none | Project owner |  **Approved** 29 Sep 2026: full header navigation from 1280 px; sheet number joins at 1440 px; compact menu below 1280 px → D-012 |
+| Q-14 | Home key-facts strip is specified as "Status (+ DGR holding)". Show the DGR holding inside the Status cell, as a sixth cell, or not on the home page? (Catalogue currently shows five cells, holding omitted.) | build (Phase 3 home) | Project owner |  **Approved** 29 Sep 2026: no DGR holding in the homepage key-facts strip for now |
+| Q-15 | Source lines are 10.5 px mono (approved). Legible, but small for older readers — keep, or raise the minimum to 11–12 px? | none | Project owner |  **Keep 10.5 px for now**; reassess after seeing real pages |
+| Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner |  **Approved** with Phase 2 (29 Sep 2026) → D-013, D-014 |
+| Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner |  **Do not block**: the approved written design specification is the source of truth |
+| Q-18 | The mockup map (Fig. 1) and cross-section (Fig. 2) now appear in preview, labelled indicative (D-017). Should production show them before tenement GIS / a CP-approved section exist — labelled "indicative" — or stay hidden until replaced? Showing them changes the rule that mockup geometry never ships (CLAUDE.md §3, §9). | none (preview only until decided) | Project owner + CP |  **Decided** 29 Sep 2026: keep hidden from production. Mockup-derived graphics are preview-only, labelled indicative/to verify, excluded from production by build and CI, and replaced later by approved GIS/technical figures. The content-governance rule is unchanged. |
+| Q-19 | Before launch, production pages with no approved content show only their title block and navigation (legal pages: title only). Acceptable while content is approved, or should such routes be withheld (which would break approved navigation links)? (D-019) | none (launch readiness) | Project owner | **Approved** 29 Sep 2026 (D-019): acceptable as a temporary state only, not launch-ready; nothing fabricated; a content-readiness report lists such pages before launch |
+| Q-43 | D-001 names Preact for islands; the mobile menu needed none (native dialog, D-021). Confirm the rule for later islands: native HTML and minimal script first, Preact only where state and rendering justify it (likely the document filters and map)? | none | Project owner | **Decided** 29 Sep 2026: native HTML/CSS first; Preact only where it gives a clear benefit native capabilities cannot → D-022 |
+| Q-44 | Document filters (Phase 4.2): a static build serves the same file for `/investors/announcements` and `/investors/announcements?year=2021`, so query-string filtering cannot work without JavaScript unless something at the edge reads the query. Choose: (A) a minimal edge Worker maps `?year=&type=` to pre-rendered, noindex filtered pages (no client JS; pulls part of item 8 forward; needs deployment approval); (B) native GET form + small vanilla script filtering the static list (no-JS users get the full list with year jump-links); (C) static path-based filter pages (conflicts with SITEMAP §1 query-string rule and the three-level URL limit); (D) B now, A when the Worker lands. | build (Phase 4.2) | Project owner | **Decided** 29 Sep 2026: option A, Worker scope limited to filter routing → D-023 |
 
 ## Company secretary
 
@@ -39,6 +43,8 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-24 | Disclaimer, Privacy and Terms text (must be supplied by the company, not drafted by us). | launch | |
 | Q-25 | Governance documents as files, and 2023–2025 reports and current presentation. | launch | |
 | Q-26 | Acknowledgement of Country — final approved wording. | launch | |
+| Q-27 | Governance: which of the fourteen documents named on the old site are current, and their files and adoption dates? Is the Privacy Policy listed there the same text as the website privacy page? | launch | |
+| Q-28 | Investor centre and Media fact sheet: confirm which key facts appear and their labels (e.g. "DGR Global holding" as the major-holder figure). | none | |
 
 ## Competent person / technical
 
@@ -48,6 +54,8 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-31 | Tenement numbers, holders, areas, dates and GIS outlines; licence for GIS files and base-map tiles. | launch (maps) | |
 | Q-32 | Treatment of HOLD exploration-target wording (Nicholson, Calgoa): restate per JORC 2012 or remove. | none (held back) | |
 | Q-33 | CP-approved replacement for the schematic cross-section (Fig. 2). | launch | |
+| Q-34 | Project dossier module headings are taken from the approved Nicholson mockup ("Where it sits", "Why this ground", "Where we will drill", …). "Where we will drill" is forward-looking; keep it (the module links to the disclaimer) or use the neutral kicker "Exploration targets"? | none | |
+| Q-35 | Two old-site claims are stored as project setting facts rather than statements: Nicholson neighbouring deposits "Walford Creek; Century" and Tanumbirini infrastructure "Sealed Carpentaria Highway; gas pipeline". Confirm, with sources, when the setting facts are reviewed. | none | |
 
 ## Brand / assets
 
@@ -55,3 +63,4 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | --- | --- | --- | --- |
 | Q-40 | Logo: vector originals, and is the logo being redesigned? (Header uses a text wordmark until then.) | none | |
 | Q-41 | Field photography shoot and consistent leadership portraits — timing and consent process. | none | |
+| Q-42 | Contact page office map (SITEMAP §6): static image, map island (Phase 4) or omit? | none | |

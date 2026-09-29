@@ -1,0 +1,73 @@
+---
+/**
+ * PREVIEW ONLY: the space a numbered figure will occupy, drawn as an empty survey frame with the
+ * INPUT NEEDED brief. Used when a map or section has not been supplied or approved; it never stands in
+ * for a real figure in production (renders nothing there).
+ */
+import type { ContentMode } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import Placeholder from './Placeholder.astro';
+
+export interface Props {
+  number: number;
+  /** Working caption, e.g. "Auburn project portfolio, northern Australia". */
+  title: string;
+  brief: string;
+  /** Frame proportions; default 4 / 3. */
+  ratio?: '4 / 3' | '16 / 9' | '3 / 2';
+  mode?: ContentMode | undefined;
+}
+
+const { number, title, brief, ratio = '4 / 3' } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const ratioClass = { '4 / 3': 'r43', '16 / 9': 'r169', '3 / 2': 'r32' }[ratio];
+---
+
+{mode === 'preview' && (
+  <div class="figure-placeholder" data-preview-only>
+    <div class:list={['figure-placeholder__frame', ratioClass]}>
+      <Placeholder brief={brief} field={`Fig. ${number}`} mode={mode} />
+    </div>
+    <p class="figure-placeholder__caption">
+      Fig. {number} — {title}
+    </p>
+  </div>
+)}
+
+<style>
+  .figure-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .figure-placeholder__frame {
+    display: flex;
+    align-items: flex-end;
+    border: var(--placeholder-border-width) dashed var(--placeholder-border);
+    background-color: var(--water);
+  }
+
+  .figure-placeholder__frame :global(.placeholder) {
+    width: 100%;
+    border-width: var(--placeholder-border-width) 0 0;
+  }
+
+  .r43 {
+    aspect-ratio: 4 / 3;
+  }
+  .r169 {
+    aspect-ratio: 16 / 9;
+  }
+  .r32 {
+    aspect-ratio: 3 / 2;
+  }
+
+  .figure-placeholder__caption {
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

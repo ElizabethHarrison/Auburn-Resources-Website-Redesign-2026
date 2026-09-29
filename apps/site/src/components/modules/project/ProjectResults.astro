@@ -1,0 +1,124 @@
+---
+/**
+ * Module 06 — Key results (docs/SITEMAP.md §8): up to three highlight cards — headline as reported
+ * (interval @ grade from depth), hole or survey, prospect, and the announcement that reported it with
+ * its date. A result without an approved headline never appears in production.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { ResultRecord } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { factDisplay } from '~/lib/format';
+import { documentPageUrl } from '~/lib/urls';
+import FactValue from '~/components/patterns/FactValue.astro';
+import FactCell from '~/components/patterns/FactCell.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SourceLine from '~/components/patterns/SourceLine.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  results: readonly ResultRecord[];
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, projectName, results, sources, mode } = Astro.props;
+const cards = results
+  .map((result) => ({ result, headline: resolve(result.headline, mode) }))
+  .filter((card) => card.headline.kind !== 'hidden')
+  .slice(0, 3)
+  .map((card) => {
+    const report = sources.get(card.result.reportedIn.documentId);
+    return { ...card, report, reportHref: report ? documentPageUrl(report) : undefined };
+  });
+---
+
+<DossierSection module={module}>
+  {cards.length > 0 && (
+    <ul class="results" role="list" aria-label={`${projectName} key results`}>
+      {cards.map(({ result, headline, report, reportHref }) => (
+        <li class="result">
+          <h3 class="result__prospect">{result.prospectName}</h3>
+          {headline.kind === 'value' && (
+            <>
+              <p class="result__headline" data-fact>
+                {headline.item.value}
+              </p>
+              <SourceLine item={headline.item} sources={sources} mode={mode} />
+            </>
+          )}
+          {headline.kind === 'placeholder' && (
+            <Placeholder brief={headline.brief} field="Result" mode={mode} />
+          )}
+          <FactCell
+            item={factDisplay('Hole / survey', result.holeOrSurveyId)}
+            sources={sources}
+            variant="row"
+            mode={mode}
+          />
+          {report && (
+            <p class="result__report">
+              Reported in {reportHref ? <a href={reportHref}>{report.title}</a> : report.title}
+              {' · '}
+              <FactValue fact={report.releaseAt} field="Release date" mode={mode} />
+            </p>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+  {cards.length === 0 && (
+    <Placeholder
+      brief={`Up to three reported results for ${projectName}, each with its announcement, date and competent person`}
+      field="Key results"
+      mode={mode}
+    />
+  )}
+</DossierSection>
+
+<style>
+  .results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @container (min-width: 48rem) {
+    .results {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--rule);
+  }
+
+  .result__prospect {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .result__report {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+
+  .result__headline {
+    color: var(--ink-survey);
+    font-size: var(--text-h3);
+    line-height: var(--leading-heading);
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+/**
+ * A group of people cards (board, management). Only people listable in this mode appear
+ * (`isPersonListable`: an approved role in production); with none, nothing renders.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Person } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { isPersonListable } from '~/lib/content/visibility';
+import Grid from '~/components/primitives/Grid.astro';
+import PersonCard from '~/components/patterns/PersonCard.astro';
+import PageBlock from './PageBlock.astro';
+
+export interface Props {
+  id: string;
+  heading: string;
+  people: readonly Person[];
+  limit?: number | undefined;
+  action?: { label: string; href: string } | undefined;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { id, heading, people, limit, action, sources, mode } = Astro.props;
+const listed = people.filter((person) => isPersonListable(person, mode)).slice(0, limit);
+---
+
+{listed.length > 0 && (
+  <PageBlock id={id} heading={heading} action={action}>
+    <div class="people">
+      <Grid as="ul" layout="thirds">
+        {listed.map((person) => (
+          <li>
+            <PersonCard person={person} sources={sources} mode={mode} />
+          </li>
+        ))}
+      </Grid>
+    </div>
+  </PageBlock>
+)}
+
+<style>
+  .people {
+    width: 100%;
+  }
+</style>

@@ -1,0 +1,68 @@
+---
+/**
+ * Sheet 03.5 · Governance (docs/SITEMAP.md 03.5): approach · board and committees · policies and
+ * charters (all linked) · constitution · whistleblower and contact. The documents are the governance
+ * records in the register; in production each needs an approved date and file.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { isDocumentListable } from '~/lib/content/visibility';
+import Button from '~/components/primitives/Button.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import PageBlock from '~/components/modules/page/PageBlock.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('governance'),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+const policies = documents.filter(
+  (document) => document.docType === 'policy' && isDocumentListable(document, mode),
+);
+---
+
+<ContentLayout
+  heading="Governance"
+  description="How Auburn Resources is governed: the board and its committees, policies and charters, and the constitution."
+  frame={frame}
+  href="/investors/governance"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/company/leadership" variant="secondary">
+      Meet the leadership
+    </Button>
+  </Fragment>
+  <PageSections
+    sections={page.sections}
+    ids={['approach', 'board-committees']}
+    sources={sources}
+    mode={mode}
+  />
+  {policies.length > 0 && (
+    <PageBlock id="policies" heading="Policies and charters">
+      <div class="wide">
+        <DocumentRegister
+          documents={policies}
+          caption="Policies, charters and constitution"
+          mode={mode}
+        />
+      </div>
+    </PageBlock>
+  )}
+  <PageSections sections={page.sections} ids={['whistleblower']} sources={sources} mode={mode} />
+</ContentLayout>
+
+<style>
+  .wide {
+    width: 100%;
+  }
+</style>

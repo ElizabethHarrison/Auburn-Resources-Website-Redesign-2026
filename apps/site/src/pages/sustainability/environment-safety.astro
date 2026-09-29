@@ -1,0 +1,38 @@
+---
+/**
+ * Sheet 04.2 · Environment and safety (docs/SITEMAP.md 04.2): environment and rehabilitation · health
+ * and safety · policies. Specific practice only; nothing here is drafted.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import Button from '~/components/primitives/Button.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('environmentSafety'),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+---
+
+<ContentLayout
+  heading="Environment and safety"
+  description="Environmental management, rehabilitation and health and safety practice at Auburn Resources."
+  frame={frame}
+  href="/sustainability/environment-safety"
+  section="04"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="secondary">
+      Contact the company
+    </Button>
+  </Fragment>
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+</ContentLayout>

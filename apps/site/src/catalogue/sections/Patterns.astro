@@ -6,8 +6,10 @@ import type { SiteSettings } from '~/lib/content/types';
 import Accordion from '~/components/patterns/Accordion.astro';
 import CTABand from '~/components/patterns/CTABand.astro';
 import Figure from '~/components/patterns/Figure.astro';
+import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
 import MapLegend from '~/components/patterns/MapLegend.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
 import SignupStrip from '~/components/patterns/SignupStrip.astro';
 import SourceLine from '~/components/patterns/SourceLine.astro';
 import StatusDot from '~/components/patterns/StatusDot.astro';
@@ -90,6 +92,39 @@ const acn = settings.acn.kind === 'inputNeeded' ? settings.acn : inputNeeded('AC
   </Specimen>
 
   <Specimen
+    name="FigurePlaceholder"
+    notes="Preview only: the space a figure will take (empty survey frame + INPUT NEEDED). Never a stand-in in production."
+  >
+    <div class="narrow">
+      <FigurePlaceholder
+        number={1}
+        title="Specimen figure caption."
+        brief="Specimen brief: what the figure needs before it can be drawn"
+      />
+    </div>
+    <div slot="production">
+      <FigurePlaceholder
+        number={1}
+        title="Specimen figure caption."
+        brief="Specimen brief"
+        mode="production"
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="SectionHeading"
+    notes="Section kicker (usually the numbered section), H2 and an optional section-level link. The top rule marks the start of a section."
+  >
+    <SectionHeading
+      id="specimen-section-heading"
+      kicker="02 Projects"
+      heading="Specimen section heading"
+      action={{ label: 'Specimen link', href: '#patterns' }}
+    />
+  </Specimen>
+
+  <Specimen
     name="MapLegend"
     notes="Paper box, Survey Blue border, mono header. Only the Auburn project area is copper."
   >
@@ -144,6 +179,10 @@ const acn = settings.acn.kind === 'inputNeeded' ? settings.acn : inputNeeded('AC
     flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--space-3);
+  }
+
+  .narrow {
+    max-width: 32rem;
   }
 
   .stack {

@@ -19,12 +19,22 @@ Read these before writing code, in this order:
 - **Phase 0** (housekeeping) — done.
 - **Phase 1** (scaffold) — done: pnpm workspace, Astro site in `apps/site`, tokens and base CSS, `BaseLayout`,
   SEO helpers, content adapter with typed fixtures, `Fact` rendering rules, unit tests, CI.
-- **Phase 2** (design system) — done, awaiting review: tokens tagged approved/derived, 11 primitives, static
+- **Phase 2** (design system) — done, approved: tokens tagged approved/derived, 11 primitives, static
   patterns and page frame in `apps/site/src/components/`, preview-only catalogue at `/_catalogue`
   (`src/catalogue/`), design-system/contrast tests, JS budget check. Review: `docs/reviews/phase-2-design-review.md`.
-- **Not yet built:** real pages and templates (Phase 3), islands (Phase 4), Sanity Studio (Phase 5),
-  `workers/edge`, Playwright/axe/Lighthouse in CI. `src/pages/index.astro` is a temporary noindex development
-  scaffold, replaced by the Home template in Phase 3.
+- **Phase 3** (page templates on fixtures) — done, approved (D-018, D-019, D-020). Every sitemap route exists
+  in both builds; pages with no approved content are a temporary state, not launch-ready (D-019).
+  Pages use `layouts/SiteLayout.astro` + `loadFrame()` (fixed pages via `layouts/ContentLayout.astro`); modules
+  live in `components/modules/<page>/` (shared page modules in `modules/page/`). Page copy comes from `page`
+  records (`getPage`, `getLegalPage`). Dossier module rules are in `lib/content/dossier.ts`.
+- **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** approved
+  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** built, awaiting
+  review: native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
+  `workers/edge`, `docs/WORKER.md`; not deployed). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
+  `components/islands/`. Playwright + axe tests in `tests/e2e` run against both builds;
+  `content-integrity.spec.ts` scans the production build; `links.spec.ts` crawls every internal link.
+- **Not yet built:** Phase 4 items 3–8 (the Worker exists only for filter routing), Sanity Studio (Phase 5),
+  Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
@@ -120,7 +130,7 @@ geological survey sheet: precise, methodical, authored by geologists, never hype
 | Concern | Choice |
 | --- | --- |
 | Framework | **Astro** (static output), TypeScript strict |
-| Interactivity | **Preact** islands only (map, doc filters, mobile menu, nav panels, strat-column nav, lightbox, forms) |
+| Interactivity | Islands only (menu, doc filters, search, nav panels, strat-column nav, lightbox, forms, map): **native HTML/CSS first**; **Preact** only where it gives a clear benefit (D-022) |
 | Styling | Plain CSS + design tokens (`src/styles/tokens.css`) + Astro scoped styles. **No Tailwind / utility framework** |
 | CMS | **Sanity** (hosted), customised Studio in `apps/studio` |
 | Images | Sanity image CDN (AVIF/WebP, srcset) + Astro `<Image>`; figures as SVG where possible |
@@ -141,7 +151,7 @@ see D-008).
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemas/documents, schemas/objects, structure, validation, actions)
-├─ workers/edge/         /documents proxy, /api/contact, /api/alerts
+├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
 ├─ redirects.csv         old Squarespace URLs → new URLs
@@ -155,15 +165,17 @@ pnpm dev            # site dev server, preview mode (placeholders visible)
 pnpm build          # production build → apps/site/dist (Approved content only)
 pnpm build:preview  # preview build → apps/site/dist-preview (noindex)
 pnpm serve          # serve the last production build locally
+pnpm serve:production  # serve apps/site/dist at http://localhost:4600 (static, behind the edge Worker, like Cloudflare)
+pnpm serve:preview     # serve apps/site/dist-preview at http://localhost:4601
 pnpm test           # unit tests (Vitest)
 pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
 pnpm budget         # JS-on-page-load budget (30 KB compressed) against the production build
-pnpm check          # all of the above plus both builds — run before pushing
+pnpm test:e2e       # Playwright + axe against both builds (build both first; `pnpm check` does)
+pnpm check          # all of the above plus both builds and e2e — run before pushing
 ```
-Planned: `pnpm test:e2e` (Playwright + axe, Phase 3), `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also
-start the Studio from Phase 5.
+Planned: `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also start the Studio from Phase 5.
 
 ### 4.4 Content access and modes (approved — D-003, D-005, D-009)
 - Components never fetch. Pages call `src/lib/content/*` loaders, which return typed records from fixtures or Sanity.
@@ -199,7 +211,8 @@ start the Studio from Phase 5.
 - **Modules render nothing when their content is empty** (no empty tables, no empty headings).
 - Every `Figure` requires `alt` and `caption` (a missing prop is a type error; the build fails).
 - Fact components accept `Fact` objects only, never raw strings or numbers.
-- Islands: Preact, hydrate with the least eager directive (`client:visible` / `client:idle`) and work without JS
+- Islands: native HTML/CSS and minimal script first; Preact only with a demonstrated benefit, explained before it
+  is introduced (D-022). Preact islands hydrate with the least eager directive (`client:visible` / `client:idle`). All work without JS
   where possible (links and native forms first).
 - Keep the `noindex`, preview-only component catalogue (`/_catalogue`, source in `src/catalogue/`) showing every
   pattern with sample data; add each new pattern to it. Catalogue specimens never leave `src/catalogue/` (D-013).

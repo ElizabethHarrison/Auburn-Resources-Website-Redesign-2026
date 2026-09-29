@@ -1,0 +1,40 @@
+---
+/**
+ * Closing links (docs/SITEMAP.md 02): "How we explore" and the disclaimer note. Navigation only — no
+ * company claims — so it always renders.
+ */
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Container from '~/components/primitives/Container.astro';
+---
+
+<section class="portfolio-links" aria-label="More about the projects">
+  <Container>
+    <div class="portfolio-links__inner">
+      <ArrowLink href="/projects/how-we-explore">How we explore</ArrowLink>
+      <p class="portfolio-links__note">
+        Project information is subject to the{' '}
+        <a href="/disclaimer">disclaimer, forward-looking statements and JORC basis</a>.
+      </p>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .portfolio-links {
+    padding-block: var(--section-padding);
+  }
+
+  .portfolio-links__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: var(--rule);
+  }
+
+  .portfolio-links__note {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+</style>

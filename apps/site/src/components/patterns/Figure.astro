@@ -4,36 +4,67 @@
  * `FIG. n — CAPTION`; source and date. `alt` and `caption` are required props, so a figure without
  * them fails the type check and the build (CLAUDE.md §5).
  *
- * Pass an `image` (raster or SVG file) or put inline SVG in the default slot. A long description for
- * complex figures (maps, sections) is offered in a native disclosure. Lightbox arrives in Phase 4.
+ * Pass an `image` (a URL, or an imported asset that goes through Astro's responsive image pipeline)
+ * or put inline SVG in the default slot. A long description for complex figures (maps, sections) is
+ * offered in a native disclosure. In preview, `status` adds the review marker to the caption.
+ * Lightbox arrives in Phase 4.
  */
-import type { IsoDate } from '~/lib/facts';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import type { ContentMode, ContentStatus, IsoDate } from '~/lib/facts';
 import DateMono from '../primitives/DateMono.astro';
+import StatusDot from './StatusDot.astro';
 
 export interface Props {
-  /** Figure number on this page. */
-  number: number;
+  /** Figure number on this page. Omit for unnumbered images (e.g. a hero photograph). */
+  number?: number | undefined;
   /** Caption text; rendered in mono caps after `FIG. n —`. */
   caption: string;
   /** Text alternative for the image or inline SVG. Never empty for a content figure. */
   alt: string;
-  image?: { src: string; width: number; height: number } | undefined;
+  image?: { src: string | ImageMetadata; width: number; height: number } | undefined;
+  /** Responsive `sizes` for imported assets. */
+  sizes?: string | undefined;
   source?: string | undefined;
   date?: IsoDate | undefined;
   /** Full text equivalent, e.g. the data a map shows. */
   longDescription?: string | undefined;
+  /** Review status of the figure record; shown in preview only. */
+  status?: ContentStatus | undefined;
+  mode?: ContentMode | undefined;
 }
 
-const { number, caption, alt, image, source, date, longDescription } = Astro.props;
-if (alt.trim() === '') throw new Error(`Figure ${number}: alt text is required.`);
-if (caption.trim() === '') throw new Error(`Figure ${number}: caption is required.`);
+const {
+  number,
+  caption,
+  alt,
+  image,
+  sizes = '(min-width: 64rem) 60vw, 100vw',
+  source,
+  date,
+  longDescription,
+  status,
+  mode,
+} = Astro.props;
+if (alt.trim() === '') throw new Error(`Figure ${number ?? caption}: alt text is required.`);
+if (caption.trim() === '') throw new Error(`Figure ${number ?? alt}: caption is required.`);
 ---
 
 <figure class="figure">
   <div class="figure__frame">
-    {image ? (
-      <img
+    {image && typeof image.src !== 'string' ? (
+      <Image
         src={image.src}
+        alt={alt}
+        widths={[640, 960, 1280, 1920].filter((width) => width <= image.width)}
+        sizes={sizes}
+        format="webp"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : image ? (
+      <img
+        src={image.src as string}
         alt={alt}
         width={image.width}
         height={image.height}
@@ -48,18 +79,21 @@ if (caption.trim() === '') throw new Error(`Figure ${number}: caption is require
   </div>
   <figcaption class="figure__caption">
     <span class="figure__title">
-      Fig. {number} — {caption}
+      {number === undefined ? caption : `Fig. ${number} — ${caption}`}
     </span>
     {(source || date) && (
       <span class="figure__source">
         {source && <span>Source — {source}</span>}
         {date && <DateMono date={date} />}
+        {status && <StatusDot status={status} mode={mode} />}
       </span>
     )}
   </figcaption>
   {longDescription && (
     <details class="figure__description">
-      <summary>Text description of figure {number}</summary>
+      <summary>
+        {number === undefined ? 'Text description' : `Text description of figure ${number}`}
+      </summary>
       <p>{longDescription}</p>
     </details>
   )}

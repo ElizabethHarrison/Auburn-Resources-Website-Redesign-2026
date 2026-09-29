@@ -18,10 +18,8 @@ const SITE_URL = process.env.SITE_URL ?? 'https://auburnresources.com.au';
 const isPreview = process.env.CONTENT_MODE === 'preview';
 
 // Paths that must never appear in the XML sitemap (noindex, internal or utility pages).
-// '/' is TEMPORARY: it is the noindex Phase 1 scaffold page. Remove it when the Home template replaces
-// the scaffold in Phase 3.
-const SITEMAP_EXCLUDE = ['/_catalogue', '/404'];
-const SITEMAP_EXCLUDE_EXACT = ['/'];
+// `/filtered/…`: prebuilt filter views served by the edge Worker at query-string URLs (D-023).
+const SITEMAP_EXCLUDE = ['/_catalogue', '/404', '/filtered/'];
 
 /**
  * The design-system catalogue (/_catalogue) exists only in preview builds. It is injected here rather
@@ -46,6 +44,11 @@ export default defineConfig({
     format: 'file',
   },
   compressHTML: true,
+  vite: {
+    // Compile-time flag: preview-only code (e.g. indicative mockup figures) is removed from
+    // production bundles by dead-code elimination, so its assets are never emitted.
+    define: { __PREVIEW_BUILD__: JSON.stringify(isPreview) },
+  },
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
   integrations: isPreview
     ? [catalogue]
@@ -53,10 +56,7 @@ export default defineConfig({
         sitemap({
           filter: (page) => {
             const { pathname } = new URL(page);
-            return (
-              !SITEMAP_EXCLUDE_EXACT.includes(pathname) &&
-              !SITEMAP_EXCLUDE.some((path) => pathname.startsWith(path))
-            );
+            return !SITEMAP_EXCLUDE.some((path) => pathname.startsWith(path));
           },
         }),
       ],

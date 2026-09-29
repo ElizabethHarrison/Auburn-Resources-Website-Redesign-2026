@@ -3,8 +3,18 @@
  * appear in a given mode. Built on the slot rules in lib/facts.ts — records are hidden, never
  * half-shown, in production.
  */
-import { isRenderable, isStatusRenderable, type ContentMode } from '../facts';
-import type { DocumentRecord, Person, Project } from './types';
+import { isRenderable, isStatusRenderable, type ContentMode, type FactSlot } from '../facts';
+import type {
+  Article,
+  DocType,
+  DocumentRecord,
+  FigureRecord,
+  FigureSlot,
+  Person,
+  PhotoRecord,
+  PhotoSlot,
+  Project,
+} from './types';
 
 /**
  * A document appears in a register when it is public, the record is renderable, and — in production —
@@ -23,11 +33,127 @@ export function isPersonListable(person: Person, mode: ContentMode): boolean {
 }
 
 /**
- * A project may be listed (cards, menus, footer) only when it is confirmed as held. Until the verified
- * project list exists (docs/OPEN-QUESTIONS.md Q-20), no project is listable in production.
+ * A project dossier may be published when the project's holding, area and ownership are approved —
+ * docs/SITEMAP.md §8: "ownership + area required to publish". Relinquished projects keep their page
+ * (marked "No longer held"), so any approved holding value qualifies.
+ */
+export function isProjectPublishable(project: Project, mode: ContentMode): boolean {
+  if (mode === 'preview') return true;
+  return (
+    isRenderable(project.holding, mode) &&
+    isRenderable(project.areaKm2, mode) &&
+    isRenderable(project.ownership, mode)
+  );
+}
+
+/**
+ * A project may be listed (cards, menus, footer) when its dossier is publishable and it is still held.
+ * Until the verified project list exists (docs/OPEN-QUESTIONS.md Q-20), no project is listable in
+ * production. Listing implies a dossier exists, so card links never lead to a missing page.
  */
 export function isProjectListable(project: Project, mode: ContentMode): boolean {
   if (mode === 'preview') return true;
   const { holding } = project;
-  return holding.kind === 'fact' && isRenderable(holding, mode) && holding.value !== 'noLongerHeld';
+  return (
+    isProjectPublishable(project, mode) &&
+    holding.kind === 'fact' &&
+    holding.value !== 'noLongerHeld'
+  );
+}
+
+// ── Figures ─────────────────────────────────────────────────────────────────────────────────────
+
+export type ResolvedFigure =
+  | { readonly kind: 'figure'; readonly figure: FigureRecord }
+  | { readonly kind: 'placeholder'; readonly brief: string }
+  | { readonly kind: 'hidden' };
+
+/** A supplied, renderable figure; a placeholder in preview; otherwise hidden. Never a stand-in image. */
+export function resolveFigure(slot: FigureSlot | undefined, mode: ContentMode): ResolvedFigure {
+  if (slot === undefined) return { kind: 'hidden' };
+  if (slot.kind === 'inputNeeded') {
+    return mode === 'preview' ? { kind: 'placeholder', brief: slot.brief } : { kind: 'hidden' };
+  }
+  return isStatusRenderable(slot.status, mode)
+    ? { kind: 'figure', figure: slot }
+    : { kind: 'hidden' };
+}
+
+/**
+ * A photograph renders like any figure, but production also requires its place, photographer and
+ * consent note (a photo without recorded consent is never published).
+ */
+export function resolvePhoto(slot: PhotoSlot | undefined, mode: ContentMode): ResolvedFigure {
+  const resolved = resolveFigure(slot, mode);
+  if (resolved.kind !== 'figure' || mode === 'preview' || slot?.kind !== 'figure') return resolved;
+  const complete = [slot.place, slot.photographer, slot.consentNote].every(
+    (value) => value.trim() !== '',
+  );
+  return complete ? resolved : { kind: 'hidden' };
+}
+
+/** Source line for a figure: photographs credit place and photographer. */
+export function figureSource(figure: FigureRecord): string {
+  if (figure.figureType === 'photo' && 'photographer' in figure) {
+    const photo = figure as PhotoRecord;
+    return `${photo.place} · Photograph: ${photo.photographer}`;
+  }
+  return figure.source;
+}
+
+// ── Latest documents and articles ───────────────────────────────────────────────────────────────
+
+function releaseValue(document: DocumentRecord): string {
+  return document.releaseAt.kind === 'fact' ? document.releaseAt.value : '';
+}
+
+/**
+ * Listable documents, newest first (undated records last), optionally limited to some types.
+ * The result is what registers may show in this mode — nothing more.
+ */
+export function latestDocuments(
+  documents: readonly DocumentRecord[],
+  mode: ContentMode,
+  options: { readonly docTypes?: readonly DocType[]; readonly limit?: number } = {},
+): DocumentRecord[] {
+  const { docTypes, limit } = options;
+  const listed = documents
+    .filter((document) => isDocumentListable(document, mode))
+    .filter((document) => !docTypes || docTypes.includes(document.docType))
+    .sort((a, b) => releaseValue(b).localeCompare(releaseValue(a)));
+  return limit === undefined ? listed : listed.slice(0, limit);
+}
+
+/** Articles that may appear: approved (or, in preview, draft/to verify) with a renderable date. */
+export function latestArticles(
+  articles: readonly Article[],
+  mode: ContentMode,
+  limit?: number,
+): Article[] {
+  const listed = articles
+    .filter(
+      (article) => isStatusRenderable(article.status, mode) && isRenderable(article.date, mode),
+    )
+    .sort((a, b) =>
+      (b.date.kind === 'fact' ? b.date.value : '').localeCompare(
+        a.date.kind === 'fact' ? a.date.value : '',
+      ),
+    );
+  return limit === undefined ? listed : listed.slice(0, limit);
+}
+
+// ── Register columns ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Whether a register column may be shown. In production a column appears only when every listed
+ * record has an approved value — never a heading over empty cells. Preview shows it whenever there are
+ * rows, with placeholders.
+ */
+export function isColumnVisible<T>(
+  rows: readonly T[],
+  slotOf: (row: T) => FactSlot<unknown>,
+  mode: ContentMode,
+): boolean {
+  if (rows.length === 0) return false;
+  return mode === 'preview' || rows.every((row) => isRenderable(slotOf(row), mode));
 }

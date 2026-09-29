@@ -1,0 +1,82 @@
+---
+/**
+ * Sheet 02.9 · How we explore (docs/SITEMAP.md 02.9): thesis · why under-explored (Fig. 1 section) ·
+ * toolkit · target-to-drill-hole sequence · back to the portfolio. The thesis is the same
+ * interpretation record as the home page (one home per claim). The cross-section is the CP-approved
+ * figure record; until then only the indicative mockup shows, in preview (D-017).
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { resolveFigure } from '~/lib/content/visibility';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+import FigureFromRecord from '~/components/modules/project/FigureFromRecord.astro';
+
+const mode = config.contentMode;
+const [frame, page, home, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('howWeExplore'),
+  content.getHomePage(),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+const section = resolveFigure(home.crossSection, mode);
+---
+
+<ContentLayout
+  heading="How we explore"
+  description="How Auburn Resources explores: why the ground is under-explored, the methods used and how a target becomes a drill hole."
+  frame={frame}
+  href="/projects/how-we-explore"
+  section="02"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/projects">Explore the projects</Button>
+    <Button href="/investors/alerts" variant="secondary">
+      Get investor updates
+    </Button>
+  </Fragment>
+  <PageSections sections={page.sections} ids={['under-cover']} sources={sources} mode={mode} />
+  {section.kind !== 'hidden' && (
+    <Container>
+      <div class="explore__figure">
+        <FigureFromRecord
+          figure={section}
+          number={1}
+          placeholderTitle="Schematic cross-section: host sequence beneath cover."
+          ratio="16 / 9"
+          mode={mode}
+        />
+      </div>
+    </Container>
+  )}
+  <PageSections
+    sections={page.sections}
+    ids={['toolkit', 'sequence']}
+    sources={sources}
+    mode={mode}
+  />
+  <Container>
+    <p class="explore__back">
+      <ArrowLink href="/projects">Back to the portfolio</ArrowLink>
+    </p>
+  </Container>
+</ContentLayout>
+
+<style>
+  .explore__figure {
+    max-width: 60rem;
+    padding-block: var(--space-4);
+  }
+
+  .explore__back {
+    padding-top: var(--space-4);
+  }
+</style>

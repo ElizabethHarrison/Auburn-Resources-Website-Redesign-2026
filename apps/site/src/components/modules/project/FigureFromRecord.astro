@@ -1,0 +1,47 @@
+---
+/**
+ * A resolved figure record rendered through the Figure pattern, or (preview only) its empty frame.
+ * Shared by the dossier modules so every figure carries caption, alt, source, date and status alike.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { figureSource, type ResolvedFigure } from '~/lib/content/visibility';
+import Figure from '~/components/patterns/Figure.astro';
+import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
+
+export interface Props {
+  figure: ResolvedFigure;
+  /** Figure number on the page; omit for unnumbered images (the hero). */
+  number?: number | undefined;
+  /** Working caption for the preview frame when the figure is missing. */
+  placeholderTitle: string;
+  ratio?: '4 / 3' | '16 / 9' | '3 / 2';
+  sizes?: string | undefined;
+  mode: ContentMode;
+}
+
+const { figure, number, placeholderTitle, ratio, sizes, mode } = Astro.props;
+---
+
+{figure.kind === 'figure' && (
+  <Figure
+    number={number}
+    caption={figure.figure.caption}
+    alt={figure.figure.alt}
+    image={{ src: figure.figure.src, width: figure.figure.width, height: figure.figure.height }}
+    sizes={sizes}
+    source={figureSource(figure.figure)}
+    date={figure.figure.date}
+    longDescription={figure.figure.longDescription}
+    status={figure.figure.status}
+    mode={mode}
+  />
+)}
+{figure.kind === 'placeholder' && number !== undefined && (
+  <FigurePlaceholder
+    number={number}
+    title={placeholderTitle}
+    brief={figure.brief}
+    {...(ratio === undefined ? {} : { ratio })}
+    mode={mode}
+  />
+)}

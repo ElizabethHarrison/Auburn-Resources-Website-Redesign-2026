@@ -1,0 +1,49 @@
+---
+/**
+ * The body of an investor document listing (announcements, reports, presentations): filter form,
+ * state in words, and the year-grouped registers. Used by the canonical listing pages (no filter) and
+ * by the prebuilt filtered pages the edge Worker serves (D-023), so both render identically.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DocumentRecord } from '~/lib/content/types';
+import {
+  applyFilter,
+  filterOptions,
+  isFiltered,
+  type FilterState,
+  type Listing,
+} from '~/lib/document-filters';
+import DocumentFilterForm from './DocumentFilterForm.astro';
+import DocumentLibrary from './DocumentLibrary.astro';
+
+export interface Props {
+  listing: Listing;
+  documents: readonly DocumentRecord[];
+  state?: FilterState | undefined;
+  /** The requested filter is malformed or not in this build's data: show no documents. */
+  unavailable?: boolean;
+  mode: ContentMode;
+}
+
+const { listing, documents, state = {}, unavailable = false, mode } = Astro.props;
+const options = filterOptions(documents, listing, mode);
+const shown = unavailable ? [] : applyFilter(documents, listing, state, mode);
+---
+
+<DocumentFilterForm
+  listing={listing}
+  options={options}
+  state={state}
+  count={shown.length}
+  unavailable={unavailable}
+  mode={mode}
+/>
+{!unavailable && (
+  <DocumentLibrary
+    documents={shown}
+    docTypes={listing.docTypes}
+    label={listing.heading}
+    emptyBrief={isFiltered(state) ? undefined : listing.emptyBrief}
+    mode={mode}
+  />
+)}

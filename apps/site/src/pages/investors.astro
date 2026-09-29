@@ -1,0 +1,111 @@
+---
+/**
+ * Sheet 03 · Investor centre (docs/SITEMAP.md 03): key facts · three "latest" cards · register (last
+ * eight) · reporting calendar · quick links · investor contact. Facts from site settings, documents
+ * from the register; only approved content in production.
+ *
+ * "Download latest presentation": when to show it is undecided (Q-08), so production omits it and
+ * preview flags the question, as on the home page.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { latestDocuments } from '~/lib/content/visibility';
+import { isRenderable } from '~/lib/facts';
+import { factDisplay } from '~/lib/format';
+import { sectionById } from '~/lib/navigation';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import LatestDocuments from '~/components/modules/investors/LatestDocuments.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import LinkCards from '~/components/modules/page/LinkCards.astro';
+import PageBlock from '~/components/modules/page/PageBlock.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('investors'),
+  content.getDocuments(),
+]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
+const keyFacts = [
+  factDisplay('Status', settings.keyFacts.companyStatus),
+  factDisplay('Shares on issue', settings.keyFacts.sharesOnIssue),
+  factDisplay('DGR Global holding', settings.keyFacts.dgrHolding),
+  factDisplay('IPO status', settings.keyFacts.ipoStatus),
+];
+const register = latestDocuments(documents, mode, {
+  docTypes: ['announcement', 'quarterly', 'halfYear', 'annual', 'presentation', 'notice'],
+  limit: 8,
+});
+const quickLinks = sectionById('03').pages.filter((link) => link.href !== '/investors');
+const contact = [factDisplay('Email', settings.email), factDisplay('Phone', settings.phone)];
+---
+
+<ContentLayout
+  heading="Investor centre"
+  description="The investor centre for Auburn Resources: key facts, the latest announcements, reports and presentations, and investor contacts."
+  frame={frame}
+  href="/investors"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts">Get investor updates</Button>
+    <Placeholder
+      brief="When to show the latest-presentation link is undecided (Q-08); omitted in production"
+      field="Download latest presentation"
+      variant="inline"
+      mode={mode}
+    />
+  </Fragment>
+  <Container>
+    <FactStrip items={keyFacts} label="Investor key facts" sources={sources} mode={mode} />
+    {isRenderable(settings.keyFacts.ipoStatus, mode) && (
+      <p class="note">
+        The IPO status is forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+      </p>
+    )}
+  </Container>
+  <LatestDocuments documents={documents} mode={mode} />
+  {register.length > 0 && (
+    <PageBlock
+      id="register"
+      heading="Register"
+      action={{ label: 'All announcements', href: '/investors/announcements' }}
+    >
+      <div class="wide">
+        <DocumentRegister documents={register} caption="Latest documents" mode={mode} />
+      </div>
+    </PageBlock>
+  )}
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <LinkCards id="investor-pages" heading="Investor pages" links={quickLinks} />
+  <FactList
+    id="investor-contact"
+    heading="Investor contact"
+    items={contact}
+    sources={sources}
+    mode={mode}
+  />
+</ContentLayout>
+
+<style>
+  .note {
+    margin-top: var(--space-2);
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+
+  .wide {
+    width: 100%;
+  }
+</style>

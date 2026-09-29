@@ -1,0 +1,73 @@
+---
+/**
+ * Home §6 — 03 Investors, "The register": key-facts title block (company status, IPO status, shares on
+ * issue) and the latest documents. No DGR holding (Q-14). Filters arrive in Phase 4. The module shows
+ * only what is approved and disappears when nothing is.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import type { DocumentRecord, KeyFacts } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { latestDocuments } from '~/lib/content/visibility';
+import { factDisplay } from '~/lib/format';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+
+export interface Props {
+  keyFacts: KeyFacts;
+  documents: readonly DocumentRecord[];
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { keyFacts, documents, sources, mode } = Astro.props;
+const facts = [
+  factDisplay('Company status', keyFacts.companyStatus),
+  factDisplay('IPO status', keyFacts.ipoStatus),
+  factDisplay('Shares on issue', keyFacts.sharesOnIssue),
+];
+const latest = latestDocuments(documents, mode, { limit: 5 });
+const visible = latest.length > 0 || facts.some((item) => isRenderable(item.slot, mode));
+---
+
+{visible && (
+  <section class="register-module" aria-labelledby="home-register">
+    <Container>
+      <SectionHeading id="home-register" kicker="03 Investors" heading="The register" />
+      <div class="register-module__body">
+        <FactStrip items={facts} label="Investor key facts" sources={sources} mode={mode} />
+        <DocumentRegister documents={latest} caption="Latest documents" showCaption mode={mode} />
+        <div class="register-module__actions">
+          <Button href="/investors/alerts" variant="secondary">
+            Get email alerts
+          </Button>
+          <ArrowLink href="/investors/announcements">View the full register</ArrowLink>
+        </div>
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .register-module {
+    padding-block: var(--section-padding);
+  }
+
+  .register-module__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  .register-module__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+  }
+</style>

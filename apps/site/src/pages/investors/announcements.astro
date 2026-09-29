@@ -1,0 +1,39 @@
+---
+/**
+ * Sheet 03.1 · Announcements (docs/SITEMAP.md 03.1): the complete record, grouped by year. Each row
+ * links to its announcement page. Year filtering is served by the edge Worker from prebuilt pages
+ * (D-023); search is a later Phase 4 item.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import Button from '~/components/primitives/Button.astro';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+import { LISTINGS } from '~/lib/document-filters';
+
+const mode = config.contentMode;
+const listing = LISTINGS.announcements;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('announcements'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading={listing.heading}
+  description={listing.description}
+  frame={frame}
+  href={listing.path}
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts" variant="secondary">
+      Get investor updates
+    </Button>
+  </Fragment>
+  <DocumentListingBody listing={listing} documents={documents} mode={mode} />
+</ContentLayout>

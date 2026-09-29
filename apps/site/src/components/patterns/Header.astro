@@ -1,6 +1,6 @@
 ---
 /**
- * Site header / title block (docs/DESIGN-DIRECTION.md; docs/SITEMAP.md §2, §5). STATIC in Phase 2.
+ * Site header / title block (docs/DESIGN-DIRECTION.md; docs/SITEMAP.md §2, §5). Static on desktop.
  *
  * Desktop (from 80rem, 88 px): wordmark · sheet reference (from 90rem) · numbered section links ·
  * Contact · outlined "Investor updates". Section links go straight to landing pages; the click-to-open
@@ -8,14 +8,21 @@
  *
  * Below 80rem (56 px): wordmark + "Menu". The full row needs ~980 px with Didact Gothic (more with
  * Century Gothic), so it starts at 1280 px; the sheet reference needs ~1230 px more room, so it joins
- * at the 1440 px artboard width. Measured in the Phase 2 review. Without JavaScript, "Menu" jumps to the full site
- * navigation in the footer; the Phase 4 menu island will turn it into a button that opens the
- * full-screen menu. The sheet reference moves to the breadcrumb line (Breadcrumb `sheet` prop).
+ * at the 1440 px artboard width. Measured in the Phase 2 review. "Menu" is the MobileMenu island
+ * (D-021): a button opening the full-screen menu, or — without JavaScript — a link to the full site
+ * navigation in the footer. The sheet reference moves to the breadcrumb line (Breadcrumb `sheet` prop).
  *
  * The wordmark is text until the logo vectors are supplied (docs/OPEN-QUESTIONS.md Q-40).
  */
 import type { SheetNumber } from '~/lib/content/types';
-import { CONTACT_LINK, INVESTOR_UPDATES_LINK, SECTIONS, type SectionId } from '~/lib/navigation';
+import {
+  CONTACT_LINK,
+  INVESTOR_UPDATES_LINK,
+  SECTIONS,
+  type NavLink,
+  type SectionId,
+} from '~/lib/navigation';
+import MobileMenu from '../islands/MobileMenu.astro';
 import Button from '../primitives/Button.astro';
 import SheetRef from '../primitives/SheetRef.astro';
 
@@ -25,9 +32,13 @@ export interface Props {
   sheetLabel?: string | undefined;
   /** Section the page belongs to; its link is marked current. */
   currentSection?: SectionId | undefined;
+  /** For the mobile menu: listable project dossiers, the current URL and the approved email. */
+  projectLinks?: readonly NavLink[] | undefined;
+  currentHref?: string | undefined;
+  email?: string | undefined;
 }
 
-const { sheet, sheetLabel, currentSection } = Astro.props;
+const { sheet, sheetLabel, currentSection, projectLinks, currentHref, email } = Astro.props;
 ---
 
 <header class="site-header">
@@ -73,9 +84,12 @@ const { sheet, sheetLabel, currentSection } = Astro.props;
       </Button>
     </div>
 
-    <a class="site-header__menu" href="#site-navigation">
-      Menu
-    </a>
+    <MobileMenu
+      projectLinks={projectLinks}
+      currentSection={currentSection}
+      currentHref={currentHref}
+      email={email}
+    />
   </div>
 </header>
 
@@ -129,28 +143,9 @@ const { sheet, sheetLabel, currentSection } = Astro.props;
     display: none;
   }
 
-  .site-header__menu {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--touch-target);
-    margin-left: auto;
-    padding-inline: var(--space-2);
-    border: var(--rule);
-    color: var(--ink-survey);
-    font-family: var(--font-mono);
-    font-size: var(--text-mono-lg);
-    letter-spacing: var(--tracking-mono);
-    text-decoration: none;
-    text-transform: uppercase;
-  }
-
   @media (min-width: 80rem) {
     .site-header__inner {
       min-height: var(--header-height);
-    }
-
-    .site-header__menu {
-      display: none;
     }
 
     .site-nav {

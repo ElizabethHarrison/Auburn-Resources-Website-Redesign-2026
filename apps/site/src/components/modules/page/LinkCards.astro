@@ -1,0 +1,95 @@
+---
+/**
+ * Structural links to other pages of the site (e.g. the pages of a section), as ruled cells with the
+ * sheet number and an arrow. Navigation only: labels come from lib/navigation.ts, never content claims.
+ */
+import type { NavLink } from '~/lib/navigation';
+import Icon from '~/components/primitives/Icon.astro';
+import PageBlock from './PageBlock.astro';
+
+export interface Props {
+  id: string;
+  heading: string;
+  links: readonly NavLink[];
+}
+
+const { id, heading, links } = Astro.props;
+---
+
+{links.length > 0 && (
+  <PageBlock id={id} heading={heading}>
+    <ul class="link-cards" role="list">
+      {links.map((link) => (
+        <li>
+          <a class="link-cards__link" href={link.href}>
+            {link.sheet && <span class="link-cards__sheet">{link.sheet}</span>}
+            <span class="link-cards__label">
+              {link.label} <Icon name="arrow-right" />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </PageBlock>
+)}
+
+<style>
+  .link-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    border-left: var(--rule);
+    list-style: none;
+  }
+
+  @container (min-width: 40rem) {
+    .link-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 64rem) {
+    .link-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .link-cards li {
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+
+  .link-cards__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    height: 100%;
+    padding: var(--space-3);
+    color: var(--ink-survey);
+    text-decoration: none;
+  }
+
+  .link-cards__link:hover .link-cards__label {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.2em;
+  }
+
+  .link-cards__sheet {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .link-cards__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-lead);
+  }
+</style>

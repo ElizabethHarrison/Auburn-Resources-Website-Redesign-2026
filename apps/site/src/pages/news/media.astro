@@ -1,0 +1,57 @@
+---
+/**
+ * Sheet 05.1 · Media (docs/SITEMAP.md 05.1): media contact · fact sheet (verified, dated) · downloads ·
+ * coverage list. The fact sheet reads the company key facts; each cell drops until approved.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { STATE_NAMES, factDisplay, formatCommodities } from '~/lib/format';
+import Button from '~/components/primitives/Button.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('media'),
+  content.getDocuments(),
+]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
+const factSheet = [
+  factDisplay('Legal name', settings.legalName),
+  factDisplay('Company type', settings.companyType),
+  factDisplay('Status', settings.keyFacts.companyStatus),
+  factDisplay('Projects', settings.keyFacts.projectCount),
+  factDisplay('Ground held', settings.keyFacts.groundHeld),
+  factDisplay('Commodities', settings.keyFacts.commodities, formatCommodities),
+  factDisplay('Jurisdictions', settings.keyFacts.jurisdictions, (states) =>
+    states.map((state) => STATE_NAMES[state]).join(' · '),
+  ),
+];
+---
+
+<ContentLayout
+  heading="Media"
+  description="Information for journalists: the Auburn Resources media contact, fact sheet, downloads and coverage."
+  frame={frame}
+  href="/news/media"
+  section="05"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/contact">Contact the company</Button>
+  </Fragment>
+  <PageSections sections={page.sections} ids={['media-contact']} sources={sources} mode={mode} />
+  <FactList id="fact-sheet" heading="Fact sheet" items={factSheet} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    ids={['downloads', 'coverage']}
+    sources={sources}
+    mode={mode}
+  />
+</ContentLayout>

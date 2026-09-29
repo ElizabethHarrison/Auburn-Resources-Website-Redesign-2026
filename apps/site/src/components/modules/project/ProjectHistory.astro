@@ -1,0 +1,40 @@
+---
+/**
+ * Module 03 — Exploration history (docs/SITEMAP.md §8): counter row of work quantities, then the work
+ * as a timeline. The timeline is in sequence, not to scale: to-scale needs every item dated. Counters
+ * and events drop individually when not approved.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { WorkItem } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { factDisplay } from '~/lib/format';
+import CounterRow from '~/components/patterns/CounterRow.astro';
+import Timeline, { type TimelineItem } from '~/components/patterns/Timeline.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  workItems: readonly WorkItem[];
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, projectName, workItems, sources, mode } = Astro.props;
+const counters = workItems.map((item) => factDisplay(item.method, item.quantity));
+// Years are plain numbers (no thousands separator).
+const timeline: TimelineItem[] = workItems.map((item) => ({
+  when: factDisplay(item.method, item.year, (year) => String(year)),
+}));
+---
+
+<DossierSection module={module}>
+  <CounterRow
+    items={counters}
+    label={`${projectName} exploration work completed`}
+    sources={sources}
+    mode={mode}
+  />
+  <Timeline items={timeline} label={`${projectName} exploration history`} mode={mode} />
+</DossierSection>

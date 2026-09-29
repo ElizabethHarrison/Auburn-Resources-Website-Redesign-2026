@@ -13,6 +13,21 @@ import { CAPTURE_DATE, SOURCE_IDS, siteFact, websiteSource } from '../helpers';
 
 const reHost = inputNeeded('Re-hosted PDF (old site file to be migrated)');
 
+/** Governance documents are named on the old site but no file was ever linked (all IN as files). */
+function governanceDocuments(entries: readonly (readonly [string, string])[]): DocumentRecord[] {
+  return entries.map(([slug, title]) => ({
+    id: `doc-governance-${slug}`,
+    slug,
+    title,
+    docType: 'policy',
+    releaseAt: inputNeeded('Adoption or last-review date'),
+    status: 'toVerify',
+    internal: false,
+    file: inputNeeded('Current file: listed on the old site but never linked'),
+    projectIds: [],
+  }));
+}
+
 export const documents: readonly DocumentRecord[] = [
   // ── Internal source records (never listed publicly) ────────────────────────────────────────────
   {
@@ -39,6 +54,19 @@ export const documents: readonly DocumentRecord[] = [
     projectIds: [],
     externalUrl: 'https://wcsecure.weblink.com.au/pdf/DGR/03084957.pdf',
     note: 'External cross-check used in docs/CONTENT-SOURCE.md §9.',
+  },
+
+  {
+    id: SOURCE_IDS.websiteStrategy,
+    slug: 'website-strategy-2026-09-29',
+    title: 'Auburn Resources website strategy (approved direction, 29 Sep 2026)',
+    docType: 'sourceCapture',
+    releaseAt: siteFact(CAPTURE_DATE, { source: websiteSource }),
+    status: 'toVerify',
+    internal: true,
+    file: inputNeeded('Not published: internal planning document (docs/WEBSITE-STRATEGY.md)'),
+    projectIds: [],
+    note: 'Source of the working positioning line and the under-cover thesis. Company claims in it still need verification.',
   },
 
   // ── Investor documents from the old Investor Centre ────────────────────────────────────────────
@@ -128,4 +156,28 @@ export const documents: readonly DocumentRecord[] = [
     projectIds: [],
     note: 'Old file sits on a Squarespace staging domain; re-host from the original.',
   },
+
+  // ── Governance documents (CONTENT-SOURCE §5): listed on the old site, none linked ──────────────
+  ...governanceDocuments([
+    [
+      'appendix-4g-and-corporate-governance-statement',
+      'Appendix 4G and Corporate Governance Statement',
+    ],
+    ['board-charter', 'Board Charter'],
+    ['audit-and-risk-management-committee-charter', 'Audit & Risk Management Committee Charter'],
+    ['remuneration-committee-charter', 'Remuneration Committee Charter'],
+    ['code-of-conduct', 'Code of Conduct'],
+    ['anti-bribery-and-corruption-policy', 'Anti-Bribery and Corruption Policy'],
+    ['diversity-policy', 'Diversity Policy'],
+    ['privacy-policy', 'Privacy Policy'],
+    [
+      'assessing-the-independence-of-directors-policy',
+      'Assessing the Independence of Directors Policy',
+    ],
+    ['continuous-disclosure-policy', 'Continuous Disclosure Policy'],
+    ['related-party-policy', 'Related Party Policy'],
+    ['whistleblower-policy', 'Whistleblower Policy'],
+    ['share-trading-policy', 'Share Trading Policy'],
+    ['constitution', 'Constitution'],
+  ]),
 ];

@@ -1,0 +1,46 @@
+---
+/**
+ * Project index cards (docs/SITEMAP.md 02): one SheetCard per listable project, in content order. The
+ * list comes from the content adapter; the template works for any number of projects.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Project } from '~/lib/content/types';
+import Container from '~/components/primitives/Container.astro';
+import Grid from '~/components/primitives/Grid.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import SheetCard from '~/components/patterns/SheetCard.astro';
+
+export interface Props {
+  projects: readonly Project[];
+  mode: ContentMode;
+}
+
+const { projects, mode } = Astro.props;
+---
+
+{projects.length > 0 && (
+  <section class="portfolio-section" aria-labelledby="portfolio-sheets">
+    <Container>
+      <SectionHeading id="portfolio-sheets" heading="Project sheets" />
+      <div class="portfolio-section__body">
+        <Grid as="ul" layout="thirds">
+          {projects.map((project) => (
+            <li>
+              <SheetCard project={project} mode={mode} />
+            </li>
+          ))}
+        </Grid>
+      </div>
+    </Container>
+  </section>
+)}
+
+<style>
+  .portfolio-section {
+    padding-block: var(--section-padding);
+  }
+
+  .portfolio-section__body {
+    margin-top: var(--space-5);
+  }
+</style>

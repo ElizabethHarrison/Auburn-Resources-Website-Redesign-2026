@@ -90,6 +90,8 @@ describe('breakpoints', () => {
     '(max-width: 47.99rem)',
     '(prefers-reduced-motion: reduce)',
     '(prefers-reduced-motion: no-preference)',
+    // Islands only: choose the enhanced control over its no-JavaScript fallback (D-021).
+    '(scripting: enabled)',
   ]);
 
   it('uses only the documented breakpoints (tokens.css)', () => {
@@ -103,9 +105,10 @@ describe('breakpoints', () => {
   });
 });
 
-describe('zero JavaScript in the design system', () => {
-  it('has no client directives or scripts (except JSON-LD) in Astro components', () => {
+describe('client JavaScript only in islands', () => {
+  it('has no client directives or scripts (except JSON-LD) outside components/islands (D-021)', () => {
     const bad = astroFiles.filter((path) => {
+      if (rel(path).startsWith('components/islands/')) return false;
       const source = read(path);
       const scripts = [...source.matchAll(/<script\b[^>]*>/g)].filter(
         (m) => !m[0].includes('application/ld+json'),

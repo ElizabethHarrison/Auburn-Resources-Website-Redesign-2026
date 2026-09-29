@@ -1,0 +1,37 @@
+---
+/**
+ * Sheet 03.2 · Reports (docs/SITEMAP.md 03.2): annual, half-yearly and quarterly reports and meeting
+ * notices, grouped by year, filterable by year and report type through the edge Worker (D-023). The
+ * "latest feature" waits on Q-08.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+import { LISTINGS } from '~/lib/document-filters';
+
+const mode = config.contentMode;
+const listing = LISTINGS.reports;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('reports'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading={listing.heading}
+  description={listing.description}
+  frame={frame}
+  href={listing.path}
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <ArrowLink href="/investors/announcements">All announcements</ArrowLink>
+  </Fragment>
+  <DocumentListingBody listing={listing} documents={documents} mode={mode} />
+</ContentLayout>

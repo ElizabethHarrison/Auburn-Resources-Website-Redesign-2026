@@ -1,0 +1,78 @@
+---
+/**
+ * Prebuilt filtered views of the investor document listings (D-023; docs/WORKER.md). NOT public URLs:
+ * the edge Worker serves these files at the listing URL with a query string
+ * (`/investors/reports?year=2022` → `/filtered/reports/year-2022`) and answers direct requests for
+ * `/filtered/…` with 404.
+ *
+ * One page per valid filter state of the documents visible in this build (production: approved only),
+ * plus one `unavailable` page per listing for malformed or out-of-dataset filters. Every page is
+ * `noindex`, canonicalises to the unfiltered listing, and is excluded from the XML sitemap.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import {
+  LISTINGS,
+  describeState,
+  filterOptions,
+  filterStates,
+  stateSlug,
+  type FilterState,
+  type Listing,
+} from '~/lib/document-filters';
+import DocumentListingBody from '~/components/modules/investors/DocumentListingBody.astro';
+
+export async function getStaticPaths() {
+  const documents = await content.getDocuments();
+  return Object.values(LISTINGS).flatMap((listing) => [
+    ...filterStates(filterOptions(documents, listing, config.contentMode)).map((state) => ({
+      params: { listing: listing.key, state: stateSlug(state) },
+      props: { listing, state, unavailable: false },
+    })),
+    {
+      params: { listing: listing.key, state: 'unavailable' },
+      props: { listing, state: {}, unavailable: true },
+    },
+  ]);
+}
+
+interface Props {
+  listing: Listing;
+  state: FilterState;
+  unavailable: boolean;
+}
+
+const { listing, state, unavailable } = Astro.props;
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage(listing.key),
+  content.getDocuments(),
+]);
+const title = unavailable
+  ? `${listing.heading} · filter not available`
+  : `${listing.heading} · ${describeState(state)}`;
+---
+
+<ContentLayout
+  heading={listing.heading}
+  title={title}
+  description={listing.description}
+  frame={frame}
+  href={listing.path}
+  section="03"
+  intro={page.intro}
+  canonicalPath={listing.path}
+  noindex
+  mode={mode}
+>
+  <DocumentListingBody
+    listing={listing}
+    documents={documents}
+    state={state}
+    unavailable={unavailable}
+    mode={mode}
+  />
+</ContentLayout>

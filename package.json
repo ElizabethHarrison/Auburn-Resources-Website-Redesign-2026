@@ -13,15 +13,20 @@
     "build": "pnpm --filter @auburn/site build",
     "build:preview": "pnpm --filter @auburn/site build:preview",
     "serve": "pnpm --filter @auburn/site serve",
+    "serve:production": "node tests/static-server.mjs apps/site/dist 4600",
+    "serve:preview": "node tests/static-server.mjs apps/site/dist-preview 4601",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "pnpm -r test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview && pnpm budget",
-    "budget": "node scripts/check-js-budget.mjs apps/site/dist"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview && pnpm budget && pnpm test:e2e",
+    "budget": "node scripts/check-js-budget.mjs apps/site/dist",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56.1",
     "eslint": "^10.11.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsx-a11y-x": "^0.2.0",

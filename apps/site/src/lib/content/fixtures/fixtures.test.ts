@@ -7,13 +7,31 @@ import { isIsoDate } from '../../dates';
 import { NARRATIVE_LIMITS, validateNarrative } from '../../facts';
 import { collectSlots, tallySlots } from '../audit';
 import { fixturesAdapter } from './index';
+import { articles } from './data/articles';
 import { documents } from './data/documents';
+import { homePage } from './data/home-page';
+import { legalPages } from './data/legal-pages';
+import { pages } from './data/pages';
+import { portfolioPage } from './data/portfolio-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
+import { prospects } from './data/prospects';
 import { siteSettings } from './data/site-settings';
 import { workItems } from './data/work-items';
 
-const all = { siteSettings, people, projects, documents, workItems };
+const all = {
+  siteSettings,
+  people,
+  projects,
+  documents,
+  workItems,
+  homePage,
+  articles,
+  portfolioPage,
+  prospects,
+  pages,
+  legalPages,
+};
 const slots = collectSlots(all);
 const documentIds = new Set(documents.map((document) => document.id));
 
@@ -137,6 +155,24 @@ describe('record integrity', () => {
   });
 });
 
+describe('page copy', () => {
+  it('gives every page section a heading and a unique id', () => {
+    for (const page of Object.values(pages)) {
+      const ids = page.sections.map((section) => section.id);
+      expect(new Set(ids).size, page.key).toBe(ids.length);
+      for (const section of page.sections) {
+        expect(section.heading.trim(), `${page.key}.${section.id}`).not.toBe('');
+        expect(section.paragraphs.length, `${page.key}.${section.id}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('drafts no legal text', () => {
+    for (const page of Object.values(legalPages))
+      expect(page.clauses).toHaveProperty('kind', 'inputNeeded');
+  });
+});
+
 describe('rendering by mode', () => {
   it('renders nothing from fixtures in a production build', () => {
     expect(tallySlots(slots, 'production').renderable).toBe(0);
@@ -160,5 +196,17 @@ describe('fixtures adapter', () => {
     const items = await fixturesAdapter.getWorkItems('project-calgoa');
     expect(items.length).toBeGreaterThan(0);
     expect(items.every((item) => item.projectId === 'project-calgoa')).toBe(true);
+  });
+});
+
+describe('indicative figures', () => {
+  it('are never approved in fixtures, and never render in production', async () => {
+    const { resolveFigure } = await import('../visibility');
+    const figures = await import('./data/indicative-figures');
+    for (const figure of [figures.portfolioMap, figures.crossSection]) {
+      expect(figure.kind === 'figure' && figure.status).not.toBe('approved');
+      expect(resolveFigure(figure, 'production')).toEqual({ kind: 'hidden' });
+      expect(resolveFigure(figure, 'preview').kind).toBe('figure');
+    }
   });
 });

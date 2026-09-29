@@ -142,6 +142,8 @@
    *   90rem  (1440 px) artboard: sheet reference in the header (needs ~1230 px)
    * Components that sit in columns of varying width respond to their own width with container
    * queries instead: DocumentRegister (table from 40rem), and FactCell / SheetCard type scaling (cqi).
+   * Non-width media features allowed: prefers-reduced-motion, and `(scripting: enabled)` — used only by
+   * islands to swap a no-JavaScript fallback for its enhanced control without layout shift (D-021).
    */
 
   /* ── Rules and shape ──────────────────────────────────────────────────────────────────────── */

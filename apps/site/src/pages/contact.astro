@@ -1,0 +1,76 @@
+---
+/**
+ * Contact (docs/SITEMAP.md, utility page, no sheet number — D-010): direct contacts · office address ·
+ * enquiries by type. The enquiry form (Turnstile, Worker) arrives with Phase 4; contact details appear
+ * only once approved, so the old site's broken links are never repeated.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import type { PostalAddress } from '~/lib/content/types';
+import { resolve } from '~/lib/facts';
+import { factDisplay } from '~/lib/format';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Container from '~/components/primitives/Container.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('contact'),
+  content.getDocuments(),
+]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
+const address = (value: PostalAddress) => value.lines.join(', ');
+const email = resolve(settings.email, mode);
+const details = [
+  factDisplay('Email', settings.email),
+  factDisplay('Phone', settings.phone),
+  factDisplay('Office', settings.streetAddress, address),
+  factDisplay('Postal address', settings.postalAddress, address),
+];
+---
+
+<ContentLayout
+  heading="Contact"
+  description="Contact Auburn Resources: investor, partnership, media, landholder and community, and general enquiries."
+  frame={frame}
+  href="/contact"
+  intro={page.intro}
+  mode={mode}
+>
+  <FactList
+    id="contact-details"
+    heading="Contact details"
+    items={details}
+    sources={sources}
+    mode={mode}
+  >
+    {email.kind === 'value' && (
+      <ArrowLink href={`mailto:${email.item.value}`}>Email the company</ArrowLink>
+    )}
+  </FactList>
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  {mode === 'preview' && (
+    <Container>
+      <div class="form-slot">
+        <Placeholder
+          brief="Enquiry form (Phase 4): name, email, enquiry type (investors, partnerships, media, landholder or community, general), message; Turnstile; office map"
+          field="Form"
+          mode={mode}
+        />
+      </div>
+    </Container>
+  )}
+</ContentLayout>
+
+<style>
+  .form-slot {
+    padding-block: var(--space-4);
+  }
+</style>

@@ -6,7 +6,8 @@
  * Renders nothing when the slot is hidden in this mode. In preview, a missing value shows the
  * INPUT NEEDED placeholder in the value position.
  *
- * `variant="counter"` puts the value first and the label beneath, for counter rows.
+ * `variant="counter"` puts the value first and the label beneath, for counter rows. `variant="row"` is
+ * the compact form for fact lists (lead-size value), e.g. project module 01.
  */
 import type { ContentMode } from '~/lib/facts';
 import { resolve } from '~/lib/facts';
@@ -19,13 +20,16 @@ import SourceLine from './SourceLine.astro';
 export interface Props {
   item: FactDisplay;
   sources?: SourceIndex | undefined;
-  variant?: 'cell' | 'counter';
+  variant?: 'cell' | 'counter' | 'row';
   mode?: ContentMode | undefined;
 }
 
 const { item, sources, variant = 'cell' } = Astro.props;
 const mode = renderMode(Astro.props.mode);
 const resolved = resolve(item.slot, mode);
+const formatted = resolved.kind === 'value' ? formatFactValue(resolved.item, item.format) : '';
+// Long text values (statements rather than figures) step down from the 44 px figure size.
+const isLong = [...formatted].length > 24;
 ---
 
 {resolved.kind !== 'hidden' && (
@@ -33,8 +37,8 @@ const resolved = resolve(item.slot, mode);
     <dt class="fact-cell__label">{item.label}</dt>
     {resolved.kind === 'value' ? (
       <>
-        <dd class="fact-cell__value" data-fact>
-          {formatFactValue(resolved.item, item.format)}
+        <dd class:list={['fact-cell__value', { 'fact-cell__value--long': isLong }]} data-fact>
+          {formatted}
         </dd>
         <dd class="fact-cell__source">
           <SourceLine item={resolved.item} sources={sources} mode={mode} />
@@ -83,6 +87,10 @@ const resolved = resolve(item.slot, mode);
     hyphens: none;
   }
 
+  .fact-cell__value--long {
+    font-size: var(--text-h3);
+  }
+
   .fact-cell__value :global(.placeholder) {
     font-size: var(--text-body);
   }
@@ -99,6 +107,10 @@ const resolved = resolve(item.slot, mode);
     order: 1;
     font-size: clamp(1.25rem, 17cqi, var(--text-counter));
   }
+  .fact-cell--row .fact-cell__value {
+    font-size: var(--text-lead);
+  }
+
   .fact-cell--counter .fact-cell__source {
     order: 3;
   }

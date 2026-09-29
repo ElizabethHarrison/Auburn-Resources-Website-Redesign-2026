@@ -18,10 +18,12 @@ export interface Props {
   title?: string | undefined;
   description: string;
   noindex?: boolean | undefined;
+  /** Canonical path when this page is a variant of another (e.g. a filtered listing, D-023). */
+  canonicalPath?: string | undefined;
   jsonLd?: readonly JsonLd[] | undefined;
 }
 
-const { title, description, noindex = false, jsonLd = [] } = Astro.props;
+const { title, description, noindex = false, jsonLd = [], canonicalPath } = Astro.props;
 
 const site = Astro.site;
 if (!site) throw new Error('`site` must be set in astro.config.ts for canonical URLs.');
@@ -31,7 +33,7 @@ for (const issue of descriptionIssues(description)) {
 }
 
 const fullTitle = pageTitle(title);
-const canonical = canonicalUrl(Astro.url.pathname, site);
+const canonical = canonicalUrl(canonicalPath ?? Astro.url.pathname, site);
 const robots = robotsDirective(config.contentMode, noindex);
 ---
 

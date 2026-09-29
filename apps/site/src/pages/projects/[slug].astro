@@ -1,0 +1,310 @@
+---
+/**
+ * Sheet 02.n · Project dossier (docs/SITEMAP.md §8): ONE template for every project, routed by slug.
+ *
+ * Hero → key-facts strip → modules 01–09 (approved order) beside the strat-column index → related
+ * sheets → CTA band → compliance block. Which modules render is decided from data alone
+ * (`visibleModules` in lib/content/dossier.ts): production shows approved content only and never an
+ * empty heading; preview shows every module with INPUT NEEDED placeholders.
+ *
+ * Routes: a dossier is generated only when `isProjectPublishable` (production: approved holding, area
+ * and ownership). Until the verified project list exists (Q-20) production generates none.
+ */
+import SiteLayout from '~/layouts/SiteLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import {
+  adjacentProjects,
+  isComplianceShown,
+  publishableResults,
+  relatedProjects,
+  visibleModules,
+  type DossierData,
+} from '~/lib/content/dossier';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import type { Project } from '~/lib/content/types';
+import {
+  isDocumentListable,
+  isProjectPublishable,
+  latestDocuments,
+  resolveFigure,
+} from '~/lib/content/visibility';
+import { projectSectionPages } from '~/lib/navigation';
+import { canonicalUrl, placeJsonLd } from '~/lib/seo';
+import { projectUrl } from '~/lib/urls';
+import Container from '~/components/primitives/Container.astro';
+import CTABand from '~/components/patterns/CTABand.astro';
+import ComplianceBlock from '~/components/patterns/ComplianceBlock.astro';
+import StratColumn from '~/components/patterns/StratColumn.astro';
+import ProjectDocuments from '~/components/modules/project/ProjectDocuments.astro';
+import ProjectGeology from '~/components/modules/project/ProjectGeology.astro';
+import ProjectHero from '~/components/modules/project/ProjectHero.astro';
+import ProjectHistory from '~/components/modules/project/ProjectHistory.astro';
+import ProjectKeyFacts from '~/components/modules/project/ProjectKeyFacts.astro';
+import ProjectMilestones from '~/components/modules/project/ProjectMilestones.astro';
+import ProjectPhotography from '~/components/modules/project/ProjectPhotography.astro';
+import ProjectRelated from '~/components/modules/project/ProjectRelated.astro';
+import ProjectResources from '~/components/modules/project/ProjectResources.astro';
+import ProjectResults from '~/components/modules/project/ProjectResults.astro';
+import ProjectSetting from '~/components/modules/project/ProjectSetting.astro';
+import ProjectTargets from '~/components/modules/project/ProjectTargets.astro';
+
+export async function getStaticPaths() {
+  const projects = await content.getProjects();
+  return projects
+    .filter((project) => isProjectPublishable(project, config.contentMode))
+    .map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const mode = config.contentMode;
+const [frame, documents, workItems, prospects, resources, results, milestones] = await Promise.all([
+  loadFrame(content, mode),
+  content.getDocuments(),
+  content.getWorkItems(project.id),
+  content.getProspects(project.id),
+  content.getResourceEstimates(project.id),
+  content.getResults(project.id),
+  content.getMilestones(project.id),
+]);
+const sources = createSourceIndex(documents);
+const projectDocuments = latestDocuments(
+  documents.filter((document) => document.projectIds.includes(project.id)),
+  mode,
+);
+const latestAnnouncement = projectDocuments.find(
+  (document) => document.docType === 'announcement' && isDocumentListable(document, mode),
+);
+
+const data: DossierData = {
+  project,
+  workItems,
+  prospects,
+  resources,
+  results: publishableResults(results, documents, mode),
+  milestones,
+  documents: projectDocuments,
+};
+const modules = visibleModules(data, mode);
+const shown = new Set(modules.map((module) => module.id));
+const showCompliance = isComplianceShown(modules, data, mode);
+
+// Figures are numbered in page order, counting only those that render (or, in preview, their frames).
+let figureCount = 0;
+const settingFigure =
+  shown.has('setting') && resolveFigure(project.settingMap, mode).kind !== 'hidden'
+    ? ++figureCount
+    : 0;
+const sectionFigure =
+  shown.has('geology') && resolveFigure(project.sectionFigure, mode).kind !== 'hidden'
+    ? ++figureCount
+    : 0;
+const firstPhotoFigure = figureCount + 1;
+
+// Related sheets and previous / next use only projects listable in this mode.
+const related = relatedProjects(project, frame.projects, mode);
+const adjacent = adjacentProjects(project, frame.projects);
+
+const path = projectUrl(project);
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: '02 Projects', path: '/projects' },
+  { name: `${project.sheetNumber} ${project.name}`, path },
+];
+const sectionPages = projectSectionPages(
+  frame.projects.map((listed) => ({
+    sheet: listed.sheetNumber,
+    label: listed.name,
+    href: projectUrl(listed),
+  })),
+);
+const site = Astro.site ?? Astro.url;
+// Claim-free: published before any project fact is approved.
+const description = `The ${project.name} project sheet: setting, geology, exploration work and documents for this Auburn Resources exploration project.`;
+---
+
+<SiteLayout
+  title={project.name}
+  description={description}
+  frame={frame}
+  sheet={project.sheetNumber}
+  sheetLabel={project.name}
+  currentSection="02"
+  sectionBar={{ sectionLabel: '02 Projects', pages: sectionPages, currentHref: path }}
+  breadcrumbs={breadcrumbs}
+  jsonLd={[placeJsonLd(project, mode, canonicalUrl(path, site))]}
+>
+  <ProjectHero
+    project={project}
+    breadcrumbs={breadcrumbs}
+    sheet={project.sheetNumber}
+    latestAnnouncement={latestAnnouncement}
+    mode={mode}
+  />
+  <ProjectKeyFacts project={project} sources={sources} mode={mode} />
+
+  {modules.length > 0 && (
+    <Container>
+      <div class="dossier">
+        <aside class="dossier__index">
+          <StratColumn bands={modules.map(({ id, number, label }) => ({ id, number, label }))} />
+        </aside>
+        <div class="dossier__modules">
+          {modules.map((module) => {
+            switch (module.id) {
+              case 'setting':
+                return (
+                  <ProjectSetting
+                    module={module}
+                    project={project}
+                    figureNumber={settingFigure}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'geology':
+                return (
+                  <ProjectGeology
+                    module={module}
+                    project={project}
+                    figureNumber={sectionFigure}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'history':
+                return (
+                  <ProjectHistory
+                    module={module}
+                    projectName={project.name}
+                    workItems={workItems}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'resources':
+                return (
+                  <ProjectResources
+                    module={module}
+                    projectName={project.name}
+                    resources={resources}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'targets':
+                return (
+                  <ProjectTargets
+                    module={module}
+                    projectName={project.name}
+                    prospects={prospects}
+                    heldBackNote={project.heldBackNote}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'results':
+                return (
+                  <ProjectResults
+                    module={module}
+                    projectName={project.name}
+                    results={data.results}
+                    sources={sources}
+                    mode={mode}
+                  />
+                );
+              case 'photography':
+                return (
+                  <ProjectPhotography
+                    module={module}
+                    projectName={project.name}
+                    photos={project.photos}
+                    firstFigureNumber={firstPhotoFigure}
+                    mode={mode}
+                  />
+                );
+              case 'milestones':
+                return (
+                  <ProjectMilestones
+                    module={module}
+                    projectName={project.name}
+                    milestones={milestones}
+                    mode={mode}
+                  />
+                );
+              case 'documents':
+                return (
+                  <ProjectDocuments
+                    module={module}
+                    projectName={project.name}
+                    documents={projectDocuments}
+                    mode={mode}
+                  />
+                );
+            }
+          })}
+        </div>
+      </div>
+    </Container>
+  )}
+
+  <ProjectRelated related={related} adjacent={adjacent} mode={mode} />
+
+  <CTABand
+    kicker={`Follow ${project.name}`}
+    heading={`Get ${project.name} announcements by email.`}
+    primary={{ label: 'Get investor updates', href: '/investors/alerts' }}
+    secondary={{ label: 'Discuss a partnership', href: '/contact' }}
+  />
+
+  {showCompliance && (
+    <Container>
+      <div class="dossier__compliance">
+        <ComplianceBlock
+          statement={project.cpStatement}
+          asAt={project.asAt}
+          sources={sources}
+          mode={mode}
+        />
+      </div>
+    </Container>
+  )}
+</SiteLayout>
+
+<style>
+  .dossier {
+    display: grid;
+    gap: var(--grid-gap);
+    padding-top: var(--space-6);
+  }
+
+  .dossier__index {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .dossier {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      align-items: start;
+    }
+
+    .dossier__index {
+      display: block;
+      position: sticky;
+      top: var(--space-4);
+    }
+  }
+
+  .dossier__modules {
+    min-width: 0;
+  }
+
+  .dossier__compliance {
+    padding-block: var(--section-padding);
+  }
+</style>

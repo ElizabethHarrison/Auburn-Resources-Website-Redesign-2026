@@ -106,6 +106,20 @@ export const specimenProject: Project = {
   heroThesis: specimenNarrative('Specimen one-line thesis for layout review, without digits.'),
   geologySummary: { kind: 'inputNeeded', brief: 'Geology summary' },
   statements: [],
+  tenements: { kind: 'inputNeeded', brief: 'Tenements' },
+  asAt: specimenFact(SPECIMEN_DATE),
+  setting: {
+    neighbouringDeposits: { kind: 'inputNeeded', brief: 'Neighbouring deposits' },
+    nearestTown: specimenFact('Specimen town'),
+    access: specimenFact('Specimen access'),
+    infrastructure: { kind: 'inputNeeded', brief: 'Infrastructure' },
+    traditionalOwners: { kind: 'inputNeeded', brief: 'Traditional Owners (with consent)' },
+  },
+  heroPhoto: { kind: 'inputNeeded', brief: 'Hero photograph' },
+  settingMap: { kind: 'inputNeeded', brief: 'Setting map' },
+  sectionFigure: { kind: 'inputNeeded', brief: 'Section' },
+  photos: [],
+  cpStatement: { kind: 'inputNeeded', brief: 'Competent person statement' },
 };
 
 export const specimenMilestones: readonly Milestone[] = [

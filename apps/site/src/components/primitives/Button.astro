@@ -10,8 +10,8 @@
 export interface Props {
   href?: string;
   variant?: 'primary' | 'secondary' | 'light' | 'outline-light';
-  /** Submit buttons arrive with forms in Phase 4. */
-  type?: 'button';
+  /** `submit` for native forms (e.g. the document filters, D-023). */
+  type?: 'button' | 'submit';
 }
 
 const { href, variant = 'primary', type = 'button' } = Astro.props;

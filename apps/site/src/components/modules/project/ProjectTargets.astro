@@ -1,0 +1,126 @@
+---
+/**
+ * Module 05 — Exploration targets (docs/SITEMAP.md §8): numbered target cards (keyed to map pins once
+ * approved GIS exists). Target descriptions are Interpretation (CP review); target types are Facts.
+ * Targets are forward-looking, so the module links to the disclaimer.
+ *
+ * Held-back wording (HOLD, e.g. exploration-target figures from the old site) is never stored or
+ * rendered; preview shows only an internal note that it exists. The optional JORC Exploration Target
+ * block needs approved ranges and the cautionary statement, and is not built until such records exist.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { factDisplay } from '~/lib/format';
+import { resolve } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { Prospect } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import FactCell from '~/components/patterns/FactCell.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SourceLine from '~/components/patterns/SourceLine.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  prospects: readonly Prospect[];
+  heldBackNote?: string | undefined;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, projectName, prospects, heldBackNote, sources, mode } = Astro.props;
+const targets = prospects
+  .map((prospect) => ({ prospect, summary: resolve(prospect.summary, mode) }))
+  .filter((target) => target.summary.kind !== 'hidden');
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<DossierSection module={module}>
+  {targets.length > 0 && (
+    <ol class="targets" role="list" aria-label={`${projectName} exploration targets`}>
+      {targets.map(({ prospect, summary }, index) => (
+        <li class="target">
+          <p class="target__number" aria-hidden="true">
+            T{pad(index)}
+          </p>
+          <h3 class="target__name">{prospect.name}</h3>
+          {summary.kind === 'value' && (
+            <>
+              <p>{summary.item.text}</p>
+              <SourceLine item={summary.item} sources={sources} mode={mode} />
+            </>
+          )}
+          {summary.kind === 'placeholder' && (
+            <Placeholder brief={summary.brief} field="Target" mode={mode} />
+          )}
+          <FactCell
+            item={factDisplay('Target type', prospect.targetType)}
+            sources={sources}
+            variant="row"
+            mode={mode}
+          />
+        </li>
+      ))}
+    </ol>
+  )}
+  {targets.length === 0 && (
+    <Placeholder
+      brief={`Drill targets at ${projectName}: name, evidence and target type for each, reviewed by the competent person`}
+      field="Targets"
+      mode={mode}
+    />
+  )}
+  {heldBackNote && (
+    <Placeholder brief={heldBackNote} field="Held back (not published)" mode={mode} />
+  )}
+  <p class="targets__note">
+    Exploration targets are forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+  </p>
+</DossierSection>
+
+<style>
+  .targets {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    border-left: var(--rule);
+    list-style: none;
+  }
+
+  @container (min-width: 40rem) {
+    .targets {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .target {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+    background-color: var(--paper);
+  }
+
+  .target__number {
+    align-self: flex-start;
+    padding: var(--tag-padding-block) var(--tag-padding-inline);
+    background-color: var(--copper-tint);
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .target__name {
+    font-size: var(--text-h3);
+  }
+
+  .targets__note {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+</style>

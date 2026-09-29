@@ -1,0 +1,144 @@
+---
+/**
+ * Sheet 03.1.x · Announcement (docs/SITEMAP.md 03.1.x): a permanent page per announcement — title block
+ * (date, reference), plain-language summary, PDF download, related projects and announcements.
+ *
+ * Routes: one per announcement listable in this mode (production: approved record, date and file), so
+ * every register link resolves. The PDF itself is served at /documents/[slug].pdf by the Worker (D-001).
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import type { DocumentRecord } from '~/lib/content/types';
+import { isDocumentListable, latestDocuments } from '~/lib/content/visibility';
+import { inputNeeded, resolve } from '~/lib/facts';
+import { formatDate } from '~/lib/dates';
+import { factDisplay } from '~/lib/format';
+import { articleJsonLd, canonicalUrl } from '~/lib/seo';
+import { documentPageUrl, documentPdfUrl } from '~/lib/urls';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import Grid from '~/components/primitives/Grid.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SheetCard from '~/components/patterns/SheetCard.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import PageBlock from '~/components/modules/page/PageBlock.astro';
+
+export async function getStaticPaths() {
+  const documents = await content.getDocuments();
+  return documents
+    .filter(
+      (document) =>
+        document.docType === 'announcement' && isDocumentListable(document, config.contentMode),
+    )
+    .map((document) => ({ params: { slug: document.slug }, props: { document } }));
+}
+
+interface Props {
+  document: DocumentRecord;
+}
+
+const { document } = Astro.props;
+const mode = config.contentMode;
+const [frame, documents] = await Promise.all([loadFrame(content, mode), content.getDocuments()]);
+const sources = createSourceIndex(documents);
+const path = documentPageUrl(document) ?? '/investors/announcements';
+const summary = resolve(
+  document.summary ?? inputNeeded('Plain-language summary of the announcement (no digits)'),
+  mode,
+);
+const file = resolve(document.file, mode);
+const details = [
+  factDisplay('Release date', document.releaseAt, formatDate),
+  ...(document.ref ? [factDisplay('Reference', document.ref)] : []),
+];
+const projects = frame.projects.filter((project) => document.projectIds.includes(project.id));
+const related = latestDocuments(
+  documents.filter(
+    (candidate) =>
+      candidate.id !== document.id &&
+      candidate.docType === 'announcement' &&
+      candidate.projectIds.some((id) => document.projectIds.includes(id)),
+  ),
+  mode,
+  { limit: 3 },
+);
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: '03 Investors', path: '/investors' },
+  { name: '03.1 Announcements', path: '/investors/announcements' },
+  { name: document.title, path },
+];
+const site = Astro.site ?? Astro.url;
+---
+
+<ContentLayout
+  heading={document.title}
+  description={`${document.title}: an Auburn Resources announcement, with a plain-language summary and the full PDF.`}
+  frame={frame}
+  href="/investors/announcements"
+  section="03"
+  sheetLabel="Announcement"
+  breadcrumbs={breadcrumbs}
+  jsonLd={[articleJsonLd(document.title, document.releaseAt, mode, canonicalUrl(path, site))]}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    {file.kind === 'value' && <Button href={documentPdfUrl(document)}>Download PDF</Button>}
+    {file.kind === 'placeholder' && (
+      <Placeholder brief={file.brief} field="PDF" variant="inline" mode={mode} />
+    )}
+  </Fragment>
+  <FactList id="details" heading="Details" items={details} sources={sources} mode={mode} />
+  {summary.kind !== 'hidden' && (
+    <PageBlock id="summary" heading="Summary">
+      {summary.kind === 'value' && <p class="summary">{summary.item.text}</p>}
+      {summary.kind === 'placeholder' && (
+        <Placeholder brief={summary.brief} field="Summary" mode={mode} />
+      )}
+    </PageBlock>
+  )}
+  {projects.length > 0 && (
+    <PageBlock id="related-projects" heading="Related projects">
+      <div class="wide">
+        <Grid as="ul" layout="thirds">
+          {projects.map((project) => (
+            <li>
+              <SheetCard project={project} mode={mode} />
+            </li>
+          ))}
+        </Grid>
+      </div>
+    </PageBlock>
+  )}
+  {related.length > 0 && (
+    <PageBlock id="related-announcements" heading="Related announcements">
+      <div class="wide">
+        <DocumentRegister documents={related} caption="Related announcements" mode={mode} />
+      </div>
+    </PageBlock>
+  )}
+  {projects.length === 0 && mode === 'preview' && (
+    <Container>
+      <Placeholder
+        brief="Tag the projects this announcement concerns, so it appears on their dossiers"
+        field="Related projects"
+        mode={mode}
+      />
+    </Container>
+  )}
+</ContentLayout>
+
+<style>
+  .summary {
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+  }
+
+  .wide {
+    width: 100%;
+  }
+</style>

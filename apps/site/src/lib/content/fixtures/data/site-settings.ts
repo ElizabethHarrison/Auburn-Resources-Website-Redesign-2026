@@ -48,6 +48,7 @@ export const siteSettings: SiteSettings = {
       unit: '%',
       note: 'Site: "39% owned by DGR Global Ltd". DGR Mar 2026 quarterly: 39.34%, 19.1 M shares. DGR\'s own Auburn page says 63% (outdated).',
     }),
+    sharesOnIssue: inputNeeded('Shares on issue, from the share registry (Q-22)'),
     ipoStatus: siteFact('Planning for a proposed IPO and ASX listing', {
       note: 'Stated since at least 2021; confirm the current position.',
     }),

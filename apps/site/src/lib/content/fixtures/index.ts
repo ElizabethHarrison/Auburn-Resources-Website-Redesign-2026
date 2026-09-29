@@ -3,7 +3,14 @@
  * Every seeded value is `toVerify` or INPUT NEEDED, so a production build renders none of it.
  */
 import type { ContentAdapter } from '../adapter';
+import { articles } from './data/articles';
 import { documents } from './data/documents';
+import { homePage } from './data/home-page';
+import { legalPages } from './data/legal-pages';
+import { pages } from './data/pages';
+import { portfolioPage } from './data/portfolio-page';
+import { prospects } from './data/prospects';
+import { milestones, resourceEstimates, results } from './data/technical';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
@@ -19,4 +26,14 @@ export const fixturesAdapter: ContentAdapter = {
   getDocument: async (id) => documents.find((document) => document.id === id),
   getWorkItems: async (projectId) =>
     projectId === undefined ? workItems : workItems.filter((item) => item.projectId === projectId),
+  getArticles: async () => articles,
+  getHomePage: async () => homePage,
+  getPortfolioPage: async () => portfolioPage,
+  getProspects: async (projectId) => prospects.filter((item) => item.projectId === projectId),
+  getResourceEstimates: async (projectId) =>
+    resourceEstimates.filter((item) => item.projectId === projectId),
+  getResults: async (projectId) => results.filter((item) => item.projectId === projectId),
+  getMilestones: async (projectId) => milestones.filter((item) => item.projectId === projectId),
+  getPage: async (key) => pages[key],
+  getLegalPage: async (key) => legalPages[key],
 };
