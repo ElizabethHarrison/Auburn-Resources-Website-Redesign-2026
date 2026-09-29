@@ -21,7 +21,9 @@ const Heading = `h${level}` as 'h2' | 'h3';
 <div class="section-heading">
   <div class="section-heading__text">
     {kicker && <p class="section-heading__kicker">{kicker}</p>}
-    <Heading id={id} class="section-heading__title">{heading}</Heading>
+    <Heading id={id} class="section-heading__title">
+      {heading}
+    </Heading>
   </div>
   {action && <ArrowLink href={action.href}>{action.label}</ArrowLink>}
 </div>

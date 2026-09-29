@@ -20,29 +20,29 @@ const { home, mode } = Astro.props;
 const line = resolve(home.sustainabilityLine, mode);
 ---
 
-{
-  line.kind !== 'hidden' && (
-    <section class="sustainability" aria-labelledby="home-sustainability">
-      <Container>
-        <div class="sustainability__inner">
-          <h2 id="home-sustainability" class="sustainability__kicker">
-            04 Sustainability
-          </h2>
-          <div class="sustainability__body">
-            {line.kind === 'value' && (
-              <p class="sustainability__line">
-                {line.item.text}
-                {mode === 'preview' && <StatusDot status={line.status} compact mode={mode} />}
-              </p>
-            )}
-            {line.kind === 'placeholder' && <Placeholder brief={line.brief} field="Sentence" mode={mode} />}
-            <ArrowLink href="/sustainability">Sustainability at Auburn</ArrowLink>
-          </div>
+{line.kind !== 'hidden' && (
+  <section class="sustainability" aria-labelledby="home-sustainability">
+    <Container>
+      <div class="sustainability__inner">
+        <h2 id="home-sustainability" class="sustainability__kicker">
+          04 Sustainability
+        </h2>
+        <div class="sustainability__body">
+          {line.kind === 'value' && (
+            <p class="sustainability__line">
+              {line.item.text}
+              {mode === 'preview' && <StatusDot status={line.status} compact mode={mode} />}
+            </p>
+          )}
+          {line.kind === 'placeholder' && (
+            <Placeholder brief={line.brief} field="Sentence" mode={mode} />
+          )}
+          <ArrowLink href="/sustainability">Sustainability at Auburn</ArrowLink>
         </div>
-      </Container>
-    </section>
-  )
-}
+      </div>
+    </Container>
+  </section>
+)}
 
 <style>
   .sustainability {

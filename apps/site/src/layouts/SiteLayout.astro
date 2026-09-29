@@ -42,11 +42,11 @@ const {
 ---
 
 <BaseLayout
-  {...title === undefined ? {} : { title }}
+  {...(title === undefined ? {} : { title })}
   description={description}
-  {...breadcrumbs === undefined ? {} : { breadcrumbs }}
-  {...jsonLd === undefined ? {} : { jsonLd }}
-  {...noindex === undefined ? {} : { noindex }}
+  {...(breadcrumbs === undefined ? {} : { breadcrumbs })}
+  {...(jsonLd === undefined ? {} : { jsonLd })}
+  {...(noindex === undefined ? {} : { noindex })}
 >
   <Fragment slot="header">
     <Header sheet={sheet} sheetLabel={sheetLabel} currentSection={currentSection} />

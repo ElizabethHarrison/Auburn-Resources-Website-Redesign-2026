@@ -36,9 +36,9 @@ export default tseslint.config(
   },
   {
     // Build scripts run in Node and report to the console.
-    files: ['scripts/**/*.mjs'],
+    files: ['scripts/**/*.mjs', 'tests/**/*.mjs'],
     languageOptions: {
-      globals: { process: 'readonly', console: 'readonly', Buffer: 'readonly' },
+      globals: { process: 'readonly', console: 'readonly', Buffer: 'readonly', URL: 'readonly' },
     },
     rules: { 'no-console': 'off' },
   },

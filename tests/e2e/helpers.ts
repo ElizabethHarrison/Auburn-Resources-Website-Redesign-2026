@@ -13,7 +13,8 @@ export async function expectNoAxeViolations(page: Page) {
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
   const summary = results.violations.map(
-    (violation) => `${violation.id} (${violation.impact}): ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`,
+    (violation) =>
+      `${violation.id} (${violation.impact}): ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`,
   );
   expect(summary).toEqual([]);
 }
@@ -30,7 +31,9 @@ export async function expectNoHorizontalOverflow(page: Page) {
 /** One H1 and no skipped heading levels (CLAUDE.md §6). */
 export async function expectHeadingOutline(page: Page) {
   const levels = await page.$$eval('h1, h2, h3, h4, h5, h6', (headings) =>
-    headings.filter((heading) => heading.getClientRects().length > 0).map((heading) => Number(heading.tagName[1])),
+    headings
+      .filter((heading) => heading.getClientRects().length > 0)
+      .map((heading) => Number(heading.tagName[1])),
   );
   expect(levels.filter((level) => level === 1)).toHaveLength(1);
   levels.reduce((previous, level) => {
@@ -59,6 +62,9 @@ export async function expectNoPreviewOutput(page: Page) {
 
 /** Zero client JavaScript at this stage (no islands before Phase 4). */
 export async function expectNoScripts(page: Page) {
-  const scripts = await page.$$eval('script:not([type="application/ld+json"])', (nodes) => nodes.length);
+  const scripts = await page.$$eval(
+    'script:not([type="application/ld+json"])',
+    (nodes) => nodes.length,
+  );
   expect(scripts).toBe(0);
 }

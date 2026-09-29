@@ -32,60 +32,68 @@ const text = resolve(home.whyText, mode);
 const section = resolveFigure(home.crossSection, mode);
 ---
 
-{
-  visible && (
-    <section class="why" aria-labelledby="home-why">
-      <Container>
-        <div class="why__rule">
-          <p class="why__kicker">Why this ground</p>
+{visible && (
+  <section class="why" aria-labelledby="home-why">
+    <Container>
+      <div class="why__rule">
+        <p class="why__kicker">Why this ground</p>
+      </div>
+      <div class:list={['why__grid', { 'why__grid--figure': section.kind !== 'hidden' }]}>
+        <div class="why__text">
+          <h2 id="home-why" class="why__heading">
+            {heading.kind === 'value' ? heading.item.text : 'Why this ground'}
+          </h2>
+          {mode === 'preview' && heading.kind === 'value' && (
+            <StatusDot status={heading.status} mode={mode} />
+          )}
+          {heading.kind === 'placeholder' && (
+            <Placeholder brief={heading.brief} field="Heading" mode={mode} />
+          )}
+          {text.kind === 'value' && (
+            <>
+              <p>{text.item.text}</p>
+              <SourceLine item={text.item} sources={sources} mode={mode} />
+            </>
+          )}
+          {text.kind === 'placeholder' && (
+            <Placeholder brief={text.brief} field="Thesis" mode={mode} />
+          )}
+          <ArrowLink href="/projects/how-we-explore">How we explore</ArrowLink>
         </div>
-        <div class:list={['why__grid', { 'why__grid--figure': section.kind !== 'hidden' }]}>
-          <div class="why__text">
-            <h2 id="home-why" class="why__heading">
-              {heading.kind === 'value' ? heading.item.text : 'Why this ground'}
-            </h2>
-            {mode === 'preview' && heading.kind === 'value' && <StatusDot status={heading.status} mode={mode} />}
-            {heading.kind === 'placeholder' && <Placeholder brief={heading.brief} field="Heading" mode={mode} />}
-            {text.kind === 'value' && (
-              <>
-                <p>{text.item.text}</p>
-                <SourceLine item={text.item} sources={sources} mode={mode} />
-              </>
-            )}
-            {text.kind === 'placeholder' && <Placeholder brief={text.brief} field="Thesis" mode={mode} />}
-            <ArrowLink href="/projects/how-we-explore">How we explore</ArrowLink>
-          </div>
 
-          {section.kind === 'figure' && (
-            <div class="why__figure">
-              <Figure
-                number={2}
-                caption={section.figure.caption}
-                alt={section.figure.alt}
-                image={{ src: section.figure.src, width: section.figure.width, height: section.figure.height }}
-                source={section.figure.source}
-                date={section.figure.date}
-                longDescription={section.figure.longDescription}
-              />
-              <MapLegend keys={['auburn', 'form-lines']} />
-            </div>
-          )}
-          {section.kind === 'placeholder' && (
-            <div class="why__figure">
-              <FigurePlaceholder
-                number={2}
-                title="Schematic cross-section: host sequence beneath cover."
-                brief={section.brief}
-                ratio="16 / 9"
-                mode={mode}
-              />
-            </div>
-          )}
-        </div>
-      </Container>
-    </section>
-  )
-}
+        {section.kind === 'figure' && (
+          <div class="why__figure">
+            <Figure
+              number={2}
+              caption={section.figure.caption}
+              alt={section.figure.alt}
+              image={{
+                src: section.figure.src,
+                width: section.figure.width,
+                height: section.figure.height,
+              }}
+              source={section.figure.source}
+              date={section.figure.date}
+              longDescription={section.figure.longDescription}
+            />
+            <MapLegend keys={['auburn', 'form-lines']} />
+          </div>
+        )}
+        {section.kind === 'placeholder' && (
+          <div class="why__figure">
+            <FigurePlaceholder
+              number={2}
+              title="Schematic cross-section: host sequence beneath cover."
+              brief={section.brief}
+              ratio="16 / 9"
+              mode={mode}
+            />
+          </div>
+        )}
+      </div>
+    </Container>
+  </section>
+)}
 
 <style>
   .why {

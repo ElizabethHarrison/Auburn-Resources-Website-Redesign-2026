@@ -14,6 +14,9 @@ export interface FrameData {
 }
 
 export async function loadFrame(adapter: ContentAdapter, mode: ContentMode): Promise<FrameData> {
-  const [settings, projects] = await Promise.all([adapter.getSiteSettings(), adapter.getProjects()]);
+  const [settings, projects] = await Promise.all([
+    adapter.getSiteSettings(),
+    adapter.getProjects(),
+  ]);
   return { settings, projects: projects.filter((project) => isProjectListable(project, mode)) };
 }

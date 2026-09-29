@@ -53,7 +53,9 @@ export function resolveFigure(slot: FigureSlot | undefined, mode: ContentMode): 
   if (slot.kind === 'inputNeeded') {
     return mode === 'preview' ? { kind: 'placeholder', brief: slot.brief } : { kind: 'hidden' };
   }
-  return isStatusRenderable(slot.status, mode) ? { kind: 'figure', figure: slot } : { kind: 'hidden' };
+  return isStatusRenderable(slot.status, mode)
+    ? { kind: 'figure', figure: slot }
+    : { kind: 'hidden' };
 }
 
 // ── Latest documents and articles ───────────────────────────────────────────────────────────────
@@ -80,11 +82,19 @@ export function latestDocuments(
 }
 
 /** Articles that may appear: approved (or, in preview, draft/to verify) with a renderable date. */
-export function latestArticles(articles: readonly Article[], mode: ContentMode, limit?: number): Article[] {
+export function latestArticles(
+  articles: readonly Article[],
+  mode: ContentMode,
+  limit?: number,
+): Article[] {
   const listed = articles
-    .filter((article) => isStatusRenderable(article.status, mode) && isRenderable(article.date, mode))
+    .filter(
+      (article) => isStatusRenderable(article.status, mode) && isRenderable(article.date, mode),
+    )
     .sort((a, b) =>
-      (b.date.kind === 'fact' ? b.date.value : '').localeCompare(a.date.kind === 'fact' ? a.date.value : ''),
+      (b.date.kind === 'fact' ? b.date.value : '').localeCompare(
+        a.date.kind === 'fact' ? a.date.value : '',
+      ),
     );
   return limit === undefined ? listed : listed.slice(0, limit);
 }

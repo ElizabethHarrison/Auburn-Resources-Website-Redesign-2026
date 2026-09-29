@@ -23,18 +23,16 @@ const mode = renderMode(Astro.props.mode);
 const ratioClass = { '4 / 3': 'r43', '16 / 9': 'r169', '3 / 2': 'r32' }[ratio];
 ---
 
-{
-  mode === 'preview' && (
-    <div class="figure-placeholder" data-preview-only>
-      <div class:list={['figure-placeholder__frame', ratioClass]}>
-        <Placeholder brief={brief} field={`Fig. ${number}`} mode={mode} />
-      </div>
-      <p class="figure-placeholder__caption">
-        Fig. {number} — {title}
-      </p>
+{mode === 'preview' && (
+  <div class="figure-placeholder" data-preview-only>
+    <div class:list={['figure-placeholder__frame', ratioClass]}>
+      <Placeholder brief={brief} field={`Fig. ${number}`} mode={mode} />
     </div>
-  )
-}
+    <p class="figure-placeholder__caption">
+      Fig. {number} — {title}
+    </p>
+  </div>
+)}
 
 <style>
   .figure-placeholder {

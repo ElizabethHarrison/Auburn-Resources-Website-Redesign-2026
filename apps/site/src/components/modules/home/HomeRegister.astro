@@ -34,25 +34,23 @@ const latest = latestDocuments(documents, mode, { limit: 5 });
 const visible = latest.length > 0 || facts.some((item) => isRenderable(item.slot, mode));
 ---
 
-{
-  visible && (
-    <section class="register-module" aria-labelledby="home-register">
-      <Container>
-        <SectionHeading id="home-register" kicker="03 Investors" heading="The register" />
-        <div class="register-module__body">
-          <FactStrip items={facts} label="Investor key facts" sources={sources} mode={mode} />
-          <DocumentRegister documents={latest} caption="Latest documents" showCaption mode={mode} />
-          <div class="register-module__actions">
-            <Button href="/investors/alerts" variant="secondary">
-              Get email alerts
-            </Button>
-            <ArrowLink href="/investors/announcements">View the full register</ArrowLink>
-          </div>
+{visible && (
+  <section class="register-module" aria-labelledby="home-register">
+    <Container>
+      <SectionHeading id="home-register" kicker="03 Investors" heading="The register" />
+      <div class="register-module__body">
+        <FactStrip items={facts} label="Investor key facts" sources={sources} mode={mode} />
+        <DocumentRegister documents={latest} caption="Latest documents" showCaption mode={mode} />
+        <div class="register-module__actions">
+          <Button href="/investors/alerts" variant="secondary">
+            Get email alerts
+          </Button>
+          <ArrowLink href="/investors/announcements">View the full register</ArrowLink>
         </div>
-      </Container>
-    </section>
-  )
-}
+      </div>
+    </Container>
+  </section>
+)}
 
 <style>
   .register-module {

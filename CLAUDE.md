@@ -22,9 +22,12 @@ Read these before writing code, in this order:
 - **Phase 2** (design system) — done, awaiting review: tokens tagged approved/derived, 11 primitives, static
   patterns and page frame in `apps/site/src/components/`, preview-only catalogue at `/_catalogue`
   (`src/catalogue/`), design-system/contrast tests, JS budget check. Review: `docs/reviews/phase-2-design-review.md`.
-- **Not yet built:** real pages and templates (Phase 3), islands (Phase 4), Sanity Studio (Phase 5),
-  `workers/edge`, Playwright/axe/Lighthouse in CI. `src/pages/index.astro` is a temporary noindex development
-  scaffold, replaced by the Home template in Phase 3.
+- **Phase 3** (page templates on fixtures) — in progress, reviewed page by page: **Home** built (awaiting
+  review). Next, after approval: portfolio → project dossier → investor centre → document library → other pages.
+  Pages use `layouts/SiteLayout.astro` + `loadFrame()`; modules live in `components/modules/<page>/`.
+  Playwright + axe tests in `tests/e2e` run against both builds.
+- **Not yet built:** remaining Phase 3 pages, islands (Phase 4), Sanity Studio (Phase 5), `workers/edge`,
+  Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
@@ -162,8 +165,10 @@ pnpm typecheck      # astro check
 pnpm budget         # JS-on-page-load budget (30 KB compressed) against the production build
 pnpm check          # all of the above plus both builds — run before pushing
 ```
-Planned: `pnpm test:e2e` (Playwright + axe, Phase 3), `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also
-start the Studio from Phase 5.
+pnpm test:e2e       # Playwright + axe against both builds (build both first; `pnpm check` does)
+```
+Planned: `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also start the Studio from Phase 5.
+```
 
 ### 4.4 Content access and modes (approved — D-003, D-005, D-009)
 - Components never fetch. Pages call `src/lib/content/*` loaders, which return typed records from fixtures or Sanity.

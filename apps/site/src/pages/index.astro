@@ -45,7 +45,7 @@ const description =
   frame={frame}
   sheet="00"
   sheetLabel="Home"
-  {...organization ? { jsonLd: [organization] } : {}}
+  {...(organization ? { jsonLd: [organization] } : {})}
 >
   <HomeHero home={home} keyFacts={settings.keyFacts} mode={mode} />
   <HomeKeyFacts keyFacts={settings.keyFacts} sources={sources} mode={mode} />

@@ -42,7 +42,9 @@ async function locate(pathname) {
   const safe = normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, '');
   const base = join(root, safe);
   if (!base.startsWith(root)) return undefined;
-  const candidates = safe.endsWith('/') ? [join(base, 'index.html')] : [base, `${base}.html`, join(base, 'index.html')];
+  const candidates = safe.endsWith('/')
+    ? [join(base, 'index.html')]
+    : [base, `${base}.html`, join(base, 'index.html')];
   for (const candidate of candidates) if (await isFile(candidate)) return candidate;
   return undefined;
 }

@@ -22,42 +22,44 @@ const latest = latestArticles(articles, mode, 2);
 const visible = latest.length > 0 || mode === 'preview';
 ---
 
-{
-  visible && (
-    <section class="news-module" aria-labelledby="home-news">
-      <Container>
-        <SectionHeading
-          id="home-news"
-          kicker="05 News"
-          heading="News"
-          action={latest.length > 0 ? { label: 'All news', href: '/news' } : undefined}
-        />
-        <div class="news-module__body">
-          {latest.length > 0 ? (
-            <ul class="news-module__list" role="list">
-              {latest.map((article) => {
-                const lead = resolve(article.lead, mode);
-                return (
-                  <li class="news-module__item">
-                    <p class="news-module__date">
-                      <FactValue fact={article.date} field="Date" mode={mode} />
-                    </p>
-                    <h3 class="news-module__title">
-                      <a href={`/news/${article.slug}`}>{article.title}</a>
-                    </h3>
-                    {lead.kind === 'value' && <p>{lead.item.text}</p>}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <Placeholder brief="No news articles have been supplied; the module stays hidden in production until one is published" field="Latest news" mode={mode} />
-          )}
-        </div>
-      </Container>
-    </section>
-  )
-}
+{visible && (
+  <section class="news-module" aria-labelledby="home-news">
+    <Container>
+      <SectionHeading
+        id="home-news"
+        kicker="05 News"
+        heading="News"
+        action={latest.length > 0 ? { label: 'All news', href: '/news' } : undefined}
+      />
+      <div class="news-module__body">
+        {latest.length > 0 ? (
+          <ul class="news-module__list" role="list">
+            {latest.map((article) => {
+              const lead = resolve(article.lead, mode);
+              return (
+                <li class="news-module__item">
+                  <p class="news-module__date">
+                    <FactValue fact={article.date} field="Date" mode={mode} />
+                  </p>
+                  <h3 class="news-module__title">
+                    <a href={`/news/${article.slug}`}>{article.title}</a>
+                  </h3>
+                  {lead.kind === 'value' && <p>{lead.item.text}</p>}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <Placeholder
+            brief="No news articles have been supplied; the module stays hidden in production until one is published"
+            field="Latest news"
+            mode={mode}
+          />
+        )}
+      </div>
+    </Container>
+  </section>
+)}
 
 <style>
   .news-module {

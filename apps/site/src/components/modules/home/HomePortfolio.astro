@@ -19,29 +19,27 @@ export interface Props {
 const { projects, mode } = Astro.props;
 ---
 
-{
-  projects.length > 0 && (
-    <section class="home-section" aria-labelledby="home-portfolio">
-      <Container>
-        <SectionHeading
-          id="home-portfolio"
-          kicker="02 Projects"
-          heading="The portfolio, sheet by sheet"
-          action={{ label: 'All projects and the full map', href: '/projects' }}
-        />
-        <div class="home-section__body">
-          <Grid as="ul" layout="thirds">
-            {projects.map((project) => (
-              <li>
-                <SheetCard project={project} mode={mode} />
-              </li>
-            ))}
-          </Grid>
-        </div>
-      </Container>
-    </section>
-  )
-}
+{projects.length > 0 && (
+  <section class="home-section" aria-labelledby="home-portfolio">
+    <Container>
+      <SectionHeading
+        id="home-portfolio"
+        kicker="02 Projects"
+        heading="The portfolio, sheet by sheet"
+        action={{ label: 'All projects and the full map', href: '/projects' }}
+      />
+      <div class="home-section__body">
+        <Grid as="ul" layout="thirds">
+          {projects.map((project) => (
+            <li>
+              <SheetCard project={project} mode={mode} />
+            </li>
+          ))}
+        </Grid>
+      </div>
+    </Container>
+  </section>
+)}
 
 <style>
   .home-section {

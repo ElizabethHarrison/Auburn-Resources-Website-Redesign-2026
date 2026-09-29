@@ -17,8 +17,9 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "pnpm -r test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview && pnpm budget",
-    "budget": "node scripts/check-js-budget.mjs apps/site/dist"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview && pnpm budget && pnpm test:e2e",
+    "budget": "node scripts/check-js-budget.mjs apps/site/dist",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

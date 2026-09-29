@@ -47,34 +47,44 @@ const formatCommodityList = (value: unknown) =>
   <Container>
     <div class:list={['hero__grid', { 'hero__grid--figure': map.kind !== 'hidden' }]}>
       <div class="hero__text">
-        {
-          (showCommodities || showJurisdictions) && (
-            <p class="hero__kicker">
-              {showCommodities && (
-                <FactValue fact={keyFacts.commodities} format={formatCommodityList} field="Commodities" mode={mode} />
-              )}
-              {showCommodities && showJurisdictions && <span aria-hidden="true"> / </span>}
-              {showJurisdictions && (
-                <FactValue fact={keyFacts.jurisdictions} format={formatStates} field="Jurisdictions" mode={mode} />
-              )}
-            </p>
-          )
-        }
+        {(showCommodities || showJurisdictions) && (
+          <p class="hero__kicker">
+            {showCommodities && (
+              <FactValue
+                fact={keyFacts.commodities}
+                format={formatCommodityList}
+                field="Commodities"
+                mode={mode}
+              />
+            )}
+            {showCommodities && showJurisdictions && <span aria-hidden="true"> / </span>}
+            {showJurisdictions && (
+              <FactValue
+                fact={keyFacts.jurisdictions}
+                format={formatStates}
+                field="Jurisdictions"
+                mode={mode}
+              />
+            )}
+          </p>
+        )}
 
         <h1 id="hero-heading" class="hero__heading">
           {heading.kind === 'value' ? heading.item.text : SITE_NAME}
         </h1>
-        {
-          mode === 'preview' && heading.kind === 'value' && (
-            <p class="hero__note">
-              <StatusDot status={heading.status} mode={mode} /> Working headline (WEBSITE-STRATEGY §5)
-            </p>
-          )
-        }
-        {heading.kind === 'placeholder' && <Placeholder brief={heading.brief} field="Headline" mode={mode} />}
+        {mode === 'preview' && heading.kind === 'value' && (
+          <p class="hero__note">
+            <StatusDot status={heading.status} mode={mode} /> Working headline (WEBSITE-STRATEGY §5)
+          </p>
+        )}
+        {heading.kind === 'placeholder' && (
+          <Placeholder brief={heading.brief} field="Headline" mode={mode} />
+        )}
 
         {intro.kind === 'value' && <p class="hero__intro">{intro.item.text}</p>}
-        {intro.kind === 'placeholder' && <Placeholder brief={intro.brief} field="Introduction" mode={mode} />}
+        {intro.kind === 'placeholder' && (
+          <Placeholder brief={intro.brief} field="Introduction" mode={mode} />
+        )}
 
         <div class="hero__actions">
           <Button href="/projects">Explore the projects</Button>
@@ -87,28 +97,29 @@ const formatCommodityList = (value: unknown) =>
         </div>
       </div>
 
-      {
-        map.kind === 'figure' && (
-          <div class="hero__figure">
-            <Figure
-              number={1}
-              caption={map.figure.caption}
-              alt={map.figure.alt}
-              image={{ src: map.figure.src, width: map.figure.width, height: map.figure.height }}
-              source={map.figure.source}
-              date={map.figure.date}
-              longDescription={map.figure.longDescription}
-            />
-          </div>
-        )
-      }
-      {
-        map.kind === 'placeholder' && (
-          <div class="hero__figure">
-            <FigurePlaceholder number={1} title="Auburn project portfolio, northern Australia." brief={map.brief} mode={mode} />
-          </div>
-        )
-      }
+      {map.kind === 'figure' && (
+        <div class="hero__figure">
+          <Figure
+            number={1}
+            caption={map.figure.caption}
+            alt={map.figure.alt}
+            image={{ src: map.figure.src, width: map.figure.width, height: map.figure.height }}
+            source={map.figure.source}
+            date={map.figure.date}
+            longDescription={map.figure.longDescription}
+          />
+        </div>
+      )}
+      {map.kind === 'placeholder' && (
+        <div class="hero__figure">
+          <FigurePlaceholder
+            number={1}
+            title="Auburn project portfolio, northern Australia."
+            brief={map.brief}
+            mode={mode}
+          />
+        </div>
+      )}
     </div>
   </Container>
 </section>
