@@ -6,7 +6,8 @@
  * Renders nothing when the slot is hidden in this mode. In preview, a missing value shows the
  * INPUT NEEDED placeholder in the value position.
  *
- * `variant="counter"` puts the value first and the label beneath, for counter rows.
+ * `variant="counter"` puts the value first and the label beneath, for counter rows. `variant="row"` is
+ * the compact form for fact lists (lead-size value), e.g. project module 01.
  */
 import type { ContentMode } from '~/lib/facts';
 import { resolve } from '~/lib/facts';
@@ -19,7 +20,7 @@ import SourceLine from './SourceLine.astro';
 export interface Props {
   item: FactDisplay;
   sources?: SourceIndex | undefined;
-  variant?: 'cell' | 'counter';
+  variant?: 'cell' | 'counter' | 'row';
   mode?: ContentMode | undefined;
 }
 
@@ -106,6 +107,10 @@ const isLong = [...formatted].length > 24;
     order: 1;
     font-size: clamp(1.25rem, 17cqi, var(--text-counter));
   }
+  .fact-cell--row .fact-cell__value {
+    font-size: var(--text-lead);
+  }
+
   .fact-cell--counter .fact-cell__source {
     order: 3;
   }

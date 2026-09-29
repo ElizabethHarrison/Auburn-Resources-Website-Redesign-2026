@@ -1,0 +1,137 @@
+---
+/**
+ * Strat-column index, "On this sheet" (docs/DESIGN-DIRECTION.md): the project page's sections as
+ * stacked bands of varied height, like a stratigraphic column. STATIC in Phase 3: in-page links, sticky
+ * with CSS only, shown from 64rem. The Phase 4 island adds the filled "current" band on scroll and the
+ * mobile "Sections" chip with a bottom sheet.
+ *
+ * Only the modules actually rendered on the page are listed, so every link has a target.
+ */
+export interface StratBand {
+  readonly id: string;
+  readonly number: string;
+  readonly label: string;
+}
+
+export interface Props {
+  bands: readonly StratBand[];
+}
+
+const { bands } = Astro.props;
+
+// Band heights vary 44–70 px (design direction); fills alternate, with copper tint for Targets.
+const HEIGHTS = ['h56', 'h66', 'h48', 'h44', 'h70', 'h50', 'h46', 'h54', 'h48'] as const;
+const FILLS = ['paper', 'water', 'grey'] as const;
+---
+
+{bands.length > 0 && (
+  <nav class="strat" aria-label="On this sheet">
+    <p class="strat__title">On this sheet</p>
+    <ol class="strat__bands" role="list">
+      {bands.map((band, index) => (
+        <li>
+          <a
+            class:list={[
+              'strat__band',
+              HEIGHTS[index % HEIGHTS.length],
+              band.id === 'targets' ? 'fill-copper' : `fill-${FILLS[index % FILLS.length]}`,
+            ]}
+            href={`#${band.id}`}
+          >
+            <span class="strat__number">{band.number}</span>
+            {band.label}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .strat {
+    position: sticky;
+    top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .strat__title {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .strat__bands {
+    margin: 0;
+    padding: 0;
+    border: var(--rule);
+    list-style: none;
+  }
+
+  .strat__bands li + li {
+    border-top: var(--rule);
+  }
+
+  .strat__band {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
+    color: var(--ink-survey);
+    text-decoration: none;
+  }
+
+  .strat__band:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.25em;
+  }
+
+  .strat__number {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .h44 {
+    min-height: var(--strat-band-min);
+  }
+  .h46 {
+    min-height: calc(var(--strat-band-min) + var(--space-half) / 2);
+  }
+  .h48 {
+    min-height: calc(var(--strat-band-min) + var(--space-half));
+  }
+  .h50 {
+    min-height: calc(var(--strat-band-min) + var(--space-half) * 1.5);
+  }
+  .h54 {
+    min-height: calc(var(--strat-band-min) + var(--space-half) * 2.5);
+  }
+  .h56 {
+    min-height: calc(var(--strat-band-min) + var(--space-half) * 3);
+  }
+  .h66 {
+    min-height: calc(var(--strat-band-max) - var(--space-half));
+  }
+  .h70 {
+    min-height: var(--strat-band-max);
+  }
+
+  .fill-paper {
+    background-color: var(--paper);
+  }
+  .fill-water {
+    background-color: var(--water);
+  }
+  .fill-grey {
+    background-color: var(--band-grey);
+  }
+  .fill-copper {
+    background-color: var(--copper-tint);
+  }
+</style>

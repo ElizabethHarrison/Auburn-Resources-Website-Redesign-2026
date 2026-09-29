@@ -16,8 +16,8 @@ import DateMono from '../primitives/DateMono.astro';
 import StatusDot from './StatusDot.astro';
 
 export interface Props {
-  /** Figure number on this page. */
-  number: number;
+  /** Figure number on this page. Omit for unnumbered images (e.g. a hero photograph). */
+  number?: number | undefined;
   /** Caption text; rendered in mono caps after `FIG. n —`. */
   caption: string;
   /** Text alternative for the image or inline SVG. Never empty for a content figure. */
@@ -46,8 +46,8 @@ const {
   status,
   mode,
 } = Astro.props;
-if (alt.trim() === '') throw new Error(`Figure ${number}: alt text is required.`);
-if (caption.trim() === '') throw new Error(`Figure ${number}: caption is required.`);
+if (alt.trim() === '') throw new Error(`Figure ${number ?? caption}: alt text is required.`);
+if (caption.trim() === '') throw new Error(`Figure ${number ?? alt}: caption is required.`);
 ---
 
 <figure class="figure">
@@ -79,7 +79,7 @@ if (caption.trim() === '') throw new Error(`Figure ${number}: caption is require
   </div>
   <figcaption class="figure__caption">
     <span class="figure__title">
-      Fig. {number} — {caption}
+      {number === undefined ? caption : `Fig. ${number} — ${caption}`}
     </span>
     {(source || date) && (
       <span class="figure__source">
@@ -91,7 +91,9 @@ if (caption.trim() === '') throw new Error(`Figure ${number}: caption is require
   </figcaption>
   {longDescription && (
     <details class="figure__description">
-      <summary>Text description of figure {number}</summary>
+      <summary>
+        {number === undefined ? 'Text description' : `Text description of figure ${number}`}
+      </summary>
       <p>{longDescription}</p>
     </details>
   )}
