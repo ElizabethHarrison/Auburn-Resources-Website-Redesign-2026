@@ -64,6 +64,9 @@ Still to decide or supply (Q-09): the Cloudflare account and project names, the 
 that owns the repository and its Actions secrets, who holds admin access, and the DNS cut-over plan.
 Nothing in this repository deploys yet: CI only lints, typechecks, tests and builds.
 
+The edge Worker (`workers/edge`, D-023) needs **no variables or secrets** for document-filter routing. Its
+deployment configuration (`workers/edge/wrangler.jsonc`) commits no account ID or routes; see `docs/WORKER.md` §8.
+
 ## 5. CI (GitHub Actions)
 
 `.github/workflows/ci.yml` runs on pull requests and on pushes to `main`. It needs **no secrets** at this

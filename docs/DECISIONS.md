@@ -270,3 +270,27 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Consequences:** D-001's stack is otherwise unchanged; Preact remains available, not required. CLAUDE.md §4.1 and
   §5 updated. `docs/WEBSITE-STRATEGY.md` §6 (approved document) still says "Preact islands only where interactive";
   read it together with this decision.
+
+## D-023 · Document filters: query strings routed by a small edge Worker to prebuilt static pages
+- **Date:** 29 Sep 2026 · **Status:** Approved (Q-44 option A, 29 Sep 2026)
+- **Decision:** Use a small Cloudflare Worker to provide query-string document filtering while retaining a static
+  Astro site and zero client-side JavaScript for the filters. The Worker is pulled forward from the later Worker
+  phase with scope strictly limited to document-filter routing; the broader document Worker (PDF proxy), contact
+  API, alerts API and other edge functionality are not implemented.
+- **How:** architecture, URLs, SEO behaviour, local emulation and deployment steps in `docs/WORKER.md`.
+  - Filters: announcements `year`; presentations `year`; reports `year` and `type`
+    (`annual`, `half-year`, `quarterly`, `notice`). Native GET form; "Clear filters" is a plain link.
+  - The build generates one `noindex` page per valid state of the documents visible in that build (each year,
+    each type, every year × type pair) plus one `unavailable` page per listing, at `/filtered/<listing>/<state>`.
+    They reuse the listing template (`DocumentListingBody` → `DocumentLibrary` → `DocumentRegister`).
+  - The Worker (`workers/edge`, dependency-free) validates the query strictly, serves the prebuilt page with
+    `X-Robots-Tag: noindex`, answers malformed filters with the unavailable page (400) and out-of-data filters with
+    it (404), answers direct `/filtered/…` requests with 404, never redirects, and passes everything else to static
+    assets.
+  - Unfiltered listings stay canonical and indexable; filtered responses canonicalise to them; `/filtered/` is
+    excluded from the XML sitemap and disallowed in `robots.txt`.
+  - Preview and production use the same Worker; each build's filter pages follow its own visibility rules
+    (production today: no approved documents, so no filter states).
+- **Not deployed.** `workers/edge/wrangler.jsonc` documents the configuration; deployment needs Q-09 and `wrangler`.
+- **Also:** `Button` accepts `type="submit"`; layouts accept a `canonicalPath` override; `tests/static-server.mjs`
+  runs the real Worker in front of the build so Playwright tests the same routing code.

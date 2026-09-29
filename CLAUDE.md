@@ -28,11 +28,12 @@ Read these before writing code, in this order:
   live in `components/modules/<page>/` (shared page modules in `modules/page/`). Page copy comes from `page`
   records (`getPage`, `getLegalPage`). Dossier module rules are in `lib/content/dossier.ts`.
 - **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** approved
-  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters**: architecture proposed,
-  awaiting a decision (Q-44). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
+  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** built, awaiting
+  review: native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
+  `workers/edge`, `docs/WORKER.md`; not deployed). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
   `components/islands/`. Playwright + axe tests in `tests/e2e` run against both builds;
   `content-integrity.spec.ts` scans the production build; `links.spec.ts` crawls every internal link.
-- **Not yet built:** Phase 4 items 2–8, Sanity Studio (Phase 5), `workers/edge`,
+- **Not yet built:** Phase 4 items 3–8 (the Worker exists only for filter routing), Sanity Studio (Phase 5),
   Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
@@ -150,7 +151,7 @@ see D-008).
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemas/documents, schemas/objects, structure, validation, actions)
-├─ workers/edge/         /documents proxy, /api/contact, /api/alerts
+├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
 ├─ redirects.csv         old Squarespace URLs → new URLs
@@ -164,7 +165,7 @@ pnpm dev            # site dev server, preview mode (placeholders visible)
 pnpm build          # production build → apps/site/dist (Approved content only)
 pnpm build:preview  # preview build → apps/site/dist-preview (noindex)
 pnpm serve          # serve the last production build locally
-pnpm serve:production  # serve apps/site/dist at http://localhost:4600 (static, like Cloudflare)
+pnpm serve:production  # serve apps/site/dist at http://localhost:4600 (static, behind the edge Worker, like Cloudflare)
 pnpm serve:preview     # serve apps/site/dist-preview at http://localhost:4601
 pnpm test           # unit tests (Vitest)
 pnpm lint           # ESLint + Prettier check
