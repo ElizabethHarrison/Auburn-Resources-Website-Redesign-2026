@@ -102,3 +102,13 @@ export function factDisplay<T>(
     ...(format ? { format: format as (value: unknown) => string } : {}),
   };
 }
+
+// ── Line-break opportunities ────────────────────────────────────────────────────────────────────
+
+/**
+ * Split text so a domain or file name can wrap before each dot (`AUBURNRESOURCES` / `.COM.AU`) rather
+ * than at an arbitrary character. Components join the parts with <wbr>. Plain words are returned whole.
+ */
+export function breakBeforeDots(text: string): string[] {
+  return text.split(/(?=\.[A-Za-z0-9])/);
+}

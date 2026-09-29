@@ -6,6 +6,7 @@
 import type { ContentMode, Fact, Interpretation } from '~/lib/facts';
 import { renderMode } from '~/lib/config';
 import { provenanceOf, type SourceIndex } from '~/lib/content/sources';
+import { breakBeforeDots } from '~/lib/format';
 import DateMono from '../primitives/DateMono.astro';
 import StatusDot from './StatusDot.astro';
 
@@ -21,10 +22,14 @@ const { item, sources, tone = 'default' } = Astro.props;
 const mode = renderMode(Astro.props.mode);
 const provenance = provenanceOf(item);
 const source = sources?.get(provenance.source.documentId);
+// Wrap domains before their dots, not mid-word (e.g. AUBURNRESOURCES / .COM.AU).
+const titleParts = source ? breakBeforeDots(source.title) : [];
 ---
 
 <p class:list={['source-line', `source-line--${tone}`]}>
-  {source && <span>Source — {source.title}</span>}
+  {source && (
+    <span>Source — {titleParts.map((part, index) => (index === 0 ? part : [<wbr />, part]))}</span>
+  )}
   <span>
     As at <DateMono date={provenance.asAt} />
   </span>
@@ -44,8 +49,9 @@ const source = sources?.get(provenance.source.documentId);
     letter-spacing: var(--tracking-mono);
     line-height: var(--leading-mono);
     text-transform: uppercase;
-    /* Source titles can contain long unbroken words (domains, file names). */
-    overflow-wrap: anywhere;
+    /* Domains get <wbr> break points before their dots; a mid-word break remains only as a last resort
+       for a segment that cannot fit on a line of its own. */
+    overflow-wrap: break-word;
   }
 
   .source-line--on-dark {

@@ -145,3 +145,16 @@ describe('navigation (docs/SITEMAP.md)', () => {
     ).toEqual(['Portfolio map', 'X', 'How we explore']);
   });
 });
+
+describe('breakBeforeDots', () => {
+  it('offers wrap points before each dot in a domain, and keeps plain text whole', async () => {
+    const { breakBeforeDots } = await import('./format');
+    expect(breakBeforeDots('Capture of the current auburnresources.com.au website')).toEqual([
+      'Capture of the current auburnresources',
+      '.com',
+      '.au website',
+    ]);
+    expect(breakBeforeDots('Annual Report')).toEqual(['Annual Report']);
+    expect(breakBeforeDots('Report. Next')).toEqual(['Report. Next']);
+  });
+});
