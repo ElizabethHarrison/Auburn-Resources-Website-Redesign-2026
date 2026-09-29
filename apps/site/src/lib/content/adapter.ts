@@ -8,7 +8,15 @@
  * Implementations: `fixtures` (Phase 1). `sanity` is added in Phase 5 and must satisfy this same
  * interface so the page and component layers do not change.
  */
-import type { DocumentRecord, Person, Project, SiteSettings, WorkItem } from './types';
+import type {
+  Article,
+  DocumentRecord,
+  HomePageContent,
+  Person,
+  Project,
+  SiteSettings,
+  WorkItem,
+} from './types';
 
 export interface ContentAdapter {
   readonly name: string;
@@ -20,4 +28,6 @@ export interface ContentAdapter {
   getDocuments(): Promise<readonly DocumentRecord[]>;
   getDocument(id: string): Promise<DocumentRecord | undefined>;
   getWorkItems(projectId?: string): Promise<readonly WorkItem[]>;
+  getArticles(): Promise<readonly Article[]>;
+  getHomePage(): Promise<HomePageContent>;
 }

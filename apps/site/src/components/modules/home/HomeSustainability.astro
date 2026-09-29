@@ -1,0 +1,85 @@
+---
+/**
+ * Home §8 — Sustainability teaser: one sentence and a link. The sentence must be specific and
+ * verifiable (docs/SITEMAP.md 04); none exists yet, so production omits the module.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { HomePageContent } from '~/lib/content/types';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Container from '~/components/primitives/Container.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+
+export interface Props {
+  home: HomePageContent;
+  mode: ContentMode;
+}
+
+const { home, mode } = Astro.props;
+const line = resolve(home.sustainabilityLine, mode);
+---
+
+{
+  line.kind !== 'hidden' && (
+    <section class="sustainability" aria-labelledby="home-sustainability">
+      <Container>
+        <div class="sustainability__inner">
+          <h2 id="home-sustainability" class="sustainability__kicker">
+            04 Sustainability
+          </h2>
+          <div class="sustainability__body">
+            {line.kind === 'value' && (
+              <p class="sustainability__line">
+                {line.item.text}
+                {mode === 'preview' && <StatusDot status={line.status} compact mode={mode} />}
+              </p>
+            )}
+            {line.kind === 'placeholder' && <Placeholder brief={line.brief} field="Sentence" mode={mode} />}
+            <ArrowLink href="/sustainability">Sustainability at Auburn</ArrowLink>
+          </div>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+<style>
+  .sustainability {
+    padding-block: var(--section-padding);
+  }
+
+  .sustainability__inner {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: var(--rule);
+  }
+
+  @media (min-width: 64rem) {
+    .sustainability__inner {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: var(--grid-gap);
+    }
+  }
+
+  .sustainability__kicker {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .sustainability__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .sustainability__line {
+    font-size: var(--text-lead);
+  }
+</style>

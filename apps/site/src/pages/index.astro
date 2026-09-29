@@ -1,149 +1,57 @@
 ---
 /**
- * DEVELOPMENT SCAFFOLD — temporary. Replaced by the Home template (Sheet 00) in Phase 3.
+ * Sheet 00 · Home (docs/WEBSITE-STRATEGY.md §5; docs/SITEMAP.md 00).
  *
- * Shows the build mode and how much fixture content each mode would render, proving the content
- * adapter and rendering rules end to end. It renders no company facts, only counts. Always noindex.
+ * Section order is approved and must not change (CLAUDE.md §9): header → hero → key facts →
+ * 02 Projects → Why this ground → 03 Investors (the register) → News → Sustainability teaser → footer.
+ * Every module decides its own visibility from content status; in production, modules without approved
+ * content are omitted entirely.
  */
-import BaseLayout from '~/layouts/BaseLayout.astro';
+import SiteLayout from '~/layouts/SiteLayout.astro';
 import { config } from '~/lib/config';
 import { content } from '~/lib/content';
-import { collectSlots, tallySlots } from '~/lib/content/audit';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { organizationJsonLd } from '~/lib/seo';
+import HomeHero from '~/components/modules/home/HomeHero.astro';
+import HomeKeyFacts from '~/components/modules/home/HomeKeyFacts.astro';
+import HomeNews from '~/components/modules/home/HomeNews.astro';
+import HomePortfolio from '~/components/modules/home/HomePortfolio.astro';
+import HomeRegister from '~/components/modules/home/HomeRegister.astro';
+import HomeSustainability from '~/components/modules/home/HomeSustainability.astro';
+import HomeWhyThisGround from '~/components/modules/home/HomeWhyThisGround.astro';
 
-const [settings, people, projects, documents, workItems] = await Promise.all([
-  content.getSiteSettings(),
-  content.getPeople(),
-  content.getProjects(),
+const mode = config.contentMode;
+const [frame, home, documents, articles] = await Promise.all([
+  loadFrame(content, mode),
+  content.getHomePage(),
   content.getDocuments(),
-  content.getWorkItems(),
+  content.getArticles(),
 ]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
 
-const rows = [
-  { label: 'Site settings', records: 1, data: settings },
-  { label: 'People', records: people.length, data: people },
-  { label: 'Projects', records: projects.length, data: projects },
-  { label: 'Documents', records: documents.length, data: documents },
-  { label: 'Work items', records: workItems.length, data: workItems },
-].map((row) => ({ ...row, tally: tallySlots(collectSlots(row.data), config.contentMode) }));
+const site = Astro.site;
+if (!site) throw new Error('`site` must be set in astro.config.ts.');
+const organization = organizationJsonLd(settings, mode, site);
+
+// Deliberately claim-free: the description is published before any fact is approved.
+const description =
+  'Auburn Resources: the company, its exploration projects, investor information and announcements.';
 ---
 
-<BaseLayout
-  title="Development scaffold"
-  description="Development scaffold for the Auburn Resources website. Not a public page; replaced by the home page in a later phase."
-  noindex
+<SiteLayout
+  description={description}
+  frame={frame}
+  sheet="00"
+  sheetLabel="Home"
+  {...organization ? { jsonLd: [organization] } : {}}
 >
-  <div class="l-container l-section">
-    <p class="kicker">Phase 1 · Scaffold</p>
-    <h1>Development scaffold</h1>
-    <p>
-      This temporary page confirms the build, content adapter and rendering rules. It is replaced by
-      the home page in Phase 3.
-    </p>
-
-    <dl class="build">
-      <div>
-        <dt>Content mode</dt>
-        <dd>{config.contentMode}</dd>
-      </div>
-      <div>
-        <dt>Content source</dt>
-        <dd>{config.contentSource}</dd>
-      </div>
-    </dl>
-
-    <div class="table-scroll" role="region" aria-labelledby="slots-caption" tabindex="0">
-      <table>
-        <caption id="slots-caption">
-          Content slots by status, and how many render in this build
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Record type</th>
-            <th scope="col">Records</th>
-            <th scope="col">Slots</th>
-            <th scope="col">Approved</th>
-            <th scope="col">To verify</th>
-            <th scope="col">Input needed</th>
-            <th scope="col">Renderable here</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr>
-              <th scope="row">{row.label}</th>
-              <td>{row.records}</td>
-              <td>{row.tally.total}</td>
-              <td>{row.tally.byStatus.approved}</td>
-              <td>{row.tally.byStatus.toVerify}</td>
-              <td>{row.tally.byStatus.inputNeeded}</td>
-              <td>{row.tally.renderable}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</BaseLayout>
-
-<style>
-  .kicker,
-  dt,
-  caption,
-  th[scope='col'] {
-    color: var(--color-label);
-    font-family: var(--font-mono);
-    font-size: var(--text-mono);
-    letter-spacing: var(--tracking-mono);
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin-block: var(--space-2) var(--space-3);
-  }
-
-  .build {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    margin-block: var(--space-4);
-  }
-
-  dd {
-    color: var(--color-heading);
-    font-family: var(--font-mono);
-    font-size: var(--text-mono-lg);
-  }
-
-  .table-scroll {
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    min-width: 40rem;
-    border-top: var(--rule);
-    font-family: var(--font-mono);
-    font-size: var(--text-mono-lg);
-  }
-
-  caption {
-    padding-block: var(--space-1);
-    text-align: left;
-  }
-
-  th,
-  td {
-    padding: var(--space-1) var(--space-2) var(--space-1) 0;
-    border-bottom: var(--rule-secondary);
-    text-align: left;
-  }
-
-  th[scope='row'] {
-    color: var(--color-heading);
-    font-weight: var(--font-weight-regular);
-  }
-
-  td {
-    font-variant-numeric: tabular-nums;
-  }
-</style>
+  <HomeHero home={home} keyFacts={settings.keyFacts} mode={mode} />
+  <HomeKeyFacts keyFacts={settings.keyFacts} sources={sources} mode={mode} />
+  <HomePortfolio projects={frame.projects} mode={mode} />
+  <HomeWhyThisGround home={home} sources={sources} mode={mode} />
+  <HomeRegister keyFacts={settings.keyFacts} documents={documents} sources={sources} mode={mode} />
+  <HomeNews articles={articles} mode={mode} />
+  <HomeSustainability home={home} mode={mode} />
+</SiteLayout>

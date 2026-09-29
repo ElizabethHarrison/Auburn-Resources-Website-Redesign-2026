@@ -3,7 +3,9 @@
  * Every seeded value is `toVerify` or INPUT NEEDED, so a production build renders none of it.
  */
 import type { ContentAdapter } from '../adapter';
+import { articles } from './data/articles';
 import { documents } from './data/documents';
+import { homePage } from './data/home-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
@@ -19,4 +21,6 @@ export const fixturesAdapter: ContentAdapter = {
   getDocument: async (id) => documents.find((document) => document.id === id),
   getWorkItems: async (projectId) =>
     projectId === undefined ? workItems : workItems.filter((item) => item.projectId === projectId),
+  getArticles: async () => articles,
+  getHomePage: async () => homePage,
 };

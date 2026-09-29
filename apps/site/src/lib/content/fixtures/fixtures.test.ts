@@ -7,13 +7,15 @@ import { isIsoDate } from '../../dates';
 import { NARRATIVE_LIMITS, validateNarrative } from '../../facts';
 import { collectSlots, tallySlots } from '../audit';
 import { fixturesAdapter } from './index';
+import { articles } from './data/articles';
 import { documents } from './data/documents';
+import { homePage } from './data/home-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
 import { workItems } from './data/work-items';
 
-const all = { siteSettings, people, projects, documents, workItems };
+const all = { siteSettings, people, projects, documents, workItems, homePage, articles };
 const slots = collectSlots(all);
 const documentIds = new Set(documents.map((document) => document.id));
 

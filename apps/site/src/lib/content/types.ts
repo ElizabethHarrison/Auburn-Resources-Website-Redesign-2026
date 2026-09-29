@@ -10,6 +10,7 @@ import type {
   ContentStatus,
   DocumentRef,
   FactSlot,
+  InputNeeded,
   InterpretationSlot,
   IsoDate,
   NarrativeSlot,
@@ -78,6 +79,7 @@ export interface KeyFacts {
   readonly jurisdictions: FactSlot<readonly AustralianState[]>;
   readonly companyStatus: FactSlot<string>;
   readonly dgrHolding: FactSlot<number>;
+  readonly sharesOnIssue: FactSlot<number>;
   readonly ipoStatus: FactSlot<string>;
 }
 
@@ -155,6 +157,64 @@ export interface WorkItem {
   readonly quantity: FactSlot<number>;
   readonly year: FactSlot<number>;
   readonly operator: FactSlot<'auburn' | 'historic'>;
+}
+
+// ── Figures (docs/SITEMAP.md §8, `figure`) ─────────────────────────────────────────────────────
+
+export type FigureType = 'map' | 'section' | 'geophysics' | 'other';
+
+/** A supplied figure asset. Maps and sections need CP approval before `status` is approved. */
+export interface FigureRecord {
+  readonly kind: 'figure';
+  readonly id: string;
+  readonly figureType: FigureType;
+  readonly src: string;
+  readonly width: number;
+  readonly height: number;
+  readonly caption: string;
+  readonly alt: string;
+  readonly longDescription?: string;
+  readonly source: string;
+  readonly date: IsoDate;
+  readonly status: ContentStatus;
+}
+
+export type FigureSlot = FigureRecord | InputNeeded;
+
+// ── Articles (docs/SITEMAP.md §8, `article`) ───────────────────────────────────────────────────
+
+export interface Article {
+  readonly id: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly date: FactSlot<IsoDate>;
+  readonly lead: NarrativeSlot;
+  readonly status: ContentStatus;
+  readonly projectIds: readonly string[];
+  readonly linkedDocumentId?: string;
+}
+
+// ── Home page (singleton; docs/WEBSITE-STRATEGY.md §5) ─────────────────────────────────────────
+
+/**
+ * Editable home-page copy. Headings that make claims about the company or its geology are content,
+ * not template text, so they follow the same approval rules as everything else.
+ */
+export interface HomePageContent {
+  /** Working H1 (WEBSITE-STRATEGY §5); final wording after fact verification. */
+  readonly heroHeading: NarrativeSlot;
+  /** One-paragraph introduction. */
+  readonly heroIntro: NarrativeSlot;
+  /** Fig. 1 portfolio map. */
+  readonly portfolioMap: FigureSlot;
+  /** "Why this ground" heading. */
+  readonly whyHeading: NarrativeSlot;
+  /** The under-cover thesis; geological, so CP review. */
+  readonly whyText: InterpretationSlot;
+  /** Fig. 2 cross-section (CP-approved). */
+  readonly crossSection: FigureSlot;
+  /** Sustainability teaser sentence. */
+  readonly sustainabilityLine: NarrativeSlot;
 }
 
 // ── Re-exports so callers need one import ───────────────────────────────────────────────────────

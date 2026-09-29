@@ -41,6 +41,19 @@ export const documents: readonly DocumentRecord[] = [
     note: 'External cross-check used in docs/CONTENT-SOURCE.md §9.',
   },
 
+  {
+    id: SOURCE_IDS.websiteStrategy,
+    slug: 'website-strategy-2026-09-29',
+    title: 'Auburn Resources website strategy (approved direction, 29 Sep 2026)',
+    docType: 'sourceCapture',
+    releaseAt: siteFact(CAPTURE_DATE, { source: websiteSource }),
+    status: 'toVerify',
+    internal: true,
+    file: inputNeeded('Not published: internal planning document (docs/WEBSITE-STRATEGY.md)'),
+    projectIds: [],
+    note: 'Source of the working positioning line and the under-cover thesis. Company claims in it still need verification.',
+  },
+
   // ── Investor documents from the old Investor Centre ────────────────────────────────────────────
   {
     id: 'doc-2022-12-23-annual-report',

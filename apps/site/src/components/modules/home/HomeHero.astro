@@ -1,0 +1,180 @@
+---
+/**
+ * Home §2 — Hero (docs/WEBSITE-STRATEGY.md §5): mono kicker (commodities / jurisdictions), H1,
+ * one-paragraph intro, Fig. 1 portfolio map; CTAs "Explore the projects" and "Latest presentation".
+ *
+ * Content rules:
+ * - The kicker is built from the key-fact records, so it only shows approved commodities/jurisdictions.
+ * - The H1 is the working headline (Narrative). Until approved, production falls back to the company
+ *   name: every page keeps exactly one H1 without publishing unapproved wording.
+ * - Fig. 1 needs tenement GIS (Q-31). No map is drawn from mockup geometry; preview shows the space.
+ * - "Latest presentation": when to show it is undecided (docs/OPEN-QUESTIONS.md Q-08), so production
+ *   omits it and preview flags the open question. It is not wired to the Feb 2022 file.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable, resolve } from '~/lib/facts';
+import type { HomePageContent, KeyFacts } from '~/lib/content/types';
+import { resolveFigure } from '~/lib/content/visibility';
+import { STATE_NAMES, formatCommodities } from '~/lib/format';
+import { SITE_NAME } from '~/lib/seo';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Figure from '~/components/patterns/Figure.astro';
+import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+
+export interface Props {
+  home: HomePageContent;
+  keyFacts: KeyFacts;
+  mode: ContentMode;
+}
+
+const { home, keyFacts, mode } = Astro.props;
+const heading = resolve(home.heroHeading, mode);
+const intro = resolve(home.heroIntro, mode);
+const map = resolveFigure(home.portfolioMap, mode);
+const showCommodities = isRenderable(keyFacts.commodities, mode);
+const showJurisdictions = isRenderable(keyFacts.jurisdictions, mode);
+const formatStates = (value: unknown) =>
+  (value as readonly (keyof typeof STATE_NAMES)[]).map((state) => STATE_NAMES[state]).join(' & ');
+const formatCommodityList = (value: unknown) =>
+  formatCommodities(value as Parameters<typeof formatCommodities>[0]);
+---
+
+<section class="hero" aria-labelledby="hero-heading">
+  <Container>
+    <div class:list={['hero__grid', { 'hero__grid--figure': map.kind !== 'hidden' }]}>
+      <div class="hero__text">
+        {
+          (showCommodities || showJurisdictions) && (
+            <p class="hero__kicker">
+              {showCommodities && (
+                <FactValue fact={keyFacts.commodities} format={formatCommodityList} field="Commodities" mode={mode} />
+              )}
+              {showCommodities && showJurisdictions && <span aria-hidden="true"> / </span>}
+              {showJurisdictions && (
+                <FactValue fact={keyFacts.jurisdictions} format={formatStates} field="Jurisdictions" mode={mode} />
+              )}
+            </p>
+          )
+        }
+
+        <h1 id="hero-heading" class="hero__heading">
+          {heading.kind === 'value' ? heading.item.text : SITE_NAME}
+        </h1>
+        {
+          mode === 'preview' && heading.kind === 'value' && (
+            <p class="hero__note">
+              <StatusDot status={heading.status} mode={mode} /> Working headline (WEBSITE-STRATEGY §5)
+            </p>
+          )
+        }
+        {heading.kind === 'placeholder' && <Placeholder brief={heading.brief} field="Headline" mode={mode} />}
+
+        {intro.kind === 'value' && <p class="hero__intro">{intro.item.text}</p>}
+        {intro.kind === 'placeholder' && <Placeholder brief={intro.brief} field="Introduction" mode={mode} />}
+
+        <div class="hero__actions">
+          <Button href="/projects">Explore the projects</Button>
+          <Placeholder
+            brief="When to show the latest-presentation link is undecided (Q-08); omitted in production"
+            field="Latest presentation"
+            variant="inline"
+            mode={mode}
+          />
+        </div>
+      </div>
+
+      {
+        map.kind === 'figure' && (
+          <div class="hero__figure">
+            <Figure
+              number={1}
+              caption={map.figure.caption}
+              alt={map.figure.alt}
+              image={{ src: map.figure.src, width: map.figure.width, height: map.figure.height }}
+              source={map.figure.source}
+              date={map.figure.date}
+              longDescription={map.figure.longDescription}
+            />
+          </div>
+        )
+      }
+      {
+        map.kind === 'placeholder' && (
+          <div class="hero__figure">
+            <FigurePlaceholder number={1} title="Auburn project portfolio, northern Australia." brief={map.brief} mode={mode} />
+          </div>
+        )
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--section-padding);
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 64rem) {
+    .hero__grid--figure {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: start;
+      gap: var(--grid-gap);
+    }
+  }
+
+  .hero__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .hero__kicker {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .hero__heading {
+    max-width: 18ch;
+  }
+
+  .hero__note {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--copper-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .hero__intro {
+    font-size: var(--text-lead);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .hero__figure {
+    min-width: 0;
+  }
+</style>

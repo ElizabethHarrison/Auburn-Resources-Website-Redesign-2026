@@ -1,0 +1,57 @@
+---
+/**
+ * Page frame for every public page: header (with sheet number and current section), optional section
+ * bar, the page content, and the footer. Pages load `FrameData` once (lib/content/frame.ts) and pass it
+ * in; the layout never fetches.
+ */
+import type { FrameData } from '~/lib/content/frame';
+import type { SheetNumber } from '~/lib/content/types';
+import type { NavLink, SectionId } from '~/lib/navigation';
+import type { BreadcrumbItem, JsonLd } from '~/lib/seo';
+import Footer from '~/components/patterns/Footer.astro';
+import Header from '~/components/patterns/Header.astro';
+import SectionBar from '~/components/patterns/SectionBar.astro';
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  /** Page title without the site name; omit on the home page. */
+  title?: string;
+  description: string;
+  frame: FrameData;
+  sheet?: SheetNumber;
+  sheetLabel?: string;
+  currentSection?: SectionId;
+  sectionBar?: { sectionLabel: string; pages: readonly NavLink[]; currentHref: string };
+  breadcrumbs?: readonly BreadcrumbItem[];
+  jsonLd?: readonly JsonLd[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  frame,
+  sheet,
+  sheetLabel,
+  currentSection,
+  sectionBar,
+  breadcrumbs,
+  jsonLd,
+  noindex,
+} = Astro.props;
+---
+
+<BaseLayout
+  {...title === undefined ? {} : { title }}
+  description={description}
+  {...breadcrumbs === undefined ? {} : { breadcrumbs }}
+  {...jsonLd === undefined ? {} : { jsonLd }}
+  {...noindex === undefined ? {} : { noindex }}
+>
+  <Fragment slot="header">
+    <Header sheet={sheet} sheetLabel={sheetLabel} currentSection={currentSection} />
+    {sectionBar && <SectionBar {...sectionBar} />}
+  </Fragment>
+  <slot />
+  <Footer slot="footer" settings={frame.settings} projects={frame.projects} />
+</BaseLayout>
