@@ -16,8 +16,14 @@ Read these before writing code, in this order:
 
 ## Current state
 
-Phase 0 (housekeeping) complete. **No application code yet** — no `package.json`, no scripts, no CI. Update this
-section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
+- **Phase 0** (housekeeping) — done.
+- **Phase 1** (scaffold) — done: pnpm workspace, Astro site in `apps/site`, tokens and base CSS, `BaseLayout`,
+  SEO helpers, content adapter with typed fixtures, `Fact` rendering rules, unit tests, CI.
+- **Not yet built:** components (Phase 2), real pages and templates (Phase 3), islands (Phase 4), Sanity
+  Studio (Phase 5), `workers/edge`, Playwright/axe/Lighthouse. `src/pages/index.astro` is a temporary noindex
+  development scaffold, replaced by the Home template in Phase 3.
+
+Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
 ---
 
@@ -61,7 +67,8 @@ seed scripts — approval happens only in the CMS, by the company secretary (cor
 - Numbers appear on the page only via Fact records. `FactCell` and friends accept a `Fact` object, never a raw string.
 - Only facts with `status === 'approved'` render in production.
 - Never hard-code a number in a template, component or UI string (sheet numbers and dates from records excepted).
-- Numbers inside Interpretation text: undecided (`docs/OPEN-QUESTIONS.md` Q-06). Until decided, don't author any.
+- Numbers inside **approved Interpretation** text are preserved as written (D-011, interim — no final compliance
+  decision). They are not Facts and are never pulled into data cells.
 
 ### 2.3 Compliance text
 - Any page showing exploration results, targets or resources must render `ComplianceBlock` (competent person
@@ -122,13 +129,14 @@ geological survey sheet: precise, methodical, authored by geologists, never hype
 | Analytics | Plausible or Cloudflare Web Analytics (cookie-free) + Search Console |
 | CI | GitHub Actions: typecheck, lint, unit, Playwright journeys, axe, Lighthouse budgets |
 
-Package manager: **pnpm** workspaces. Node: current LTS, pinned in `.nvmrc` and `engines`.
+Package manager: **pnpm** 10 workspaces. Node **24 LTS**, pinned in `.nvmrc` and `engines`. TypeScript 6.0 (not 7 —
+see D-008).
 
 ### 4.2 Repository layout (target — the repository root is the workspace root, D-002)
 ```
 /
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
-│  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,facts.ts,seo.ts},styles}
+│  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemas/documents, schemas/objects, structure, validation, actions)
 ├─ workers/edge/         /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
@@ -137,22 +145,30 @@ Package manager: **pnpm** workspaces. Node: current LTS, pinned in `.nvmrc` and 
 └─ .github/workflows/
 ```
 
-### 4.3 Scripts (planned — create as the project is scaffolded; keep this list current)
+### 4.3 Scripts (run from the repository root; keep this list current)
 ```
-pnpm dev            # site + studio locally
-pnpm build          # production build of the site
-pnpm build:preview  # preview-mode build (all statuses, placeholders)
-pnpm test           # unit tests
-pnpm test:e2e       # Playwright journeys + axe
-pnpm lint && pnpm typecheck
-pnpm sanity:typegen # regenerate content types from schemas
+pnpm install        # install (Node 24, pnpm via Corepack)
+pnpm dev            # site dev server, preview mode (placeholders visible)
+pnpm build          # production build → apps/site/dist (Approved content only)
+pnpm build:preview  # preview build → apps/site/dist-preview (noindex)
+pnpm serve          # serve the last production build locally
+pnpm test           # unit tests (Vitest)
+pnpm lint           # ESLint + Prettier check
+pnpm format         # Prettier write
+pnpm typecheck      # astro check
+pnpm check          # all of the above plus both builds — run before pushing
 ```
+Planned: `pnpm test:e2e` (Playwright + axe, Phase 3), `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also
+start the Studio from Phase 5.
 
-### 4.4 Content access and modes (proposed — D-003, D-005)
+### 4.4 Content access and modes (approved — D-003, D-005, D-009)
 - Components never fetch. Pages call `src/lib/content/*` loaders, which return typed records from fixtures or Sanity.
 - `CONTENT_MODE=production|preview`. The single function `isRenderable(fact, mode)` in `lib/facts.ts` decides fact
   visibility; do not duplicate this logic in components.
-- Placeholders and status dots render **only** in preview mode.
+- Placeholders and status dots render **only** in preview mode. CI fails if preview-only output appears in the
+  production build.
+- Only `lib/config.ts` reads `astro:env`; everything else in `lib/` takes the mode as a parameter and is unit-tested.
+- Unit tests sit next to the code (`*.test.ts`); Playwright and axe tests go in `/tests`.
 
 ### 4.5 General
 - TypeScript strict; no `any` without a comment explaining why.
@@ -214,7 +230,7 @@ pnpm sanity:typegen # regenerate content types from schemas
 
 - LCP < 2.0 s (4G mobile), CLS < 0.05, INP < 200 ms
 - JS loaded on page load < 30 KB compressed on content pages; home total initial transfer < 500 KB
-  (deferred map chunk budgeted separately — D-006, proposed)
+  (MapLibre is lazy-loaded only when the map is needed and budgeted separately — D-006)
 - Lighthouse ≥ 95 in all four categories
 - WCAG 2.2 AA; zero axe violations
 

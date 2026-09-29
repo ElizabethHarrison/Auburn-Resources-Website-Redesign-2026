@@ -2,9 +2,39 @@
 
 Source for the rebuild of **auburnresources.com.au** for Auburn Resources Limited.
 
-**Status:** planning complete; Phase 0 (repository housekeeping) done. No application code yet.
+**Status:** Phase 1 (scaffold) complete. No public pages yet — see `CLAUDE.md` → "Current state".
 
-## Start here
+## Getting started
+
+Requires **Node 24** (see `.nvmrc`) and **pnpm 10** (via Corepack).
+
+```sh
+corepack enable
+pnpm install
+pnpm dev          # http://localhost:4321 — preview mode, placeholders visible
+```
+
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Dev server in preview mode |
+| `pnpm build` | Production build (Approved content only) → `apps/site/dist` |
+| `pnpm build:preview` | Preview build (all statuses, noindex) → `apps/site/dist-preview` |
+| `pnpm test` | Unit tests |
+| `pnpm lint` / `pnpm format` | ESLint + Prettier check / fix |
+| `pnpm typecheck` | `astro check` |
+| `pnpm check` | Everything CI runs — use before pushing |
+
+Environment variables: [`docs/ENV.md`](docs/ENV.md).
+
+## Repository
+
+```
+apps/site/     Astro site (static)
+docs/          strategy, sitemap, design, content source, decisions, open questions, env
+.github/       CI
+```
+
+## Documents
 
 | Document | What it covers |
 | --- | --- |
@@ -15,8 +45,8 @@ Source for the rebuild of **auburnresources.com.au** for Auburn Resources Limite
 | [`docs/CONTENT-SOURCE.md`](docs/CONTENT-SOURCE.md) | Content captured from the current site — all unverified |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Decision log |
 | [`docs/OPEN-QUESTIONS.md`](docs/OPEN-QUESTIONS.md) | Questions awaiting a human decision |
+| [`docs/ENV.md`](docs/ENV.md) | Toolchain, environment variables, environments |
 
 ## Stack
 
-Astro (static) · TypeScript · Preact islands · plain CSS tokens · Sanity CMS · Cloudflare. Setup and development
-commands will be added here in Phase 1.
+Astro (static) · TypeScript · Preact islands · plain CSS tokens · Sanity CMS · Cloudflare.

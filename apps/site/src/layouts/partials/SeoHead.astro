@@ -1,0 +1,53 @@
+---
+/**
+ * Per-page SEO tags (CLAUDE.md §7): title, description, canonical, robots, Open Graph, Twitter and
+ * JSON-LD. Included once by BaseLayout. OG images are generated in Phase 6.
+ */
+import { config } from '~/lib/config';
+import {
+  SITE_NAME,
+  canonicalUrl,
+  descriptionIssues,
+  pageTitle,
+  robotsDirective,
+  serializeJsonLd,
+  type JsonLd,
+} from '~/lib/seo';
+
+export interface Props {
+  title?: string | undefined;
+  description: string;
+  noindex?: boolean | undefined;
+  jsonLd?: readonly JsonLd[] | undefined;
+}
+
+const { title, description, noindex = false, jsonLd = [] } = Astro.props;
+
+const site = Astro.site;
+if (!site) throw new Error('`site` must be set in astro.config.ts for canonical URLs.');
+
+for (const issue of descriptionIssues(description)) {
+  console.warn(`[seo] ${Astro.url.pathname}: ${issue}`);
+}
+
+const fullTitle = pageTitle(title);
+const canonical = canonicalUrl(Astro.url.pathname, site);
+const robots = robotsDirective(config.contentMode, noindex);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots} />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:locale" content="en_AU" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta name="twitter:card" content="summary" />
+
+{jsonLd.length > 0 && (
+  <script is:inline type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
+)}

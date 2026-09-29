@@ -1,0 +1,79 @@
+---
+/**
+ * Base document for every page: <html lang="en-AU">, SEO head, global styles, fonts, skip link and
+ * the <main> landmark. Header and footer patterns arrive in Phase 2 and fill the named slots.
+ *
+ * Every page must pass a meta description. Breadcrumb JSON-LD is added when `breadcrumbs` is given
+ * (all pages except the home page from Phase 3).
+ */
+import '@fontsource/didact-gothic/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '~/styles/index.css';
+
+import { config } from '~/lib/config';
+import { breadcrumbJsonLd, type BreadcrumbItem, type JsonLd } from '~/lib/seo';
+import SeoHead from './partials/SeoHead.astro';
+
+export interface Props {
+  /** Page title without the site name. Omit on the home page. */
+  title?: string;
+  description: string;
+  noindex?: boolean;
+  breadcrumbs?: readonly BreadcrumbItem[];
+  jsonLd?: readonly JsonLd[];
+}
+
+const { title, description, noindex, breadcrumbs, jsonLd = [] } = Astro.props;
+
+const site = Astro.site;
+if (!site) throw new Error('`site` must be set in astro.config.ts.');
+
+const structuredData: JsonLd[] = [
+  ...(breadcrumbs && breadcrumbs.length > 0 ? [breadcrumbJsonLd(breadcrumbs, site)] : []),
+  ...jsonLd,
+];
+---
+
+<!doctype html>
+<html lang="en-AU" data-content-mode={config.contentMode}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <SeoHead title={title} description={description} noindex={noindex} jsonLd={structuredData} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    {config.isPreview && (
+      <p class="preview-banner" role="note">
+        Preview build: unapproved content and input-needed placeholders are visible. Not for
+        publication.
+      </p>
+    )}
+    <slot name="header" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>
+
+<style>
+  .preview-banner {
+    max-width: none;
+    padding: var(--space-1) var(--gutter);
+    background-color: var(--paper-deep);
+    border-bottom: var(--rule-width) dashed var(--placeholder-border);
+    color: var(--copper-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

@@ -1,0 +1,32 @@
+{
+  "name": "auburn-web",
+  "private": true,
+  "type": "module",
+  "description": "Website for Auburn Resources Limited (auburnresources.com.au)",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24.16.0 <25",
+    "pnpm": ">=10.33.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @auburn/site dev",
+    "build": "pnpm --filter @auburn/site build",
+    "build:preview": "pnpm --filter @auburn/site build:preview",
+    "serve": "pnpm --filter @auburn/site serve",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "pnpm -r test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "eslint-plugin-jsx-a11y-x": "^0.2.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0"
+  }
+}

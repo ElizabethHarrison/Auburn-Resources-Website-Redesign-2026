@@ -1,0 +1,28 @@
+/*
+ * Layout foundations: the page container and the 12-column grid (docs/DESIGN-DIRECTION.md,
+ * "Layout and grid"). The Container and Grid primitives (Phase 2) wrap these classes.
+ */
+
+.l-container {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.l-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+/* Below tablet width everything stacks. */
+@media (max-width: 47.99rem) {
+  .l-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.l-section {
+  padding-block: var(--section-padding);
+}

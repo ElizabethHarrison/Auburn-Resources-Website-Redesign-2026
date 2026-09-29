@@ -10,15 +10,15 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 
 | ID | Question | Blocks | Owner | Answer |
 | --- | --- | --- | --- | --- |
-| Q-01 | Approve D-003 (fixtures first, behind a content adapter)? | build (Phase 1) | Project owner | |
-| Q-02 | Approve D-005 (static preview build behind Cloudflare Access, rather than live visual editing)? | build (Phase 3) | Project owner | |
-| Q-03 | Approve D-006 (JS budget excludes the deferred map chunk)? | build (Phase 1 CI) | Project owner | |
-| Q-04 | Pages marked "—" in the sitemap (Contact, Disclaimer, Privacy, Terms, 404): give them sheet numbers, or exempt them from the "every page has a sheet number" rule? | build (Phase 3) | Project owner | |
+| Q-01 | Approve D-003 (fixtures first, behind a content adapter)? | build (Phase 1) | Project owner | **Approved** 29 Sep 2026 → D-003 |
+| Q-02 | Approve D-005 (static preview build behind Cloudflare Access, rather than live visual editing)? | build (Phase 3) | Project owner | **Approved** 29 Sep 2026 → D-005 |
+| Q-03 | Approve D-006 (JS budget excludes the deferred map chunk)? | build (Phase 1 CI) | Project owner | **Approved** 29 Sep 2026: budget applies to the initial/core bundle; MapLibre excluded, lazy-loaded only when the map is needed → D-006 |
+| Q-04 | Pages marked "—" in the sitemap (Contact, Disclaimer, Privacy, Terms, 404): give them sheet numbers, or exempt them from the "every page has a sheet number" rule? | build (Phase 3) | Project owner | **For now:** no sheet numbers; treated as utility/legal pages → D-010 |
 | Q-05 | Project sheet numbers `02.1–02.n` collide with `02.9` (How we explore) if there are nine or more projects. Renumber How we explore (e.g. `02.0` or `02.X`) or cap the project count? | none | Project owner | |
-| Q-06 | Interpretation text (CP-approved geology) will contain numbers, e.g. depths. Allowed as written once CP-approved, or must every number be a Fact reference? | build (Phase 5 schemas) | Project owner + CP | |
+| Q-06 | Interpretation text (CP-approved geology) will contain numbers, e.g. depths. Allowed as written once CP-approved, or must every number be a Fact reference? | build (Phase 5 schemas) | Project owner + CP | **Interim:** no final compliance decision. Preserve numbers inside approved Interpretation content; content-class rules still enforced → D-011 |
 | Q-07 | Seed data's source is "Current website (Sep 2026)", which is not a stored document. Add a `source` type (website capture, third-party report, etc.) or create one "website capture" `document` record? | build (Phase 5) | Project owner | |
 | Q-08 | Homepage CTA "Latest presentation": what should show when the newest presentation is stale (currently Feb 2022) — hide the CTA, or link to the presentations page? | none | Project owner | |
-| Q-09 | Hosting accounts: which Cloudflare account and GitHub organisation own production and staging? | build (Phase 1 deploy) | Project owner | |
+| Q-09 | Hosting accounts: which Cloudflare account and GitHub organisation own production and staging? | build (Phase 1 deploy) | Project owner | **Deferred:** do not configure production accounts yet; placeholders and documentation only (docs/ENV.md §4) |
 | Q-10 | Sanity plan and seat count. | build (Phase 5) | Project owner | |
 | Q-11 | Email platform for alerts (does Auburn or DGR Global already use one?). | build (Phase 4 alerts form) | Project owner | |
 | Q-12 | Century Gothic web-font licence — buy, or keep Didact Gothic permanently? | none (fallback in use) | Project owner | |
