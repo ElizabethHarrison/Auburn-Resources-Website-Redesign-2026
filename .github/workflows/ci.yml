@@ -1,5 +1,5 @@
-# Continuous integration: lint, typecheck, unit tests, and production + preview builds.
-# Playwright journeys, axe and Lighthouse budgets are added in later phases (CLAUDE.md §8).
+# Continuous integration: lint, typecheck, unit tests, schema/typegen drift, fixture and Sanity-snapshot builds,
+# leak guards, JS budget, Playwright + axe. Lighthouse budgets are added later (CLAUDE.md §8).
 # No deployment happens here; hosting accounts are not configured yet (docs/OPEN-QUESTIONS.md Q-09).
 name: CI
 
@@ -19,9 +19,12 @@ jobs:
   checks:
     name: Lint, typecheck, test, build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
+      DO_NOT_TRACK: '1'
+      # No Sanity credentials: CI uses fixtures and the NDJSON snapshot only (D-024). A live staging job is added
+      # only once a project exists and its read token is stored as a secret (docs/CMS.md).
     steps:
       - uses: actions/checkout@v7
 
@@ -41,14 +44,25 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Unit tests
+      - name: Unit tests (site, Worker, Studio; includes the snapshot drift, round-trip and hostile-content tests)
         run: pnpm test
+
+      # The site's Sanity mapper compiles against types generated from the Studio schema (D-003, D-024).
+      - name: Sanity schema and typegen drift
+        run: pnpm typegen:check
+
+      - name: Build Sanity Studio (offline, not deployed)
+        run: pnpm --filter @auburn/studio build
 
       - name: Build (production mode)
         run: pnpm build
 
       - name: Build (preview mode)
         run: pnpm build:preview
+
+      # The same site built through the Sanity adapter from the NDJSON snapshot, in both modes.
+      - name: Build from the Sanity snapshot (production and preview)
+        run: pnpm build:sanity-export
 
       # JS loaded on page load < 30 KB compressed on every page (CLAUDE.md §8, D-006).
       - name: JavaScript budget
@@ -58,19 +72,23 @@ jobs:
       # placeholders, status dots, the preview banner, catalogue specimens or the catalogue itself.
       - name: Guard against preview content in production output
         run: |
-          if grep -rIl -e 'INPUT NEEDED' -e 'data-preview-only' -e 'data-content-mode="preview"' -e 'Preview build' -e 'Specimen' apps/site/dist; then
-            echo "::error::Preview-only content found in the production build (files listed above)."
-            exit 1
-          fi
-          # Indicative mockup graphics (src/assets/figures/indicative) are preview-only.
-          if find apps/site/dist -iname '*indicative*' | grep .; then
-            echo "::error::Indicative mockup artwork found in the production build."
-            exit 1
-          fi
-          if find apps/site/dist -path '*_catalogue*' | grep .; then
-            echo "::error::The design-system catalogue must not exist in the production build."
-            exit 1
-          fi
+          for dist in apps/site/dist apps/site/dist-sanity; do
+            if grep -rIl -e 'INPUT NEEDED' -e 'data-preview-only' -e 'data-content-mode="preview"' -e 'Preview build' -e 'Specimen' "$dist"; then
+              echo "::error::Preview-only content found in $dist (files listed above)."
+              exit 1
+            fi
+            # Indicative mockup graphics (src/assets/figures/indicative) are preview-only.
+            if find "$dist" -iname '*indicative*' | grep .; then
+              echo "::error::Indicative mockup artwork found in $dist."
+              exit 1
+            fi
+            if find "$dist" -path '*_catalogue*' | grep .; then
+              echo "::error::The design-system catalogue must not exist in $dist."
+              exit 1
+            fi
+          done
+          # Publication in Sanity never implies approval: the snapshot's production build must match the fixtures'.
+          diff -r apps/site/dist apps/site/dist-sanity
 
       # End-to-end, responsive and axe (WCAG 2.2 AA) tests against both builds (CLAUDE.md §6, §10).
       - name: Install Playwright browser
@@ -90,8 +108,10 @@ jobs:
       # The preview build must never be indexable.
       - name: Guard against indexable preview output
         run: |
-          grep -qx 'Disallow: /' apps/site/dist-preview/robots.txt
-          if grep -rIL 'noindex' --include='*.html' apps/site/dist-preview | grep .; then
-            echo "::error::Preview pages without noindex (listed above)."
-            exit 1
-          fi
+          for dist in apps/site/dist-preview apps/site/dist-sanity-preview; do
+            grep -qx 'Disallow: /' "$dist/robots.txt"
+            if grep -rIL 'noindex' --include='*.html' "$dist" | grep .; then
+              echo "::error::Preview pages without noindex in $dist (listed above)."
+              exit 1
+            fi
+          done

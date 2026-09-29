@@ -3,7 +3,7 @@
 What the site needs to build and run, per environment. **No secrets are stored in this repository.**
 Secrets live in the hosting provider's secret store (Cloudflare) and GitHub Actions secrets.
 
-Status: Phase 1. Only build-time variables exist so far. Hosting accounts are **not configured** —
+Status: Phase 5. Build-time variables, including the Sanity ones (docs/CMS.md); no Sanity project exists yet. Hosting accounts are **not configured** —
 production Cloudflare and GitHub ownership are pending (`docs/OPEN-QUESTIONS.md` Q-09).
 
 ## 1. Toolchain
@@ -21,7 +21,13 @@ Only `apps/site/src/lib/config.ts` reads them.
 | Variable | Values | Default | Purpose |
 | --- | --- | --- | --- |
 | `CONTENT_MODE` | `production` \| `preview` | `production` | `production` renders Approved content only and hides empty modules. `preview` renders every status with status dots and INPUT NEEDED placeholders, adds a preview banner, and is `noindex` with `Disallow: /` in robots.txt (D-005). |
-| `CONTENT_SOURCE` | `fixtures` | `fixtures` | Which content adapter to use (D-003). `sanity` is added in Phase 5. |
+| `CONTENT_SOURCE` | `fixtures` \| `sanity` \| `sanity-export` | `fixtures` | Which content adapter to use (D-003, D-024): typed fixtures; the live Sanity dataset (needs the variables below); or the Sanity mapping over an NDJSON snapshot (no credentials). |
+| `SANITY_PROJECT_ID` | Sanity project ID | — | Required for `sanity`; also enables image-CDN URLs. |
+| `SANITY_DATASET` | `production` \| `staging` | — | Private datasets only (D-024 §7). |
+| `SANITY_API_VERSION` | date | `2026-09-29` | Pinned Content Lake API version. |
+| `SANITY_READ_TOKEN` | **secret** | — | Viewer token, build-time only (Astro `secret` env; never sent to the browser). Required for `sanity`. |
+| `SANITY_EXPORT_PATH` | path | `src/lib/content/sanity/snapshot/fixtures.ndjson` | NDJSON file for `sanity-export`, relative to `apps/site`. |
+| `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET` | Studio only | `placeholder`, `staging` | Local Studio (`pnpm studio`); the placeholder lets schema work, typegen and `sanity build` run offline. |
 | `SITE_URL` | absolute URL | `https://auburnresources.com.au` | Origin for canonical URLs, sitemap and Open Graph. Read from the process environment only (not `.env`), because Astro needs it before loading env files. |
 
 The package scripts set `CONTENT_MODE` for you: `pnpm dev` and `pnpm build:preview` use `preview`;
@@ -38,10 +44,6 @@ that are committed.
 
 | Variable | Secret | Phase | Used by | Purpose |
 | --- | --- | --- | --- | --- |
-| `SANITY_PROJECT_ID` | no | 5 | site, studio | Sanity project |
-| `SANITY_DATASET` | no | 5 | site, studio | `production` or `staging` |
-| `SANITY_API_VERSION` | no | 5 | site | Pinned API date |
-| `SANITY_READ_TOKEN` | **yes** | 5 | preview build | Reads drafts for preview builds only |
 | `SANITY_WEBHOOK_SECRET` | **yes** | 5 | worker / CI | Verifies CMS publish webhooks that trigger rebuilds |
 | `TURNSTILE_SITE_KEY` | no | 4 | site | Bot protection widget on forms |
 | `TURNSTILE_SECRET_KEY` | **yes** | 4 | worker | Verifies Turnstile tokens |

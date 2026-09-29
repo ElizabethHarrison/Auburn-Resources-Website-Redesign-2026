@@ -7,9 +7,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { projects } from '../../apps/site/src/lib/content/fixtures/data/projects';
-import { isPreview } from './helpers';
+import { isPreview, productionDist } from './helpers';
 
-const DIST = new URL('../../apps/site/dist/', import.meta.url).pathname;
+let DIST = '';
 
 function filesIn(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
@@ -21,7 +21,11 @@ test.describe('production build integrity', () => {
   // Playwright requires an object pattern for the fixtures argument, even when none is used.
   // eslint-disable-next-line no-empty-pattern
   test.beforeEach(({}, testInfo) => {
-    test.skip(isPreview(testInfo), 'scans the production build once');
+    test.skip(
+      isPreview(testInfo),
+      'scans each production build (fixtures and Sanity snapshot) once',
+    );
+    DIST = productionDist(testInfo);
   });
 
   const files = () => filesIn(DIST);
