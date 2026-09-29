@@ -32,13 +32,14 @@ for (const file of walk(dir).filter((f) => f.endsWith('.html'))) {
     bytes += gz(readFileSync(join(dir, src)));
   for (const [, href] of html.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*href="([^"]+)"/g))
     bytes += gz(readFileSync(join(dir, href)));
-  for (const [tag, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
-    if (!tag.includes('application/ld+json') && !/\bsrc=/.test(tag)) bytes += gz(Buffer.from(body));
+  for (const [, attributes, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+    if (!attributes.includes('application/ld+json') && !/\bsrc=/.test(attributes))
+      bytes += gz(Buffer.from(body));
   }
   const over = bytes > limit;
   failed ||= over;
   console.log(
-    `${over ? 'FAIL' : 'ok  '} ${(bytes / 1024).toFixed(1).padStart(6)} KB  ${file.slice(dir.length)}`,
+    `${over ? 'FAIL' : 'ok  '} ${(bytes / 1024).toFixed(2).padStart(6)} KB  ${file.slice(dir.length)}`,
   );
 }
 console.log(`Limit: ${limit / 1024} KB compressed JS on page load.`);
