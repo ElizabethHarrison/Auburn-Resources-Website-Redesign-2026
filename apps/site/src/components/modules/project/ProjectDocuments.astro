@@ -1,0 +1,38 @@
+---
+/**
+ * Module 09 — Documents (docs/SITEMAP.md §8): the document register filtered by project tag. Rows
+ * follow `isDocumentListable`; the page passes only this project's listable documents.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { DocumentRecord } from '~/lib/content/types';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  documents: readonly DocumentRecord[];
+  mode: ContentMode;
+}
+
+const { module, projectName, documents, mode } = Astro.props;
+---
+
+<DossierSection module={module}>
+  {documents.length > 0 && (
+    <>
+      <DocumentRegister documents={documents} caption={`${projectName} documents`} mode={mode} />
+      <ArrowLink href="/investors">All company documents</ArrowLink>
+    </>
+  )}
+  {documents.length === 0 && (
+    <Placeholder
+      brief={`No documents are tagged to ${projectName} yet: tag its announcements and reports in the CMS`}
+      field="Documents"
+      mode={mode}
+    />
+  )}
+</DossierSection>

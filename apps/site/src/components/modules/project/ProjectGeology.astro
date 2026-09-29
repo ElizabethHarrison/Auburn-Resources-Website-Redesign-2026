@@ -1,0 +1,134 @@
+---
+/**
+ * Module 02 — Geological setting (docs/SITEMAP.md §8): the ≤120-word summary and the reviewed technical
+ * statements beside Fig. 2 cross-section. All Interpretation, competent-person reviewed; in production
+ * the module needs an approved CP statement as well (`visibleModules`). Numbers inside approved
+ * interpretation are kept as written (D-011) and never become data cells.
+ *
+ * Reviewer notes on statements are shown in preview only.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { Project } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { resolveFigure } from '~/lib/content/visibility';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SourceLine from '~/components/patterns/SourceLine.astro';
+import DossierSection from './DossierSection.astro';
+import FigureFromRecord from './FigureFromRecord.astro';
+
+export interface Props {
+  module: DossierModule;
+  project: Project;
+  figureNumber: number;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, project, figureNumber, sources, mode } = Astro.props;
+const summary = resolve(project.geologySummary, mode);
+const statements = project.statements
+  .map((statement) => resolve(statement, mode))
+  .filter((statement) => statement.kind === 'value');
+const section = resolveFigure(project.sectionFigure, mode);
+---
+
+<DossierSection module={module}>
+  <div class:list={['geology', { 'geology--figure': section.kind !== 'hidden' }]}>
+    <div class="geology__text">
+      {summary.kind === 'value' && (
+        <div class="geology__summary">
+          <p>{summary.item.text}</p>
+          <SourceLine item={summary.item} sources={sources} mode={mode} />
+        </div>
+      )}
+      {summary.kind === 'placeholder' && (
+        <Placeholder brief={summary.brief} field="Geological setting" mode={mode} />
+      )}
+      {statements.length > 0 && (
+        <ul class="geology__statements" role="list" aria-label="Technical statements">
+          {statements.map((statement) => (
+            <li class="geology__statement">
+              <p>{statement.item.text}</p>
+              <SourceLine item={statement.item} sources={sources} mode={mode} />
+              {mode === 'preview' && statement.item.note && (
+                <p class="geology__note" data-preview-only>
+                  Reviewer note: {statement.item.note}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+    {section.kind !== 'hidden' && (
+      <div class="geology__figure">
+        <FigureFromRecord
+          figure={section}
+          number={figureNumber}
+          placeholderTitle="Schematic cross-section."
+          ratio="16 / 9"
+          mode={mode}
+        />
+      </div>
+    )}
+  </div>
+</DossierSection>
+
+<style>
+  .geology {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @container (min-width: 48rem) {
+    .geology--figure {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: start;
+    }
+  }
+
+  .geology__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .geology__summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+  }
+
+  .geology__statements {
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule-secondary);
+    list-style: none;
+  }
+
+  .geology__statement {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    max-width: var(--measure);
+    padding-block: var(--space-2);
+    border-bottom: var(--rule-secondary);
+  }
+
+  .geology__note {
+    color: var(--copper-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .geology__figure {
+    min-width: 0;
+  }
+</style>

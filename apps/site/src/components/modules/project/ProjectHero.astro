@@ -1,0 +1,251 @@
+---
+/**
+ * Project hero (docs/SITEMAP.md §8): title block — breadcrumb with sheet reference, H1, tags
+ * (commodity, state, stage), one-line thesis, CTAs "Latest [project] announcement" and "Discuss a
+ * partnership" — beside the field photograph.
+ *
+ * - Every tag and the thesis are fact/narrative slots: hidden in production until approved,
+ *   placeholders in preview.
+ * - The photo falls back to the location map (SITEMAP §8), shown unnumbered here because the same
+ *   record is Fig. 1 in module 01. With neither, production shows the title block alone.
+ * - The announcement CTA appears only when a listable announcement is tagged to the project.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { DocumentRecord, Project, SheetNumber } from '~/lib/content/types';
+import { resolveFigure } from '~/lib/content/visibility';
+import { COMMODITY_LABELS, STAGE_LABELS, STATE_NAMES } from '~/lib/format';
+import type { BreadcrumbItem } from '~/lib/seo';
+import { documentPageUrl } from '~/lib/urls';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import Tag from '~/components/primitives/Tag.astro';
+import Breadcrumb from '~/components/patterns/Breadcrumb.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+import FigureFromRecord from './FigureFromRecord.astro';
+
+export interface Props {
+  project: Project;
+  breadcrumbs: readonly BreadcrumbItem[];
+  sheet: SheetNumber;
+  /** The newest listable announcement tagged to this project, if any. */
+  latestAnnouncement?: DocumentRecord | undefined;
+  mode: ContentMode;
+}
+
+const { project, breadcrumbs, sheet, latestAnnouncement, mode } = Astro.props;
+const commodities = resolve(project.commodities, mode);
+const state = resolve(project.state, mode);
+const stage = resolve(project.stage, mode);
+const holding = resolve(project.holding, mode);
+const thesis = resolve(project.heroThesis, mode);
+
+const photo = resolveFigure(project.heroPhoto, mode);
+const map = resolveFigure(project.settingMap, mode);
+// Photo first; then the location map (SITEMAP §8). In preview a missing photo still shows its brief.
+const media = photo.kind === 'figure' ? photo : map.kind === 'figure' ? map : undefined;
+const photoBrief = photo.kind === 'placeholder' ? photo.brief : undefined;
+const hasMedia = media !== undefined || photoBrief !== undefined;
+const hasTags = commodities.kind !== 'hidden' || state.kind !== 'hidden' || stage.kind !== 'hidden';
+const announcementHref = latestAnnouncement ? documentPageUrl(latestAnnouncement) : undefined;
+const noLongerHeld = holding.kind === 'value' && holding.item.value === 'noLongerHeld';
+---
+
+<section class="project-hero" aria-labelledby="project-title">
+  <Container>
+    <div class:list={['project-hero__grid', { 'project-hero__grid--media': hasMedia }]}>
+      <div class="project-hero__text">
+        <Breadcrumb items={breadcrumbs} sheet={sheet} sheetLabel={project.name} />
+        <h1 id="project-title" class="project-hero__title">
+          {project.name}
+        </h1>
+
+        {noLongerHeld && (
+          <p class="project-hero__notice">
+            No longer held
+            {mode === 'preview' && holding.kind === 'value' && (
+              <StatusDot status={holding.status} compact mode={mode} />
+            )}
+          </p>
+        )}
+        {holding.kind === 'placeholder' && (
+          <Placeholder brief={holding.brief} field="Holding" variant="inline" mode={mode} />
+        )}
+
+        {hasTags && (
+          <ul class="project-hero__tags" role="list" aria-label="Project tags">
+            {commodities.kind === 'value' &&
+              commodities.item.value.map((commodity) => (
+                <li>
+                  <Tag variant="commodity">{COMMODITY_LABELS[commodity]}</Tag>
+                </li>
+              ))}
+            {commodities.kind === 'placeholder' && (
+              <li>
+                <Placeholder
+                  brief={commodities.brief}
+                  field="Commodity"
+                  variant="inline"
+                  mode={mode}
+                />
+              </li>
+            )}
+            {state.kind === 'value' && (
+              <li>
+                <Tag>{STATE_NAMES[state.item.value]}</Tag>
+              </li>
+            )}
+            {state.kind === 'placeholder' && (
+              <li>
+                <Placeholder brief={state.brief} field="State" variant="inline" mode={mode} />
+              </li>
+            )}
+            {stage.kind === 'value' && (
+              <li>
+                <Tag>{STAGE_LABELS[stage.item.value]}</Tag>
+              </li>
+            )}
+            {stage.kind === 'placeholder' && (
+              <li>
+                <Placeholder brief={stage.brief} field="Stage" variant="inline" mode={mode} />
+              </li>
+            )}
+            {mode === 'preview' && (commodities.kind === 'value' || state.kind === 'value') && (
+              <li>
+                <StatusDot
+                  status={
+                    commodities.kind === 'value'
+                      ? commodities.status
+                      : state.kind === 'value'
+                        ? state.status
+                        : 'toVerify'
+                  }
+                  compact
+                  mode={mode}
+                />
+              </li>
+            )}
+          </ul>
+        )}
+
+        {thesis.kind === 'value' && <p class="project-hero__thesis">{thesis.item.text}</p>}
+        {thesis.kind === 'placeholder' && (
+          <Placeholder brief={thesis.brief} field="Thesis" mode={mode} />
+        )}
+
+        <div class="project-hero__actions">
+          {announcementHref && (
+            <Button href={announcementHref}>Latest {project.name} announcement</Button>
+          )}
+          {!announcementHref && (
+            <Placeholder
+              brief={`No announcement is tagged to ${project.name} yet; the button appears when one is`}
+              field="Latest announcement"
+              variant="inline"
+              mode={mode}
+            />
+          )}
+          <Button href="/contact" variant="secondary">
+            Discuss a partnership
+          </Button>
+        </div>
+      </div>
+
+      {hasMedia && (
+        <div class="project-hero__media">
+          {media && (
+            <FigureFromRecord
+              figure={media}
+              placeholderTitle={`${project.name} field photograph.`}
+              sizes="(min-width: 64rem) 50vw, 100vw"
+              mode={mode}
+            />
+          )}
+          {photoBrief !== undefined && (
+            <Placeholder brief={photoBrief} field="Hero photograph" mode={mode} />
+          )}
+        </div>
+      )}
+    </div>
+  </Container>
+</section>
+
+<style>
+  .project-hero {
+    padding-block: var(--space-4) var(--space-6);
+  }
+
+  .project-hero__grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 64rem) {
+    .project-hero__grid--media {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: var(--grid-gap);
+    }
+  }
+
+  .project-hero__text {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  /* Scales with the column (never above the token) so long names never break mid-word. */
+  .project-hero__title {
+    max-width: 100%;
+    font-size: clamp(2rem, 14cqi, var(--text-project-title));
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+    overflow-wrap: normal;
+  }
+
+  .project-hero__notice {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--tag-padding-block) var(--tag-padding-inline);
+    border: var(--rule);
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .project-hero__tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-hero__thesis {
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+  }
+
+  .project-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .project-hero__media {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+/**
+ * Related sheets (docs/SITEMAP.md §8): up to three project cards — same commodity first, else same
+ * state — then previous / next sheet links, which always appear when there is more than one project.
+ * Only listable projects are passed in, so every link resolves to a published dossier.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Project } from '~/lib/content/types';
+import { projectUrl } from '~/lib/urls';
+import Container from '~/components/primitives/Container.astro';
+import Grid from '~/components/primitives/Grid.astro';
+import Icon from '~/components/primitives/Icon.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import SheetCard from '~/components/patterns/SheetCard.astro';
+
+export interface Props {
+  related: readonly Project[];
+  adjacent?: { previous: Project; next: Project } | undefined;
+  mode: ContentMode;
+}
+
+const { related, adjacent, mode } = Astro.props;
+---
+
+{(related.length > 0 || adjacent) && (
+  <section class="related" aria-labelledby="related-sheets">
+    <Container>
+      <SectionHeading
+        id="related-sheets"
+        heading="Related sheets"
+        action={{ label: 'All projects', href: '/projects' }}
+      />
+      {related.length > 0 && (
+        <div class="related__cards">
+          <Grid as="ul" layout="thirds">
+            {related.map((project) => (
+              <li>
+                <SheetCard project={project} mode={mode} />
+              </li>
+            ))}
+          </Grid>
+        </div>
+      )}
+      {adjacent && (
+        <nav class="related__adjacent" aria-label="Previous and next sheets">
+          <a class="related__link" href={projectUrl(adjacent.previous)} rel="prev">
+            <span class="related__direction">Previous sheet</span>
+            <span class="related__name">
+              {adjacent.previous.sheetNumber} {adjacent.previous.name}
+            </span>
+          </a>
+          <a class="related__link related__link--next" href={projectUrl(adjacent.next)} rel="next">
+            <span class="related__direction">
+              Next sheet <Icon name="arrow-right" />
+            </span>
+            <span class="related__name">
+              {adjacent.next.sheetNumber} {adjacent.next.name}
+            </span>
+          </a>
+        </nav>
+      )}
+    </Container>
+  </section>
+)}
+
+<style>
+  .related {
+    padding-block: var(--section-padding);
+  }
+
+  .related__cards {
+    margin-top: var(--space-5);
+  }
+
+  .related__adjacent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin-top: var(--space-5);
+    border-top: var(--rule);
+    border-bottom: var(--rule);
+  }
+
+  .related__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-height: var(--touch-target);
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+    color: var(--ink-survey);
+    text-decoration: none;
+  }
+
+  .related__link--next {
+    align-items: flex-end;
+    padding-inline: var(--space-2) 0;
+    border-left: var(--rule-secondary);
+    text-align: right;
+  }
+
+  .related__link:hover .related__name {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.2em;
+  }
+
+  .related__direction {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .related__name {
+    font-size: var(--text-lead);
+  }
+</style>

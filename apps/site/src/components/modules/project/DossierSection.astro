@@ -1,0 +1,64 @@
+---
+/**
+ * Frame for dossier modules 01–09: the section landmark (its id is the strat-column anchor), the mono
+ * kicker ("01 — Setting") and the module heading. Pages render a module only when `visibleModules`
+ * lists it, so a heading here is never followed by nothing.
+ */
+import type { DossierModule } from '~/lib/content/dossier';
+
+export interface Props {
+  module: DossierModule;
+}
+
+const { module } = Astro.props;
+const headingId = `${module.id}-heading`;
+---
+
+<section id={module.id} class="dossier-section" aria-labelledby={headingId}>
+  <div class="dossier-section__head">
+    <p class="dossier-section__kicker">{module.kicker}</p>
+    <h2 id={headingId} class="dossier-section__heading">
+      {module.heading}
+    </h2>
+  </div>
+  <div class="dossier-section__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .dossier-section {
+    container-type: inline-size;
+    padding-block: var(--space-6);
+    border-top: var(--rule);
+    scroll-margin-top: var(--space-4);
+  }
+
+  .dossier-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .dossier-section__kicker {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .dossier-section__heading {
+    max-width: 24ch;
+    font-size: var(--text-h2);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .dossier-section__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+</style>

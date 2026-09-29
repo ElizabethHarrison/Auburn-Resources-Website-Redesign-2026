@@ -1,0 +1,40 @@
+---
+/**
+ * Project key-facts strip (docs/SITEMAP.md §8): six ruled cells — location, commodity, area, tenements,
+ * ownership, as-at. Cells drop individually when not approved; the strip disappears when none remains.
+ * Publishing the page at all needs approved area and ownership (`isProjectPublishable`).
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { Ownership, Project } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { formatDate } from '~/lib/dates';
+import { STATE_NAMES, factDisplay, formatCommodities, formatNumber } from '~/lib/format';
+import Container from '~/components/primitives/Container.astro';
+import FactStrip from '~/components/patterns/FactStrip.astro';
+
+export interface Props {
+  project: Project;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { project, sources, mode } = Astro.props;
+
+// Presentation only: the holder, percentage and JV partner exactly as recorded.
+const formatOwnership = (ownership: Ownership) =>
+  `${formatNumber(ownership.percent)}% ${ownership.holder}` +
+  (ownership.jvPartner === undefined ? '' : ` · JV ${ownership.jvPartner}`);
+
+const items = [
+  factDisplay('Location', project.state, (state) => STATE_NAMES[state]),
+  factDisplay('Commodity', project.commodities, formatCommodities),
+  factDisplay('Area', project.areaKm2),
+  factDisplay('Tenements', project.tenements),
+  factDisplay('Ownership', project.ownership, formatOwnership),
+  factDisplay('As at', project.asAt, formatDate),
+];
+---
+
+<Container>
+  <FactStrip items={items} label={`${project.name} key facts`} sources={sources} mode={mode} />
+</Container>

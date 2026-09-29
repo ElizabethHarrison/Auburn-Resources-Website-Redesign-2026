@@ -1,0 +1,37 @@
+---
+/**
+ * Module 08 — Milestones (docs/SITEMAP.md §8): four-step track, done · done · next · planned. Planned
+ * milestones are forward-looking; the track links to the disclaimer. A milestone appears only when its
+ * record is approved (production) and never carries a date that is not a Fact.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isStatusRenderable } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { ProjectMilestone } from '~/lib/content/types';
+import MilestoneTrack, { type Milestone } from '~/components/patterns/MilestoneTrack.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  milestones: readonly ProjectMilestone[];
+  mode: ContentMode;
+}
+
+const { module, projectName, milestones, mode } = Astro.props;
+const steps: Milestone[] = milestones
+  .filter((milestone) => isStatusRenderable(milestone.status, mode))
+  .map((milestone) => ({ title: milestone.title, state: milestone.state, when: milestone.when }));
+---
+
+<DossierSection module={module}>
+  <MilestoneTrack steps={steps} label={`${projectName} milestones`} mode={mode} />
+  {steps.length === 0 && (
+    <Placeholder
+      brief={`Current milestones for ${projectName} (done, next, planned), approved by the company; outdated work plans are not published`}
+      field="Milestones"
+      mode={mode}
+    />
+  )}
+</DossierSection>

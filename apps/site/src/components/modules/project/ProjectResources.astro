@@ -1,0 +1,153 @@
+---
+/**
+ * Module 04 — Existing resources (docs/SITEMAP.md §8): a real HTML table — category, Mt, grades,
+ * contained metal, cut-off, date, source. JORC 2012 figures only, competent-person approved.
+ *
+ * Never an empty or partial table: in production a row appears only when every cell is approved, and
+ * the module only when at least one such row exists and the CP statement is approved (`visibleModules`).
+ * Preview shows every row with its placeholders, or one placeholder when no rows are recorded.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import type { DossierModule } from '~/lib/content/dossier';
+import type { ResourceEstimate } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import { formatDate } from '~/lib/dates';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DossierSection from './DossierSection.astro';
+
+export interface Props {
+  module: DossierModule;
+  projectName: string;
+  resources: readonly ResourceEstimate[];
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { module, projectName, resources, sources, mode } = Astro.props;
+const cellsOf = (row: ResourceEstimate) => [
+  row.category,
+  row.tonnesMt,
+  row.grades,
+  row.containedMetal,
+  row.cutOff,
+  row.estimateDate,
+];
+const rows = resources.filter(
+  (row) => mode === 'preview' || cellsOf(row).every((slot) => isRenderable(slot, mode)),
+);
+const sourceTitle = (row: ResourceEstimate) =>
+  row.estimateDate.kind === 'fact'
+    ? sources.get(row.estimateDate.meta.sourceDocument.documentId)?.title
+    : undefined;
+const formatIso = (value: unknown) => formatDate(value as Parameters<typeof formatDate>[0]);
+---
+
+<DossierSection module={module}>
+  {rows.length > 0 && (
+    <div class="resources" role="region" aria-labelledby="resources-caption" tabindex="0">
+      <table>
+        <caption id="resources-caption">{projectName} Mineral Resources (JORC 2012)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Tonnes (Mt)</th>
+            <th scope="col">Grades</th>
+            <th scope="col">Contained metal</th>
+            <th scope="col">Cut-off</th>
+            <th scope="col">Date</th>
+            <th scope="col">Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">
+                <FactValue fact={row.category} field="Category" showStatus mode={mode} />
+              </th>
+              <td data-fact>
+                <FactValue fact={row.tonnesMt} field="Tonnes" mode={mode} />
+              </td>
+              <td>
+                <FactValue fact={row.grades} field="Grades" mode={mode} />
+              </td>
+              <td>
+                <FactValue fact={row.containedMetal} field="Contained metal" mode={mode} />
+              </td>
+              <td>
+                <FactValue fact={row.cutOff} field="Cut-off" mode={mode} />
+              </td>
+              <td class="resources__date">
+                <FactValue fact={row.estimateDate} format={formatIso} field="Date" mode={mode} />
+              </td>
+              <td>
+                {sourceTitle(row) ?? (
+                  <Placeholder brief="Source announcement" variant="inline" mode={mode} />
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+  {rows.length === 0 && (
+    <Placeholder
+      brief={`JORC 2012 Mineral Resource rows for ${projectName}, only if reported in an announcement; the competent person confirms each row`}
+      field="Mineral Resources"
+      mode={mode}
+    />
+  )}
+</DossierSection>
+
+<style>
+  .resources {
+    position: relative;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .resources:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-small);
+  }
+
+  caption {
+    padding-bottom: var(--space-1);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-2) var(--space-1) 0;
+    border-bottom: var(--rule-secondary);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    border-bottom: var(--rule);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .resources__date {
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+</style>
