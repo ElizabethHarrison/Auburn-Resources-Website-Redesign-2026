@@ -62,6 +62,11 @@ jobs:
             echo "::error::Preview-only content found in the production build (files listed above)."
             exit 1
           fi
+          # Indicative mockup graphics (src/assets/figures/indicative) are preview-only.
+          if find apps/site/dist -iname '*indicative*' | grep .; then
+            echo "::error::Indicative mockup artwork found in the production build."
+            exit 1
+          fi
           if find apps/site/dist -path '*_catalogue*' | grep .; then
             echo "::error::The design-system catalogue must not exist in the production build."
             exit 1

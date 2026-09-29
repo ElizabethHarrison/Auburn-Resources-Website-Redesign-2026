@@ -27,6 +27,7 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-15 | Source lines are 10.5 px mono (approved). Legible, but small for older readers — keep, or raise the minimum to 11–12 px? | none | Project owner |  **Keep 10.5 px for now**; reassess after seeing real pages |
 | Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner |  **Approved** with Phase 2 (29 Sep 2026) → D-013, D-014 |
 | Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner |  **Do not block**: the approved written design specification is the source of truth |
+| Q-18 | The mockup map (Fig. 1) and cross-section (Fig. 2) now appear in preview, labelled indicative (D-017). Should production show them before tenement GIS / a CP-approved section exist — labelled "indicative" — or stay hidden until replaced? Showing them changes the rule that mockup geometry never ships (CLAUDE.md §3, §9). | none (preview only until decided) | Project owner + CP | |
 
 ## Company secretary
 

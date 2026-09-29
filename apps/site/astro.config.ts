@@ -43,6 +43,11 @@ export default defineConfig({
     format: 'file',
   },
   compressHTML: true,
+  vite: {
+    // Compile-time flag: preview-only code (e.g. indicative mockup figures) is removed from
+    // production bundles by dead-code elimination, so its assets are never emitted.
+    define: { __PREVIEW_BUILD__: JSON.stringify(isPreview) },
+  },
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
   integrations: isPreview
     ? [catalogue]

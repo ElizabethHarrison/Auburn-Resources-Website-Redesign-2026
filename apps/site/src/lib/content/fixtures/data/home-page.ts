@@ -1,13 +1,13 @@
 /**
  * Home page copy (docs/WEBSITE-STRATEGY.md §2 and §5). The headline, positioning line and thesis are
  * the approved *working* wording; the strategy says final wording follows fact verification, so they
- * are `toVerify` and appear only in preview until approved. Figures and the sustainability sentence
- * do not exist yet.
+ * are `toVerify` and appear only in preview until approved. Figures are the indicative mockup graphics
+ * (./figures.ts, preview only); the sustainability sentence does not exist yet.
  */
 import { inputNeeded } from '../../../facts';
 import type { HomePageContent } from '../../types';
 import { draftNarrative, sourcedStatement, websiteStrategySource } from '../helpers';
-import { portfolioMap } from './figures';
+import { crossSection, portfolioMap } from './figures';
 
 export const homePage: HomePageContent = {
   heroHeading: draftNarrative("Exploring the ground beside Australia's great base-metal deposits."),
@@ -21,9 +21,7 @@ export const homePage: HomePageContent = {
     websiteStrategySource,
     'Core story from docs/WEBSITE-STRATEGY.md §2. Geological claim: needs competent-person review.',
   ),
-  crossSection: inputNeeded(
-    'Fig. 2 cross-section approved by the competent person (Q-33). The mockup section is schematic only.',
-  ),
+  crossSection,
   sustainabilityLine: inputNeeded(
     'One specific, verifiable sentence on how Auburn works on Country and with landholders',
   ),

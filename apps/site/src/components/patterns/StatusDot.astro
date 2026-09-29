@@ -12,7 +12,7 @@ export interface Props {
   status: DotStatus;
   /** `compact` shows only the shape; the text is kept for assistive technology. */
   compact?: boolean;
-  mode?: ContentMode;
+  mode?: ContentMode | undefined;
 }
 
 const { status, compact = false } = Astro.props;

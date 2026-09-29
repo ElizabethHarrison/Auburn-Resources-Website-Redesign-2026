@@ -6,6 +6,7 @@
  * page, redirect) are added with the templates that use them. When Sanity arrives (Phase 5), its
  * typegen output must map onto these types without changing any page or component.
  */
+import type { ImageMetadata } from 'astro';
 import type {
   ContentStatus,
   DocumentRef,
@@ -168,7 +169,8 @@ export interface FigureRecord {
   readonly kind: 'figure';
   readonly id: string;
   readonly figureType: FigureType;
-  readonly src: string;
+  /** CMS image URL, or an imported local asset (built through Astro's image pipeline). */
+  readonly src: string | ImageMetadata;
   readonly width: number;
   readonly height: number;
   readonly caption: string;

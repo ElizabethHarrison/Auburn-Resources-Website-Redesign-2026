@@ -14,7 +14,6 @@ import ArrowLink from '~/components/primitives/ArrowLink.astro';
 import Container from '~/components/primitives/Container.astro';
 import Figure from '~/components/patterns/Figure.astro';
 import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
-import MapLegend from '~/components/patterns/MapLegend.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
 import SourceLine from '~/components/patterns/SourceLine.astro';
 import StatusDot from '~/components/patterns/StatusDot.astro';
@@ -75,8 +74,9 @@ const section = resolveFigure(home.crossSection, mode);
               source={section.figure.source}
               date={section.figure.date}
               longDescription={section.figure.longDescription}
+              status={section.figure.status}
+              mode={mode}
             />
-            <MapLegend keys={['auburn', 'form-lines']} />
           </div>
         )}
         {section.kind === 'placeholder' && (

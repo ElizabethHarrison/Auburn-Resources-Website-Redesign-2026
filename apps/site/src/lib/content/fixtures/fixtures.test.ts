@@ -174,3 +174,15 @@ describe('fixtures adapter', () => {
     expect(items.every((item) => item.projectId === 'project-calgoa')).toBe(true);
   });
 });
+
+describe('indicative figures', () => {
+  it('are never approved in fixtures, and never render in production', async () => {
+    const { resolveFigure } = await import('../visibility');
+    const figures = await import('./data/indicative-figures');
+    for (const figure of [figures.portfolioMap, figures.crossSection]) {
+      expect(figure.kind === 'figure' && figure.status).not.toBe('approved');
+      expect(resolveFigure(figure, 'production')).toEqual({ kind: 'hidden' });
+      expect(resolveFigure(figure, 'preview').kind).toBe('figure');
+    }
+  });
+});

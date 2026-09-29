@@ -1,7 +1,7 @@
 ---
 /**
- * Fig. 1 — portfolio map (docs/SITEMAP.md 02). Static in Phase 3: a supplied, approved figure with its
- * legend, or (preview only) the empty figure frame. MapLibre and filters arrive in Phase 4. No map is
+ * Fig. 1 — portfolio map (docs/SITEMAP.md 02). Static in Phase 3: a supplied figure (its legend is part
+ * of the artwork), or (preview only) the empty figure frame. MapLibre and filters arrive in Phase 4. No map is
  * drawn from mockup geometry. The project register on this page is the map's text equivalent.
  */
 import type { ContentMode } from '~/lib/facts';
@@ -10,7 +10,6 @@ import { resolveFigure } from '~/lib/content/visibility';
 import Container from '~/components/primitives/Container.astro';
 import Figure from '~/components/patterns/Figure.astro';
 import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
-import MapLegend from '~/components/patterns/MapLegend.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
 
 export interface Props {
@@ -41,8 +40,9 @@ const resolved = resolveFigure(map, mode);
               source={resolved.figure.source}
               date={resolved.figure.date}
               longDescription={resolved.figure.longDescription}
+              status={resolved.figure.status}
+              mode={mode}
             />
-            <MapLegend />
           </>
         )}
         {resolved.kind === 'placeholder' && (

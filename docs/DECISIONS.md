@@ -137,3 +137,18 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   are never weakened to fill it. The footer keeps the Contact heading/link; individual contact fields stay
   hidden until their values are approved. Catalogue specimens are confirmed catalogue-only (Q-16).
   Q-05, Q-07 and Q-08 remain open.
+
+## D-017 · Mockup graphics kept in the design as indicative figures (preview only)
+- **Date:** 29 Sep 2026 · **Status:** Approved in part (owner: "keep the graphics that are shown here");
+  production display pending Q-18
+- **Decision:** The Fig. 1 portfolio map and Fig. 2 schematic cross-section from the approved mockups
+  ("1b · Survey Sheet — Century Gothic"; "Project page template — Nicholson") are cropped at full resolution
+  into `apps/site/src/assets/figures/indicative/` and used as figure records with status `toVerify`, captioned
+  "indicative", with text descriptions. The Nicholson regional-setting map is stored for the project dossier.
+  They render in preview builds only: they are loaded behind the compile-time `__PREVIEW_BUILD__` flag, so a
+  production bundle cannot contain them, and CI fails if any `*indicative*` file reaches production.
+- **Why not production yet:** the approved rules say mockup geometry, project positions and the schematic
+  section are indicative only and must never ship as fact (CLAUDE.md §3; DESIGN-DIRECTION "Maps and figures").
+  Showing them publicly would need an explicit owner decision (Q-18) and a change to those rules.
+- **Also:** `sharp` added as a build-time dependency of the site (required by Astro's `<Image>` pipeline,
+  part of the approved stack).
