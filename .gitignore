@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+.astro/
+.wrangler/
+.sanity/
+apps/studio/dist/
+pagefind/
+
+# Test output
+test-results/
+playwright-report/
+.lighthouseci/
+coverage/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log
