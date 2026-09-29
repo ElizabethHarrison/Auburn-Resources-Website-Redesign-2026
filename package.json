@@ -10,8 +10,10 @@
   },
   "scripts": {
     "dev": "pnpm --filter @auburn/site dev",
+    "studio": "pnpm --filter @auburn/studio dev",
     "build": "pnpm --filter @auburn/site build",
     "build:preview": "pnpm --filter @auburn/site build:preview",
+    "build:sanity-export": "pnpm --filter @auburn/site build:sanity-export && pnpm --filter @auburn/site build:sanity-export:preview",
     "serve": "pnpm --filter @auburn/site serve",
     "serve:production": "node tests/static-server.mjs apps/site/dist 4600",
     "serve:preview": "node tests/static-server.mjs apps/site/dist-preview 4601",
@@ -19,9 +21,12 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "pnpm -r test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:preview && pnpm budget && pnpm test:e2e",
-    "budget": "node scripts/check-js-budget.mjs apps/site/dist",
-    "test:e2e": "playwright test"
+    "typegen": "pnpm --filter @auburn/studio typegen",
+    "typegen:check": "node scripts/check-typegen.mjs",
+    "content:export": "pnpm --filter @auburn/site content:export",
+    "budget": "node scripts/check-js-budget.mjs apps/site/dist && node scripts/check-js-budget.mjs apps/site/dist-sanity",
+    "test:e2e": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm typegen:check && pnpm build && pnpm build:preview && pnpm build:sanity-export && pnpm budget && pnpm test:e2e"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

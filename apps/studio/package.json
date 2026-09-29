@@ -1,0 +1,23 @@
+{
+  "name": "@auburn/studio",
+  "private": true,
+  "type": "module",
+  "description": "Sanity Studio for auburnresources.com.au (D-024). Runs locally; not hosted or deployed (Q-45).",
+  "scripts": {
+    "dev": "DO_NOT_TRACK=1 sanity dev",
+    "build": "DO_NOT_TRACK=1 sanity build --yes",
+    "typegen": "DO_NOT_TRACK=1 sanity schema extract --path schema.json --force && DO_NOT_TRACK=1 sanity typegen generate",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^6.16.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.2"
+  }
+}
