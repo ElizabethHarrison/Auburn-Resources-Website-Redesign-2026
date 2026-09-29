@@ -16,6 +16,7 @@ import { content } from '~/lib/content';
 import {
   adjacentProjects,
   isComplianceShown,
+  publishableResults,
   relatedProjects,
   visibleModules,
   type DossierData,
@@ -85,7 +86,7 @@ const data: DossierData = {
   workItems,
   prospects,
   resources,
-  results,
+  results: publishableResults(results, documents, mode),
   milestones,
   documents: projectDocuments,
 };
@@ -212,7 +213,7 @@ const description = `The ${project.name} project sheet: setting, geology, explor
                   <ProjectResults
                     module={module}
                     projectName={project.name}
-                    results={results}
+                    results={data.results}
                     sources={sources}
                     mode={mode}
                   />

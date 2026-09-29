@@ -13,7 +13,7 @@
 import type { ContentMode } from '~/lib/facts';
 import { resolve } from '~/lib/facts';
 import type { DocumentRecord, Project, SheetNumber } from '~/lib/content/types';
-import { resolveFigure } from '~/lib/content/visibility';
+import { resolveFigure, resolvePhoto } from '~/lib/content/visibility';
 import { COMMODITY_LABELS, STAGE_LABELS, STATE_NAMES } from '~/lib/format';
 import type { BreadcrumbItem } from '~/lib/seo';
 import { documentPageUrl } from '~/lib/urls';
@@ -41,7 +41,7 @@ const stage = resolve(project.stage, mode);
 const holding = resolve(project.holding, mode);
 const thesis = resolve(project.heroThesis, mode);
 
-const photo = resolveFigure(project.heroPhoto, mode);
+const photo = resolvePhoto(project.heroPhoto, mode);
 const map = resolveFigure(project.settingMap, mode);
 // Photo first; then the location map (SITEMAP §8). In preview a missing photo still shows its brief.
 const media = photo.kind === 'figure' ? photo : map.kind === 'figure' ? map : undefined;

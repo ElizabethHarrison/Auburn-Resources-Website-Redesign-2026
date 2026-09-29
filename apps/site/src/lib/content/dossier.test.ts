@@ -12,12 +12,20 @@ import {
   adjacentProjects,
   isComplianceShown,
   moduleDefinitions,
+  publishableResults,
   relatedProjects,
   visibleModules,
   type DossierData,
 } from './dossier';
-import type { FigureRecord, Project, ResourceEstimate } from './types';
-import { isProjectListable, isProjectPublishable } from './visibility';
+import type {
+  DocumentRecord,
+  FigureRecord,
+  PhotoRecord,
+  Project,
+  ResourceEstimate,
+  ResultRecord,
+} from './types';
+import { figureSource, isProjectListable, isProjectPublishable, resolvePhoto } from './visibility';
 
 const approvedFact = <T>(value: T): Fact<T> => ({
   kind: 'fact',
@@ -179,5 +187,51 @@ describe('related and adjacent sheets', () => {
     const last = projects[projects.length - 1] as Project;
     expect(adjacentProjects(first, projects)).toEqual({ previous: last, next: projects[1] });
     expect(adjacentProjects(first, [first])).toBeUndefined();
+  });
+});
+
+describe('results and photographs', () => {
+  const result: ResultRecord = {
+    id: 'result',
+    projectId: nicholson.id,
+    headline: approvedFact('Specimen interval'),
+    holeOrSurveyId: approvedFact('HOLE-1'),
+    prospectName: 'Border',
+    reportedIn: { documentId: 'report' },
+  };
+  const report: DocumentRecord = {
+    id: 'report',
+    slug: 'report',
+    title: 'Report',
+    docType: 'announcement',
+    releaseAt: approvedFact('2026-09-29'),
+    status: 'approved',
+    internal: false,
+    file: approvedFact('report.pdf'),
+    projectIds: [],
+  };
+
+  it('never publishes a result whose reporting announcement is not published', () => {
+    expect(publishableResults([result], [], 'production')).toEqual([]);
+    expect(publishableResults([result], [{ ...report, status: 'toVerify' }], 'production')).toEqual(
+      [],
+    );
+    expect(publishableResults([result], [report], 'production')).toEqual([result]);
+    expect(publishableResults([result], [], 'preview')).toEqual([result]);
+  });
+
+  it('never publishes a photograph without place, photographer and consent', () => {
+    const photo: PhotoRecord = {
+      ...approvedMap,
+      figureType: 'photo',
+      place: 'Border prospect',
+      photographer: 'Photographer',
+      consentNote: 'Consent recorded',
+    };
+    expect(resolvePhoto(photo, 'production').kind).toBe('figure');
+    expect(resolvePhoto({ ...photo, consentNote: ' ' }, 'production')).toEqual({ kind: 'hidden' });
+    expect(resolvePhoto({ ...photo, photographer: '' }, 'production')).toEqual({ kind: 'hidden' });
+    expect(resolvePhoto({ ...photo, consentNote: '' }, 'preview').kind).toBe('figure');
+    expect(figureSource(photo)).toBe('Border prospect · Photograph: Photographer');
   });
 });

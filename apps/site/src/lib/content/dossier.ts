@@ -18,7 +18,7 @@ import type {
   ResultRecord,
   WorkItem,
 } from './types';
-import { resolveFigure } from './visibility';
+import { isDocumentListable, resolveFigure, resolvePhoto } from './visibility';
 
 export type DossierModuleId =
   | 'setting'
@@ -156,7 +156,7 @@ function productionVisibility(
       ),
     targets: technical && data.prospects.some((prospect) => isRenderable(prospect.summary, mode)),
     results: technical && data.results.some((result) => isRenderable(result.headline, mode)),
-    photography: project.photos.some((photo) => resolveFigure(photo, mode).kind === 'figure'),
+    photography: project.photos.some((photo) => resolvePhoto(photo, mode).kind === 'figure'),
     milestones: data.milestones.some((milestone) => isStatusRenderable(milestone.status, mode)),
     documents: data.documents.length > 0,
   };
@@ -181,6 +181,22 @@ export function isComplianceShown(
     isTechnicalAllowed(data.project, mode) &&
     modules.some((module) => ['geology', 'resources', 'targets', 'results'].includes(module.id))
   );
+}
+
+/**
+ * Results that may appear: a result cannot exist without the announcement that reported it, so in
+ * production its reporting document must itself be listable (SITEMAP §8 module 06).
+ */
+export function publishableResults(
+  results: readonly ResultRecord[],
+  documents: readonly DocumentRecord[],
+  mode: ContentMode,
+): ResultRecord[] {
+  if (mode === 'preview') return [...results];
+  return results.filter((result) => {
+    const report = documents.find((document) => document.id === result.reportedIn.documentId);
+    return report !== undefined && isDocumentListable(report, mode);
+  });
 }
 
 // ── Related sheets and previous / next ──────────────────────────────────────────────────────────

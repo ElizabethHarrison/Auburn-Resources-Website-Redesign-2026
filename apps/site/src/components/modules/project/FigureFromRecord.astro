@@ -4,7 +4,7 @@
  * Shared by the dossier modules so every figure carries caption, alt, source, date and status alike.
  */
 import type { ContentMode } from '~/lib/facts';
-import type { ResolvedFigure } from '~/lib/content/visibility';
+import { figureSource, type ResolvedFigure } from '~/lib/content/visibility';
 import Figure from '~/components/patterns/Figure.astro';
 import FigurePlaceholder from '~/components/patterns/FigurePlaceholder.astro';
 
@@ -29,7 +29,7 @@ const { figure, number, placeholderTitle, ratio, sizes, mode } = Astro.props;
     alt={figure.figure.alt}
     image={{ src: figure.figure.src, width: figure.figure.width, height: figure.figure.height }}
     sizes={sizes}
-    source={figure.figure.source}
+    source={figureSource(figure.figure)}
     date={figure.figure.date}
     longDescription={figure.figure.longDescription}
     status={figure.figure.status}

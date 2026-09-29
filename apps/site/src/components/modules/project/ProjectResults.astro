@@ -10,6 +10,8 @@ import type { DossierModule } from '~/lib/content/dossier';
 import type { ResultRecord } from '~/lib/content/types';
 import type { SourceIndex } from '~/lib/content/sources';
 import { factDisplay } from '~/lib/format';
+import { documentPageUrl } from '~/lib/urls';
+import FactValue from '~/components/patterns/FactValue.astro';
 import FactCell from '~/components/patterns/FactCell.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
 import SourceLine from '~/components/patterns/SourceLine.astro';
@@ -27,13 +29,17 @@ const { module, projectName, results, sources, mode } = Astro.props;
 const cards = results
   .map((result) => ({ result, headline: resolve(result.headline, mode) }))
   .filter((card) => card.headline.kind !== 'hidden')
-  .slice(0, 3);
+  .slice(0, 3)
+  .map((card) => {
+    const report = sources.get(card.result.reportedIn.documentId);
+    return { ...card, report, reportHref: report ? documentPageUrl(report) : undefined };
+  });
 ---
 
 <DossierSection module={module}>
   {cards.length > 0 && (
     <ul class="results" role="list" aria-label={`${projectName} key results`}>
-      {cards.map(({ result, headline }) => (
+      {cards.map(({ result, headline, report, reportHref }) => (
         <li class="result">
           <h3 class="result__prospect">{result.prospectName}</h3>
           {headline.kind === 'value' && (
@@ -53,6 +59,13 @@ const cards = results
             variant="row"
             mode={mode}
           />
+          {report && (
+            <p class="result__report">
+              Reported in {reportHref ? <a href={reportHref}>{report.title}</a> : report.title}
+              {' · '}
+              <FactValue fact={report.releaseAt} field="Release date" mode={mode} />
+            </p>
+          )}
         </li>
       ))}
     </ul>
@@ -96,6 +109,11 @@ const cards = results
     font-size: var(--text-mono);
     letter-spacing: var(--tracking-mono-wide);
     text-transform: uppercase;
+  }
+
+  .result__report {
+    color: var(--color-meta);
+    font-size: var(--text-small);
   }
 
   .result__headline {

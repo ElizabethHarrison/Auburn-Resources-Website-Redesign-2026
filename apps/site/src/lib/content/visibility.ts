@@ -11,6 +11,8 @@ import type {
   FigureRecord,
   FigureSlot,
   Person,
+  PhotoRecord,
+  PhotoSlot,
   Project,
 } from './types';
 
@@ -75,6 +77,28 @@ export function resolveFigure(slot: FigureSlot | undefined, mode: ContentMode): 
   return isStatusRenderable(slot.status, mode)
     ? { kind: 'figure', figure: slot }
     : { kind: 'hidden' };
+}
+
+/**
+ * A photograph renders like any figure, but production also requires its place, photographer and
+ * consent note (a photo without recorded consent is never published).
+ */
+export function resolvePhoto(slot: PhotoSlot | undefined, mode: ContentMode): ResolvedFigure {
+  const resolved = resolveFigure(slot, mode);
+  if (resolved.kind !== 'figure' || mode === 'preview' || slot?.kind !== 'figure') return resolved;
+  const complete = [slot.place, slot.photographer, slot.consentNote].every(
+    (value) => value.trim() !== '',
+  );
+  return complete ? resolved : { kind: 'hidden' };
+}
+
+/** Source line for a figure: photographs credit place and photographer. */
+export function figureSource(figure: FigureRecord): string {
+  if (figure.figureType === 'photo' && 'photographer' in figure) {
+    const photo = figure as PhotoRecord;
+    return `${photo.place} · Photograph: ${photo.photographer}`;
+  }
+  return figure.source;
 }
 
 // ── Latest documents and articles ───────────────────────────────────────────────────────────────

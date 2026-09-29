@@ -6,8 +6,8 @@
  */
 import type { ContentMode } from '~/lib/facts';
 import type { DossierModule } from '~/lib/content/dossier';
-import type { FigureSlot } from '~/lib/content/types';
-import { resolveFigure } from '~/lib/content/visibility';
+import type { PhotoSlot } from '~/lib/content/types';
+import { figureSource, resolvePhoto } from '~/lib/content/visibility';
 import Figure from '~/components/patterns/Figure.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
 import DossierSection from './DossierSection.astro';
@@ -15,7 +15,7 @@ import DossierSection from './DossierSection.astro';
 export interface Props {
   module: DossierModule;
   projectName: string;
-  photos: readonly FigureSlot[];
+  photos: readonly PhotoSlot[];
   /** Number of the first photograph's figure on the page. */
   firstFigureNumber: number;
   mode: ContentMode;
@@ -23,7 +23,7 @@ export interface Props {
 
 const { module, projectName, photos, firstFigureNumber, mode } = Astro.props;
 const figures = photos
-  .map((photo) => resolveFigure(photo, mode))
+  .map((photo) => resolvePhoto(photo, mode))
   .flatMap((photo) => (photo.kind === 'figure' ? [photo.figure] : []));
 ---
 
@@ -37,7 +37,7 @@ const figures = photos
           alt={photo.alt}
           image={{ src: photo.src, width: photo.width, height: photo.height }}
           sizes="(min-width: 64rem) 40vw, 100vw"
-          source={photo.source}
+          source={figureSource(photo)}
           date={photo.date}
           status={photo.status}
           mode={mode}
