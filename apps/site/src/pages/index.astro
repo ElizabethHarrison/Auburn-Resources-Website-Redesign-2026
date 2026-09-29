@@ -1,0 +1,149 @@
+---
+/**
+ * DEVELOPMENT SCAFFOLD — temporary. Replaced by the Home template (Sheet 00) in Phase 3.
+ *
+ * Shows the build mode and how much fixture content each mode would render, proving the content
+ * adapter and rendering rules end to end. It renders no company facts, only counts. Always noindex.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { collectSlots, tallySlots } from '~/lib/content/audit';
+
+const [settings, people, projects, documents, workItems] = await Promise.all([
+  content.getSiteSettings(),
+  content.getPeople(),
+  content.getProjects(),
+  content.getDocuments(),
+  content.getWorkItems(),
+]);
+
+const rows = [
+  { label: 'Site settings', records: 1, data: settings },
+  { label: 'People', records: people.length, data: people },
+  { label: 'Projects', records: projects.length, data: projects },
+  { label: 'Documents', records: documents.length, data: documents },
+  { label: 'Work items', records: workItems.length, data: workItems },
+].map((row) => ({ ...row, tally: tallySlots(collectSlots(row.data), config.contentMode) }));
+---
+
+<BaseLayout
+  title="Development scaffold"
+  description="Development scaffold for the Auburn Resources website. Not a public page; replaced by the home page in a later phase."
+  noindex
+>
+  <div class="l-container l-section">
+    <p class="kicker">Phase 1 · Scaffold</p>
+    <h1>Development scaffold</h1>
+    <p>
+      This temporary page confirms the build, content adapter and rendering rules. It is replaced by
+      the home page in Phase 3.
+    </p>
+
+    <dl class="build">
+      <div>
+        <dt>Content mode</dt>
+        <dd>{config.contentMode}</dd>
+      </div>
+      <div>
+        <dt>Content source</dt>
+        <dd>{config.contentSource}</dd>
+      </div>
+    </dl>
+
+    <div class="table-scroll" role="region" aria-labelledby="slots-caption" tabindex="0">
+      <table>
+        <caption id="slots-caption">
+          Content slots by status, and how many render in this build
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Record type</th>
+            <th scope="col">Records</th>
+            <th scope="col">Slots</th>
+            <th scope="col">Approved</th>
+            <th scope="col">To verify</th>
+            <th scope="col">Input needed</th>
+            <th scope="col">Renderable here</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              <td>{row.records}</td>
+              <td>{row.tally.total}</td>
+              <td>{row.tally.byStatus.approved}</td>
+              <td>{row.tally.byStatus.toVerify}</td>
+              <td>{row.tally.byStatus.inputNeeded}</td>
+              <td>{row.tally.renderable}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .kicker,
+  dt,
+  caption,
+  th[scope='col'] {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin-block: var(--space-2) var(--space-3);
+  }
+
+  .build {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-block: var(--space-4);
+  }
+
+  dd {
+    color: var(--color-heading);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 40rem;
+    border-top: var(--rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+  }
+
+  caption {
+    padding-block: var(--space-1);
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-2) var(--space-1) 0;
+    border-bottom: var(--rule-secondary);
+    text-align: left;
+  }
+
+  th[scope='row'] {
+    color: var(--color-heading);
+    font-weight: var(--font-weight-regular);
+  }
+
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+</style>

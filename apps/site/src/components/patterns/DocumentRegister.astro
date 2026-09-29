@@ -1,0 +1,245 @@
+---
+/**
+ * Document register (docs/DESIGN-DIRECTION.md): mono header row REF · DATE · TYPE · DOCUMENT · FILE,
+ * rows ruled in Contour Blue. When the register itself is at least 40rem wide it is an HTML table (in a
+ * keyboard-scrollable region, as in Phase 1); narrower, the same rows are cards (docs/SITEMAP.md §5).
+ * A container query, not a viewport breakpoint, so it adapts to the column it sits in. Only one of the two is displayed,
+ * so assistive technology meets the content once.
+ *
+ * Rows follow `isDocumentListable`: internal source records never appear; in production a row needs an
+ * approved record, date and file. Renders nothing when no rows remain. Filters arrive in Phase 4.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable, resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { DocumentRecord } from '~/lib/content/types';
+import { isDocumentListable } from '~/lib/content/visibility';
+import { DOC_TYPE_LABELS } from '~/lib/format';
+import { documentPageUrl, documentPdfUrl } from '~/lib/urls';
+import Icon from '../primitives/Icon.astro';
+import VisuallyHidden from '../primitives/VisuallyHidden.astro';
+import FactValue from './FactValue.astro';
+import Placeholder from './Placeholder.astro';
+import StatusDot from './StatusDot.astro';
+
+export interface Props {
+  documents: readonly DocumentRecord[];
+  /** Table caption and accessible name, e.g. "Latest documents". */
+  caption: string;
+  /** Show the caption visually (default: available to assistive technology only). */
+  showCaption?: boolean;
+  mode?: ContentMode | undefined;
+}
+
+const { documents, caption, showCaption = false } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const rows = documents
+  .filter((document) => isDocumentListable(document, mode))
+  .map((document) => ({
+    document,
+    page: documentPageUrl(document),
+    file: resolve(document.file, mode),
+  }));
+const id = `register-${caption
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '')}`;
+---
+
+{rows.length > 0 && (
+  <div class="register">
+    <div class="register__table" role="region" aria-labelledby={`${id}-caption`} tabindex="0">
+      <table>
+        <caption id={`${id}-caption`} class:list={{ 'visually-hidden': !showCaption }}>
+          {caption}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Ref</th>
+            <th scope="col">Date</th>
+            <th scope="col">Type</th>
+            <th scope="col">Document</th>
+            <th scope="col">File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ document, page, file }) => (
+            <tr>
+              <td class="mono">
+                {isRenderable(document.ref, mode) ? (
+                  <FactValue fact={document.ref} field="Ref" mode={mode} />
+                ) : (
+                  <>
+                    <span aria-hidden="true">—</span>
+                    <VisuallyHidden>No reference</VisuallyHidden>
+                  </>
+                )}
+              </td>
+              <td class="mono">
+                <FactValue fact={document.releaseAt} field="Date" mode={mode} />
+              </td>
+              <td class="mono">{DOC_TYPE_LABELS[document.docType]}</td>
+              <td>
+                {page ? <a href={page}>{document.title}</a> : document.title}
+                {mode === 'preview' && <StatusDot status={document.status} compact mode={mode} />}
+              </td>
+              <td class="mono">
+                {file.kind === 'value' && (
+                  <a href={documentPdfUrl(document)} class="register__file">
+                    <Icon name="file" />
+                    PDF<VisuallyHidden>: {document.title}</VisuallyHidden>
+                  </a>
+                )}
+                {file.kind === 'placeholder' && (
+                  <Placeholder brief="File" field="PDF" variant="inline" mode={mode} />
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="register__cards">
+      <p class:list={['register__cards-caption', { 'visually-hidden': !showCaption }]}>{caption}</p>
+      <ol class="register__list" role="list">
+        {rows.map(({ document, page, file }) => (
+          <li class="register__card">
+            <p class="register__card-meta">
+              <FactValue fact={document.releaseAt} field="Date" mode={mode} />
+              <span aria-hidden="true">·</span>
+              <span>{DOC_TYPE_LABELS[document.docType]}</span>
+              {isRenderable(document.ref, mode) && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <FactValue fact={document.ref} field="Ref" mode={mode} />
+                </>
+              )}
+            </p>
+            <p class="register__card-title">
+              {page ? <a href={page}>{document.title}</a> : document.title}
+              {mode === 'preview' && <StatusDot status={document.status} compact mode={mode} />}
+            </p>
+            {file.kind === 'value' && (
+              <a href={documentPdfUrl(document)} class="register__file">
+                <Icon name="file" />
+                PDF<VisuallyHidden>: {document.title}</VisuallyHidden>
+              </a>
+            )}
+            {file.kind === 'placeholder' && (
+              <Placeholder brief="File" field="PDF" variant="inline" mode={mode} />
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+)}
+
+<style>
+  /* Cards when the register is narrower than 40rem, table from 40rem (its own width). */
+  .register {
+    container-type: inline-size;
+  }
+
+  .register__table {
+    display: none;
+  }
+
+  @container (min-width: 40rem) {
+    .register__table {
+      display: block;
+      overflow-x: auto;
+    }
+    .register__cards {
+      display: none;
+    }
+  }
+
+  table {
+    width: 100%;
+    min-width: 40rem;
+    border-top: var(--rule);
+  }
+
+  caption {
+    padding-block: var(--space-1);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  th {
+    padding: var(--space-1) var(--space-2) var(--space-1) 0;
+    border-bottom: var(--rule);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-mono);
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+    border-bottom: var(--rule-secondary);
+    vertical-align: top;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .register__file {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-height: var(--touch-target);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .register__cards-caption {
+    margin-bottom: var(--space-1);
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .register__list {
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    list-style: none;
+  }
+
+  .register__card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    padding-block: var(--space-2);
+    border-bottom: var(--rule-secondary);
+  }
+
+  .register__card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-1);
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

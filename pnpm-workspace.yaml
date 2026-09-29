@@ -1,0 +1,6 @@
+packages:
+  - apps/*
+
+# Packages allowed to run install scripts (pnpm blocks all others by default).
+onlyBuiltDependencies:
+  - esbuild

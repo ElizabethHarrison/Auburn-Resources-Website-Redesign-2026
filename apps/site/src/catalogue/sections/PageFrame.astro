@@ -1,0 +1,94 @@
+---
+/** Page frame: header, section bar, breadcrumb and footer, all static in Phase 2. */
+import type { Project, SiteSettings } from '~/lib/content/types';
+import { isProjectListable } from '~/lib/content/visibility';
+import { projectSectionPages, sectionById } from '~/lib/navigation';
+import { projectUrl } from '~/lib/urls';
+import Breadcrumb from '~/components/patterns/Breadcrumb.astro';
+import Footer from '~/components/patterns/Footer.astro';
+import Header from '~/components/patterns/Header.astro';
+import SectionBar from '~/components/patterns/SectionBar.astro';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  settings: SiteSettings;
+  projects: readonly Project[];
+}
+
+const { settings, projects } = Astro.props;
+const investors = sectionById('03');
+const projectPages = projectSectionPages(
+  projects.map((project) => ({
+    sheet: project.sheetNumber,
+    label: project.name,
+    href: projectUrl(project),
+  })),
+);
+const productionProjects = projects.filter((project) => isProjectListable(project, 'production'));
+---
+
+<CatalogueSection
+  id="page-frame"
+  number="D"
+  title="Page frame"
+  intro="Static versions. Navigation panels, the mobile menu and search are Phase 4 islands. Resize the window: the header switches to wordmark + Menu below 80rem, and the sheet reference moves to the breadcrumb below 90rem."
+>
+  <Specimen
+    name="Header"
+    ground="bleed"
+    notes="Shown for Sheet 02.1 with 02 Projects current. Below 80rem, “Menu” jumps to the footer navigation until the Phase 4 menu island exists."
+  >
+    <Header sheet="02.1" sheetLabel="Nicholson" currentSection="02" />
+  </Specimen>
+
+  <Specimen
+    name="SectionBar — 03 Investors"
+    ground="bleed"
+    notes="Current page underlined (aria-current=page). Chips that scroll horizontally on mobile; a ruled row from 64rem."
+  >
+    <SectionBar
+      sectionLabel={`${investors.id} ${investors.label}`}
+      pages={investors.pages}
+      currentHref="/investors/announcements"
+    />
+  </Specimen>
+
+  <Specimen
+    name="SectionBar — 02 Projects"
+    ground="bleed"
+    notes="Project dossiers are inserted from content. Sheet numbers are provisional (Q-05, Q-20)."
+  >
+    <SectionBar sectionLabel="02 Projects" pages={projectPages} currentHref="/projects/nicholson" />
+  </Specimen>
+
+  <Specimen
+    name="Breadcrumb"
+    notes="Mono caps; last item is the current page. Carries the sheet reference below 90rem."
+  >
+    <Breadcrumb
+      items={[
+        { name: 'Home', path: '/' },
+        { name: '02 Projects', path: '/projects' },
+        { name: '02.1 Nicholson', path: '/projects/nicholson' },
+      ]}
+      sheet="02.1"
+      sheetLabel="Nicholson"
+    />
+  </Specimen>
+
+  <Specimen
+    name="Footer"
+    ground="bleed"
+    notes="Company details are facts: placeholders in preview, hidden in production until approved. In production no projects are listed until the verified project list exists (Q-20)."
+  >
+    <Footer settings={settings} projects={projects} />
+    <Footer
+      slot="production"
+      settings={settings}
+      projects={productionProjects}
+      anchorId="site-navigation-production"
+      mode="production"
+    />
+  </Specimen>
+</CatalogueSection>

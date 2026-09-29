@@ -1,0 +1,107 @@
+---
+/** Project components: sheet cards, milestones, compliance. */
+import { inputNeeded } from '~/lib/facts';
+import type { SourceIndex } from '~/lib/content/sources';
+import type { Project } from '~/lib/content/types';
+import { isProjectListable } from '~/lib/content/visibility';
+import Grid from '~/components/primitives/Grid.astro';
+import ComplianceBlock from '~/components/patterns/ComplianceBlock.astro';
+import MilestoneTrack from '~/components/patterns/MilestoneTrack.astro';
+import SheetCard from '~/components/patterns/SheetCard.astro';
+import {
+  specimenCompliance,
+  specimenFacts,
+  specimenMilestones,
+  specimenProject,
+} from '../specimens';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  projects: readonly Project[];
+  sources: SourceIndex;
+}
+
+const { projects, sources } = Astro.props;
+const productionProjects = projects.filter((project) => isProjectListable(project, 'production'));
+const missingStatement = inputNeeded('Competent person statement, supplied by the company (Q-30)');
+---
+
+<CatalogueSection id="projects" number="H" title="Project components">
+  <Specimen
+    name="SheetCard (fixtures)"
+    notes="The five projects with pages on the old site. Whether each is still held is unknown (Q-20), so none is listed in production. Sheet numbers are provisional."
+  >
+    <Grid as="ul" layout="thirds">
+      {projects.map((project) => (
+        <li>
+          <SheetCard project={project} />
+        </li>
+      ))}
+    </Grid>
+    <div slot="production">
+      {productionProjects.length > 0 && (
+        <Grid as="ul" layout="thirds">
+          {productionProjects.map((project) => (
+            <li>
+              <SheetCard project={project} mode="production" />
+            </li>
+          ))}
+        </Grid>
+      )}
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="SheetCard (specimen)"
+    notes="Approved specimen facts show the production card. The whole card is one link; one tab stop."
+  >
+    <div class="narrow">
+      <SheetCard project={specimenProject} />
+    </div>
+    <div slot="production" class="narrow">
+      <SheetCard project={specimenProject} mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="MilestoneTrack (specimen)"
+    notes="Done · done · next (highlighted, aria-current=step) · planned. Always links to the disclaimer: planned milestones are forward-looking. No milestone fixtures exist yet."
+  >
+    <MilestoneTrack steps={specimenMilestones} label="Specimen milestones" />
+    <div slot="production">
+      <MilestoneTrack steps={specimenMilestones} label="Specimen milestones" mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="ComplianceBlock"
+    notes="The statement is company-supplied legal/CP wording, never drafted here. Production renders the block only with an approved statement; pages must not show results, targets or resources without it."
+  >
+    <div class="stack">
+      <ComplianceBlock statement={missingStatement} sources={sources} />
+      <ComplianceBlock statement={specimenCompliance} asAt={specimenFacts.date} sources={sources} />
+    </div>
+    <div slot="production" class="stack">
+      <ComplianceBlock statement={missingStatement} sources={sources} mode="production" />
+      <ComplianceBlock
+        statement={specimenCompliance}
+        asAt={specimenFacts.date}
+        sources={sources}
+        mode="production"
+      />
+    </div>
+  </Specimen>
+</CatalogueSection>
+
+<style>
+  .narrow {
+    max-width: 28rem;
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+</style>

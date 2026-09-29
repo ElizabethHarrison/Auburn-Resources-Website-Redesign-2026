@@ -1,0 +1,55 @@
+---
+/** IBM Plex Mono label in caps: sheet numbers, figure captions, field labels, table headers. */
+export interface Props {
+  as?: 'span' | 'p' | 'div' | 'dt';
+  /** `label` Cyanotype (default) · `meta` muted · `ink` Survey Blue · `copper` copper-text. */
+  tone?: 'label' | 'meta' | 'ink' | 'copper' | 'inherit';
+  /** xs 10.5 px · sm 11 px · md 12 px (default) · lg 13 px. */
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+}
+
+const { as: Element = 'span', tone = 'label', size = 'md' } = Astro.props;
+---
+
+<Element class:list={['mono-label', `mono-label--${tone}`, `mono-label--${size}`]}>
+  <slot />
+</Element>
+
+<style>
+  .mono-label {
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .mono-label--label {
+    color: var(--color-label);
+  }
+  .mono-label--meta {
+    color: var(--color-meta);
+  }
+  .mono-label--ink {
+    color: var(--ink-survey);
+  }
+  .mono-label--copper {
+    color: var(--copper-text);
+  }
+  .mono-label--inherit {
+    color: inherit;
+  }
+
+  .mono-label--xs {
+    font-size: var(--text-mono-xs);
+  }
+  .mono-label--sm {
+    font-size: var(--text-mono-sm);
+  }
+  .mono-label--md {
+    font-size: var(--text-mono);
+  }
+  .mono-label--lg {
+    font-size: var(--text-mono-lg);
+  }
+</style>

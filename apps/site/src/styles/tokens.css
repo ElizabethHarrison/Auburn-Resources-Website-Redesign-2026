@@ -1,0 +1,188 @@
+/*
+ * Design tokens — "Survey Sheet" direction (docs/DESIGN-DIRECTION.md).
+ *
+ * Every token is tagged:
+ *   [A] approved — the value is stated in docs/DESIGN-DIRECTION.md. Do not change without approval
+ *       (CLAUDE.md §9).
+ *   [D] derived  — not stated in the design direction; chosen conservatively in Phase 1–2 and listed in
+ *       the Phase 2 design review. Change centrally here if the review asks for it.
+ *
+ * Components use these custom properties only: no raw hex values, no spacing outside the scale.
+ * Colour contrast for every pairing used by components is unit-tested (src/lib/contrast.test.ts).
+ */
+
+:root {
+  /* ── Inks ─────────────────────────────────────────────────────────────────────────────────── */
+  --ink-survey: #1b3a5c; /* [A] primary: headings, rules, buttons, footer */
+  --ink-cyanotype: #2c5f8f; /* [A] links, mono labels, figure lines */
+  --ink-contour: #a9c1d9; /* [A] contours, secondary rules, tints */
+  --ink-graphite: #262a2e; /* [A] body text */
+  --ink-muted: #5a6b7c; /* [A] source lines, meta */
+
+  /* ── Grounds ──────────────────────────────────────────────────────────────────────────────── */
+  --paper: #f5f2ea; /* [A] page background */
+  --paper-deep: #ece6d8; /* [A] preview banners, subtle panels */
+  --water: #eef2f4; /* [A] map sea, alternating bands */
+  --band-grey: #e6ecf1; /* [A] */
+
+  /* ── Accent: Auburn ground only ───────────────────────────────────────────────────────────── */
+  --copper: #b8672e; /* [A] map fills, tags, large type ONLY (3.7:1 on paper) — never body text */
+  --copper-text: #8a4a1e; /* [A] copper-coloured small text (passes AA on paper) */
+  --copper-tint: #f3e5d8; /* [A] */
+
+  /* ── On Survey Blue (footer, CTA band) ────────────────────────────────────────────────────── */
+  --on-survey: #f5f2ea; /* [A] */
+  --on-survey-muted: #d8e2ec; /* [A] */
+
+  /* ── Preview-only (never rendered in production) ──────────────────────────────────────────── */
+  --placeholder-fill: #f8efe6; /* [A] INPUT NEEDED box fill (stated in the Placeholder spec) */
+  --placeholder-border: var(--copper); /* [A] dashed copper */
+  --status-approved: var(--ink-survey); /* [A] ● filled Survey Blue */
+  --status-to-verify: var(--copper); /* [A] ◐ half copper */
+  --status-input-needed: var(--copper); /* [A] ○ dashed copper */
+  --status-dot-size: 0.5625rem; /* [D] 9 px */
+
+  /* ── Semantic aliases (roles only; values come from the approved inks) ────────────────────── */
+  --color-bg: var(--paper);
+  --color-text: var(--ink-graphite);
+  --color-heading: var(--ink-survey);
+  --color-link: var(--ink-cyanotype);
+  --color-link-hover: var(--ink-survey);
+  --color-label: var(--ink-cyanotype);
+  --color-meta: var(--ink-muted);
+  --color-rule: var(--ink-survey);
+  --color-rule-secondary: var(--ink-contour);
+  --color-focus: var(--ink-cyanotype); /* [D] focus ring on light grounds */
+  --color-focus-on-dark: var(--on-survey); /* [D] focus ring on Survey Blue */
+
+  /* ── Type faces ───────────────────────────────────────────────────────────────────────────── */
+  /* [A] Century Gothic is not licensed for web yet (docs/OPEN-QUESTIONS.md Q-12): never self-host it
+     until it is. Didact Gothic (OFL) is self-hosted as the fallback. */
+  --font-sans: 'Century Gothic', CenturyGothic, 'Didact Gothic', AppleGothic, sans-serif; /* [A] */
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace; /* [A] */
+
+  /* [A] Weight 400 throughout: hierarchy by size and ink, not weight. */
+  --font-weight-regular: 400; /* [A] */
+
+  /* ── Type scale ───────────────────────────────────────────────────────────────────────────── */
+  /* Fluid between a 360 px and a 1440 px viewport. The rem term keeps text zoomable (WCAG 1.4.4). */
+  --text-hero: clamp(2.25rem, 2rem + 1.1111vw, 3rem); /* [A] 36 mobile → 48 desktop */
+  --text-project-title: clamp(
+    2.75rem,
+    1.9167rem + 3.7037vw,
+    5.25rem
+  ); /* [A] 84 desktop; [D] 44 mobile */
+  --text-h2: clamp(1.75rem, 1.3333rem + 1.8519vw, 3rem); /* [A] 40–48 desktop; [D] 28 mobile */
+  --text-h3: clamp(1.375rem, 1.25rem + 0.5556vw, 1.75rem); /* [D] 22 → 28 */
+  --text-card-title: clamp(
+    1.625rem,
+    1.4583rem + 0.7407vw,
+    2.125rem
+  ); /* [A] 34 desktop; [D] 26 mobile */
+  --text-lead: clamp(1.125rem, 1.0833rem + 0.1852vw, 1.25rem); /* [D] 18 → 20 */
+  --text-body: clamp(1rem, 0.9583rem + 0.1852vw, 1.125rem); /* [A] 16 → 18 */
+  --text-small: 0.9375rem; /* [D] 15 px — secondary prose in cards */
+  --text-fact-value: clamp(1.25rem, 0.75rem + 2.2222vw, 2.75rem); /* [A] 20 → 44 */
+  --text-counter: var(--text-fact-value); /* [D] counters reuse the fact value size */
+
+  --text-mono-lg: 0.8125rem; /* [A] 13 px — breadcrumbs, table cells */
+  --text-mono: 0.75rem; /* [A] 12 px — labels */
+  --text-mono-sm: 0.6875rem; /* [A] 11 px — tags */
+  --text-mono-xs: 0.65625rem; /* [A] 10.5 px — source lines */
+
+  --leading-tight: 1.12; /* [A] hero and display */
+  --leading-heading: 1.2; /* [D] */
+  --leading-body: 1.6; /* [A] */
+  --leading-mono: 1.4; /* [D] */
+
+  --tracking-display: -0.5px; /* [A] */
+  --tracking-mono: 1px; /* [A] */
+  --tracking-mono-wide: 1.5px; /* [A] */
+  --tracking-wordmark: 4px; /* [A] "RESOURCES" in the wordmark */
+
+  --measure: 68ch; /* [D] maximum line length for prose */
+
+  /* ── Spacing: 8 px scale ──────────────────────────────────────────────────────────────────── */
+  --space-0: 0; /* [A] */
+  --space-half: 0.25rem; /* [D] 4 px — tag padding and hairline offsets only */
+  --space-1: 0.5rem; /* [A] 8 */
+  --space-2: 1rem; /* [A] 16 */
+  --space-3: 1.5rem; /* [A] 24 */
+  --space-4: 2rem; /* [A] 32 */
+  --space-5: 2.5rem; /* [A] 40 */
+  --space-6: 3rem; /* [A] 48 */
+  --space-7: 3.5rem; /* [A] 56 */
+  --space-8: 4rem; /* [A] 64 */
+  --space-9: 4.5rem; /* [A] 72 */
+  --space-10: 5rem; /* [A] 80 */
+
+  --section-padding: clamp(
+    var(--space-6),
+    2.3333rem + 2.963vw,
+    var(--space-10)
+  ); /* [A] 64–80 desktop; [D] 48 mobile */
+
+  /* ── Layout ───────────────────────────────────────────────────────────────────────────────── */
+  --page-max: 90rem; /* [A] 1440 px artboard */
+  --gutter: clamp(1rem, 4.4444vw, 4rem); /* [A] 64 desktop, 16–20 mobile */
+  --grid-columns: 12; /* [A] */
+  --grid-gap: 1.5rem; /* [A] 24 px */
+
+  --header-height: 5.5rem; /* [A] 88 px desktop */
+  --header-height-mobile: 3.5rem; /* [A] 56 px */
+  --section-bar-height: 2.75rem; /* [A] 44 px */
+  --touch-target: 2.75rem; /* [A] 44 px minimum */
+
+  /*
+   * Breakpoints [D]. Custom properties cannot be used inside @media, so components use these literal
+   * values; a unit test rejects any other breakpoint (src/lib/design-system.test.ts).
+   *   48rem  (768 px)  tablet: multi-column layouts begin; registers become tables
+   *   64rem  (1024 px) desktop: full-width layouts (fact strips on one row, section bar as a row)
+   *   80rem  (1280 px) wide: full header navigation (measured: needs ~980 px)
+   *   90rem  (1440 px) artboard: sheet reference in the header (needs ~1230 px)
+   * Components that sit in columns of varying width respond to their own width with container
+   * queries instead: DocumentRegister (table from 40rem), and FactCell / SheetCard type scaling (cqi).
+   */
+
+  /* ── Rules and shape ──────────────────────────────────────────────────────────────────────── */
+  --rule-width: 1px; /* [A] */
+  --rule: var(--rule-width) solid var(--color-rule); /* [A] structure: Survey Blue */
+  --rule-secondary: var(--rule-width) solid var(--color-rule-secondary); /* [A] Contour Blue */
+  --rule-on-dark: var(--rule-width) solid var(--on-survey-muted); /* [D] rules inside the footer */
+  --placeholder-border-width: 1.5px; /* [A] */
+  --radius: 0; /* [A] square everywhere; no shadows, no gradients */
+
+  /* ── Components ───────────────────────────────────────────────────────────────────────────── */
+  --button-padding-block: 1rem; /* [A] 16 px */
+  --button-padding-inline: 1.375rem; /* [A] 22 px */
+  --tag-padding-block: var(--space-half); /* [A] 3–4 px → 4 px */
+  --tag-padding-inline: var(--space-1); /* [A] 7–8 px → 8 px */
+  --strat-band-min: 2.75rem; /* [A] strat-column bands 44–70 px */
+  --strat-band-max: 4.375rem; /* [A] */
+  --figure-frame: var(--rule); /* [A] 1 px Survey Blue */
+
+  /* ── Focus ────────────────────────────────────────────────────────────────────────────────── */
+  --focus-width: 2px; /* [D] */
+  --focus-offset: 2px; /* [D] */
+  --focus-ring: var(--focus-width) solid var(--color-focus);
+  --focus-ring-on-dark: var(--focus-width) solid var(--color-focus-on-dark);
+
+  /* ── Motion [D] — minimal; nothing moves unless the user acts ─────────────────────────────── */
+  --duration-fast: 120ms; /* [D] hover underline, accordion marker */
+  --duration-base: 200ms; /* [D] reserved for panels (Phase 4) */
+  --easing: cubic-bezier(0.2, 0, 0, 1); /* [D] */
+
+  /* ── Stacking [D] ─────────────────────────────────────────────────────────────────────────── */
+  --z-header: 100; /* [D] */
+  --z-panel: 200; /* [D] */
+  --z-overlay: 300; /* [D] */
+  --z-skip-link: 1000; /* [D] */
+}
+
+/* Reduced motion: collapse durations so any transition is effectively instant. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}

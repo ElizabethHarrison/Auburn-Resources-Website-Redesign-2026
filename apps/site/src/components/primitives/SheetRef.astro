@@ -1,0 +1,30 @@
+---
+/** Sheet reference in mono caps: `SHEET 02.1 · NICHOLSON`. Sheet numbers come from navigation or records. */
+import type { SheetNumber } from '~/lib/content/types';
+
+export interface Props {
+  sheet: SheetNumber;
+  /** Page name after the separator, e.g. `Nicholson`. */
+  label?: string | undefined;
+}
+
+const { sheet, label } = Astro.props;
+---
+
+<span class="sheet-ref">
+  <span>Sheet {sheet}</span>
+  {label && <span aria-hidden="true"> · </span>}
+  {label && <span>{label}</span>}
+</span>
+
+<style>
+  .sheet-ref {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+</style>

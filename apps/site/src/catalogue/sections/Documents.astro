@@ -1,0 +1,46 @@
+---
+/** Documents: the register. */
+import type { DocumentRecord } from '~/lib/content/types';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import { specimenDocument } from '../specimens';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  documents: readonly DocumentRecord[];
+}
+
+const { documents } = Astro.props;
+---
+
+<CatalogueSection id="documents" number="F" title="Documents">
+  <Specimen
+    name="DocumentRegister (fixtures)"
+    notes="Old-site documents, all “to verify”, files not yet re-hosted. Internal source records never appear. Table when the register is at least 40rem wide (keyboard-scrollable region), cards when narrower — a container query, so it adapts to the column it sits in. Filters arrive in Phase 4."
+  >
+    <DocumentRegister documents={documents} caption="Fixture documents" showCaption />
+    <div slot="production">
+      <DocumentRegister
+        documents={documents}
+        caption="Fixture documents in production"
+        showCaption
+        mode="production"
+      />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="DocumentRegister (specimen)"
+    notes="An approved specimen row shows the production appearance, including the PDF link and announcement page link."
+  >
+    <DocumentRegister documents={[specimenDocument]} caption="Specimen register" showCaption />
+    <div slot="production">
+      <DocumentRegister
+        documents={[specimenDocument]}
+        caption="Specimen register in production"
+        showCaption
+        mode="production"
+      />
+    </div>
+  </Specimen>
+</CatalogueSection>

@@ -1,0 +1,12 @@
+/*
+ * Global stylesheet entry point, imported once by BaseLayout.
+ *
+ * Cascade layers, lowest to highest priority. Astro scoped component styles are unlayered, so they
+ * always override these global layers without needing higher specificity or !important.
+ */
+@layer reset, tokens, base, layout;
+
+@import './reset.css' layer(reset);
+@import './tokens.css' layer(tokens);
+@import './base.css' layer(base);
+@import './layout.css' layer(layout);

@@ -1,0 +1,7 @@
+# Markdown is hand-formatted; the approved documents in docs/ must not be reflowed.
+*.md
+pnpm-lock.yaml
+dist/
+dist-preview/
+.astro/
+node_modules/

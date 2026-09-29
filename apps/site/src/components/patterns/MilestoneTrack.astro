@@ -1,0 +1,158 @@
+---
+/**
+ * Milestone track (project module 08): done · done · next (highlighted) · planned. Planned milestones
+ * are forward-looking, so the track always links to the disclaimer (CLAUDE.md §2.3).
+ *
+ * State is conveyed by text and marker shape, not colour alone. The `next` step carries
+ * aria-current="step". Horizontal from 48rem; stacked on mobile.
+ */
+import type { ContentMode, FactSlot } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import FactValue from './FactValue.astro';
+
+export type MilestoneState = 'done' | 'next' | 'planned';
+
+export interface Milestone {
+  readonly title: string;
+  readonly state: MilestoneState;
+  /** Quarter or date, e.g. `Q3 2026`, as a Fact slot. */
+  readonly when?: FactSlot<string> | undefined;
+}
+
+export interface Props {
+  steps: readonly Milestone[];
+  /** Accessible name, e.g. "Nicholson milestones". */
+  label: string;
+  mode?: ContentMode | undefined;
+}
+
+const { steps, label } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+
+const STATE_LABELS: Record<MilestoneState, string> = {
+  done: 'Done',
+  next: 'Next',
+  planned: 'Planned',
+};
+---
+
+{steps.length > 0 && (
+  <div class="milestones">
+    <ol class="milestones__track" aria-label={label}>
+      {steps.map((step) => (
+        <li
+          class:list={['milestone', `milestone--${step.state}`]}
+          aria-current={step.state === 'next' ? 'step' : undefined}
+        >
+          <span class="milestone__marker" aria-hidden="true" />
+          <span class="milestone__state">{STATE_LABELS[step.state]}</span>
+          <span class="milestone__title">{step.title}</span>
+          {step.when && (
+            <span class="milestone__when">
+              <FactValue fact={step.when} field="When" mode={mode} />
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+    <p class="milestones__note">
+      Planned milestones are forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+    </p>
+  </div>
+)}
+
+<style>
+  .milestones__track {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .milestone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+    border-top: var(--rule);
+  }
+
+  .milestone__marker {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    width: var(--space-2);
+    height: var(--space-2);
+    border: var(--rule);
+  }
+
+  /* Done: filled square. Next: filled, highlighted step. Planned: open square. */
+  .milestone--done .milestone__marker {
+    background-color: var(--ink-survey);
+  }
+
+  .milestone--next {
+    background-color: var(--ink-survey);
+    color: var(--on-survey);
+  }
+
+  .milestone--next .milestone__marker {
+    border-color: var(--on-survey);
+    background-color: var(--on-survey);
+  }
+
+  .milestone--planned .milestone__marker {
+    background-color: var(--paper);
+  }
+
+  .milestone__state {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .milestone--next .milestone__state,
+  .milestone--next .milestone__when {
+    color: var(--on-survey-muted);
+  }
+
+  .milestone__title {
+    color: var(--ink-survey);
+  }
+
+  .milestone--next .milestone__title {
+    color: var(--on-survey);
+  }
+
+  .milestone__when {
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  @media (min-width: 48rem) {
+    .milestones__track {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: column;
+      border-top: var(--rule);
+      border-left: var(--rule);
+    }
+
+    .milestone {
+      padding: var(--space-5) var(--space-2) var(--space-2);
+      border-top: 0;
+      border-right: var(--rule);
+      border-bottom: var(--rule);
+    }
+  }
+
+  .milestones__note {
+    margin-top: var(--space-1);
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+</style>

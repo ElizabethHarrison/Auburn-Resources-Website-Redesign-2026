@@ -1,0 +1,74 @@
+---
+/**
+ * INPUT NEEDED placeholder — PREVIEW ONLY; renders nothing in production.
+ * Dashed 1.5 px copper border, placeholder fill, mono label + one-line brief (docs/DESIGN-DIRECTION.md).
+ */
+import type { ContentMode } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+
+export interface Props {
+  /** One-line brief of what is needed. */
+  brief: string;
+  /** Field name shown after the label, e.g. `ACN`. */
+  field?: string | undefined;
+  /** `inline` sits inside a line of text or a table cell; `block` fills its container. */
+  variant?: 'block' | 'inline';
+  mode?: ContentMode | undefined;
+}
+
+const { brief, field, variant = 'block' } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const Element = variant === 'inline' ? 'span' : 'div';
+---
+
+{mode === 'preview' && (
+  <Element class:list={['placeholder', `placeholder--${variant}`]} data-preview-only>
+    <span class="placeholder__label">Input needed{field && ` · ${field}`}</span>
+    <span class="placeholder__brief">{brief}</span>
+  </Element>
+)}
+
+<style>
+  .placeholder {
+    border: var(--placeholder-border-width) dashed var(--placeholder-border);
+    border-radius: var(--radius);
+    background-color: var(--placeholder-fill);
+    color: var(--ink-graphite);
+    text-align: left;
+  }
+
+  .placeholder--block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    padding: var(--space-2);
+  }
+
+  .placeholder--inline {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--space-1);
+    max-width: 100%;
+    padding: 0 var(--space-1);
+    vertical-align: baseline;
+  }
+
+  .placeholder__label {
+    color: var(--copper-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  .placeholder__brief {
+    font-size: var(--text-small);
+    line-height: var(--leading-mono);
+  }
+
+  .placeholder--inline .placeholder__brief {
+    font-size: var(--text-mono-lg);
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+/**
+ * A date in mono, `DD MMM YYYY` (CLAUDE.md §2.5), in a machine-readable <time> element. Pass the value
+ * of a resolved date Fact, never a hand-typed date.
+ */
+import type { IsoDate } from '~/lib/facts';
+import { formatDate } from '~/lib/dates';
+
+export interface Props {
+  date: IsoDate;
+}
+
+const { date } = Astro.props;
+---
+
+<time class="date-mono" datetime={date}>
+  {formatDate(date)}
+</time>
+
+<style>
+  .date-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-mono);
+    white-space: nowrap;
+  }
+</style>

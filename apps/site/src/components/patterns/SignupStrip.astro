@@ -1,0 +1,83 @@
+---
+/**
+ * Email-alerts strip (docs/SITEMAP.md §4, footer item 1; also the announcements "alerts strip").
+ *
+ * Phase 2 is static: the email field and double opt-in form arrive with forms in Phase 4. Until then the
+ * strip links to the alerts page. Copy is from the approved sitemap.
+ */
+import Button from '../primitives/Button.astro';
+
+export interface Props {
+  /** `dark` inside the Survey Blue footer; `light` on paper. */
+  tone?: 'light' | 'dark';
+  headingLevel?: 2 | 3;
+}
+
+const { tone = 'light', headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<section class:list={['signup', `signup--${tone}`]}>
+  <Heading class="signup__heading">Get Auburn's announcements by email</Heading>
+  <div class="signup__actions">
+    <Button href="/investors/alerts" variant={tone === 'dark' ? 'light' : 'primary'}>
+      Subscribe
+    </Button>
+    <a class="signup__privacy" href="/privacy">
+      How we use your email address
+    </a>
+  </div>
+</section>
+
+<style>
+  .signup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+  }
+
+  @media (min-width: 64rem) {
+    .signup {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .signup--light {
+    border-top: var(--rule);
+    border-bottom: var(--rule);
+  }
+
+  .signup--dark {
+    border-bottom: var(--rule-on-dark);
+  }
+
+  .signup__heading {
+    font-size: var(--text-h3);
+  }
+
+  .signup--dark .signup__heading {
+    color: var(--on-survey);
+  }
+
+  .signup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .signup__privacy {
+    font-size: var(--text-small);
+  }
+
+  .signup--dark .signup__privacy {
+    color: var(--on-survey);
+  }
+
+  .signup--dark .signup__privacy:focus-visible {
+    outline: var(--focus-ring-on-dark);
+  }
+</style>

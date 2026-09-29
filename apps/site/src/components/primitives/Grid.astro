@@ -1,0 +1,54 @@
+---
+/**
+ * The 12-column grid (24 px gutter) with a few named layouts. Everything stacks below 48rem; layouts
+ * gain columns at 48rem (tablet) and 64rem (desktop) rather than shrinking the desktop layout.
+ *
+ * `halves` 1→2 · `thirds` 1→2→3 · `quarters` 1→2→4 · `sidebar` 1→(4 | 8) · `sidebar-end` 1→(8 | 4)
+ */
+export interface Props {
+  as?: 'div' | 'ul' | 'ol' | 'section';
+  layout?: 'halves' | 'thirds' | 'quarters' | 'sidebar' | 'sidebar-end';
+}
+
+const { as: Element = 'div', layout = 'halves' } = Astro.props;
+---
+
+<Element
+  class:list={['grid', `grid--${layout}`]}
+  role={Element === 'ul' || Element === 'ol' ? 'list' : undefined}
+>
+  <slot />
+</Element>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--grid-gap);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .grid--halves,
+    .grid--thirds,
+    .grid--quarters {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .grid--thirds {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .grid--quarters {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .grid--sidebar {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+    .grid--sidebar-end {
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    }
+  }
+</style>

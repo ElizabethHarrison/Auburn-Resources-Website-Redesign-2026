@@ -1,0 +1,64 @@
+/* Minimal modern reset. Keeps browser semantics (lists, buttons) and removes default spacing. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  overflow-wrap: break-word;
+}
+
+/* Lists given a role or class are styled by their component; plain lists keep their markers. */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}

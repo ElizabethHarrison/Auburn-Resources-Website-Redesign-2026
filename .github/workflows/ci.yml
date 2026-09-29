@@ -1,0 +1,77 @@
+# Continuous integration: lint, typecheck, unit tests, and production + preview builds.
+# Playwright journeys, axe and Lighthouse budgets are added in later phases (CLAUDE.md §8).
+# No deployment happens here; hosting accounts are not configured yet (docs/OPEN-QUESTIONS.md Q-09).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6 # version from "packageManager" in package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint and format check
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build (production mode)
+        run: pnpm build
+
+      - name: Build (preview mode)
+        run: pnpm build:preview
+
+      # JS loaded on page load < 30 KB compressed on every page (CLAUDE.md §8, D-006).
+      - name: JavaScript budget
+        run: pnpm budget
+
+      # Production must never contain preview-only output (CLAUDE.md §2.1, docs/DECISIONS.md D-005):
+      # placeholders, status dots, the preview banner, catalogue specimens or the catalogue itself.
+      - name: Guard against preview content in production output
+        run: |
+          if grep -rIl -e 'INPUT NEEDED' -e 'data-preview-only' -e 'data-content-mode="preview"' -e 'Preview build' -e 'Specimen' apps/site/dist; then
+            echo "::error::Preview-only content found in the production build (files listed above)."
+            exit 1
+          fi
+          if find apps/site/dist -path '*_catalogue*' | grep .; then
+            echo "::error::The design-system catalogue must not exist in the production build."
+            exit 1
+          fi
+
+      # The preview build must never be indexable.
+      - name: Guard against indexable preview output
+        run: |
+          grep -qx 'Disallow: /' apps/site/dist-preview/robots.txt
+          if grep -rIL 'noindex' --include='*.html' apps/site/dist-preview | grep .; then
+            echo "::error::Preview pages without noindex (listed above)."
+            exit 1
+          fi

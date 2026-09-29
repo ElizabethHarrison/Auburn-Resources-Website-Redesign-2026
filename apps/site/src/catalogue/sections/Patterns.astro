@@ -1,0 +1,171 @@
+---
+/** General patterns: status markers, provenance, figures, legend, accordion, CTA and sign-up. */
+import { inputNeeded } from '~/lib/facts';
+import type { SourceIndex } from '~/lib/content/sources';
+import type { SiteSettings } from '~/lib/content/types';
+import Accordion from '~/components/patterns/Accordion.astro';
+import CTABand from '~/components/patterns/CTABand.astro';
+import Figure from '~/components/patterns/Figure.astro';
+import MapLegend from '~/components/patterns/MapLegend.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SignupStrip from '~/components/patterns/SignupStrip.astro';
+import SourceLine from '~/components/patterns/SourceLine.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+import { specimenFacts } from '../specimens';
+import CatalogueSection from '../CatalogueSection.astro';
+import Specimen from '../Specimen.astro';
+
+export interface Props {
+  settings: SiteSettings;
+  sources: SourceIndex;
+}
+
+const { settings, sources } = Astro.props;
+const acn = settings.acn.kind === 'inputNeeded' ? settings.acn : inputNeeded('ACN');
+---
+
+<CatalogueSection id="patterns" number="C" title="Patterns">
+  <Specimen
+    name="StatusDot"
+    notes="Preview only. Shape and text carry the status, not colour alone."
+  >
+    <div class="row">
+      <StatusDot status="approved" />
+      <StatusDot status="toVerify" />
+      <StatusDot status="inputNeeded" />
+      <StatusDot status="draft" />
+    </div>
+    <div slot="production" class="row">
+      <StatusDot status="approved" mode="production" />
+      <StatusDot status="toVerify" mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Placeholder"
+    notes="Preview only: dashed 1.5 px copper border, placeholder fill, mono label and a one-line brief. Block and inline variants."
+  >
+    <div class="stack">
+      <Placeholder brief={acn.brief} field="ACN" />
+      <p>
+        Inline in text: <Placeholder brief="Company phone number" field="Phone" variant="inline" />
+      </p>
+    </div>
+    <div slot="production">
+      <Placeholder brief={acn.brief} field="ACN" mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="SourceLine"
+    notes="Source document and as-at date under every fact; the status dot is added in preview. This one uses a catalogue specimen fact."
+  >
+    <SourceLine item={specimenFacts.number} sources={sources} />
+    <div slot="production">
+      <SourceLine item={specimenFacts.number} sources={sources} mode="production" />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Figure"
+    notes="Numbered, framed, captioned in mono caps with source and date. alt and caption are required props. The drawing below is a specimen, not a map."
+  >
+    <Figure
+      number={1}
+      caption="Specimen figure — form lines only, not a map."
+      alt="Specimen drawing of concentric form lines. It does not show any real place."
+      source="Catalogue specimen"
+      date="2026-09-29"
+      longDescription="A specimen drawing used to review the figure frame, caption and text-description pattern. It contains no geographic information."
+    >
+      <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="640" height="280" class="sea" />
+        <path d="M40 240C120 150 220 110 330 120s210 40 270-40" class="contour" />
+        <path d="M70 250C150 175 240 140 335 148s190 30 250-35" class="contour" />
+        <path d="M110 262C180 205 255 175 340 180s165 20 220-25" class="contour" />
+        <path d="M150 272C205 238 270 212 345 214s140 12 190-15" class="contour" />
+        <path d="M0 40h640M0 120h640M0 200h640M160 0v280M320 0v280M480 0v280" class="graticule" />
+      </svg>
+    </Figure>
+  </Specimen>
+
+  <Specimen
+    name="MapLegend"
+    notes="Paper box, Survey Blue border, mono header. Only the Auburn project area is copper."
+  >
+    <div class="row">
+      <MapLegend />
+      <MapLegend keys={['auburn', 'deposit', 'town']} />
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="Accordion"
+    notes="Native <details>/<summary>: no JavaScript; keyboard and screen-reader behaviour from the browser. The two items share a group, so opening one closes the other where supported."
+  >
+    <div>
+      <Accordion summary="Specimen question one" group="specimen-faq">
+        <p>Specimen answer text for layout review.</p>
+      </Accordion>
+      <Accordion summary="Specimen question two" group="specimen-faq">
+        <p>Specimen answer text for layout review.</p>
+      </Accordion>
+    </div>
+  </Specimen>
+
+  <Specimen
+    name="CTABand"
+    ground="bleed"
+    notes="Full-width Survey Blue band with mono kicker, one line of narrative, light and outlined buttons."
+  >
+    <CTABand
+      kicker="Next step"
+      heading="Follow the work as it happens."
+      primary={{ label: 'Get investor updates', href: '/investors/alerts' }}
+      secondary={{ label: 'Discuss a partnership', href: '/contact' }}
+    />
+  </Specimen>
+
+  <Specimen
+    name="SignupStrip (light)"
+    notes="Static in Phase 2: links to the alerts page. The email field and double opt-in arrive with forms in Phase 4."
+  >
+    <SignupStrip />
+  </Specimen>
+
+  <Specimen name="SignupStrip (dark)" ground="dark">
+    <SignupStrip tone="dark" />
+  </Specimen>
+</CatalogueSection>
+
+<style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .sea {
+    fill: var(--water);
+  }
+
+  .contour {
+    fill: none;
+    stroke: var(--ink-contour);
+    stroke-width: 1.5;
+  }
+
+  .graticule {
+    fill: none;
+    stroke: var(--ink-contour);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 4;
+  }
+</style>

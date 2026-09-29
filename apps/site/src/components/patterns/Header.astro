@@ -1,0 +1,219 @@
+---
+/**
+ * Site header / title block (docs/DESIGN-DIRECTION.md; docs/SITEMAP.md §2, §5). STATIC in Phase 2.
+ *
+ * Desktop (from 80rem, 88 px): wordmark · sheet reference (from 90rem) · numbered section links ·
+ * Contact · outlined "Investor updates". Section links go straight to landing pages; the click-to-open
+ * panels are a Phase 4 island.
+ *
+ * Below 80rem (56 px): wordmark + "Menu". The full row needs ~980 px with Didact Gothic (more with
+ * Century Gothic), so it starts at 1280 px; the sheet reference needs ~1230 px more room, so it joins
+ * at the 1440 px artboard width. Measured in the Phase 2 review. Without JavaScript, "Menu" jumps to the full site
+ * navigation in the footer; the Phase 4 menu island will turn it into a button that opens the
+ * full-screen menu. The sheet reference moves to the breadcrumb line (Breadcrumb `sheet` prop).
+ *
+ * The wordmark is text until the logo vectors are supplied (docs/OPEN-QUESTIONS.md Q-40).
+ */
+import type { SheetNumber } from '~/lib/content/types';
+import { CONTACT_LINK, INVESTOR_UPDATES_LINK, SECTIONS, type SectionId } from '~/lib/navigation';
+import Button from '../primitives/Button.astro';
+import SheetRef from '../primitives/SheetRef.astro';
+
+export interface Props {
+  /** This page's sheet number and name, e.g. `02.1` + `Nicholson`. */
+  sheet?: SheetNumber | undefined;
+  sheetLabel?: string | undefined;
+  /** Section the page belongs to; its link is marked current. */
+  currentSection?: SectionId | undefined;
+}
+
+const { sheet, sheetLabel, currentSection } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="site-header__inner l-container">
+    <a class="wordmark" href="/" aria-label="Auburn Resources — home">
+      <span class="wordmark__name" aria-hidden="true">
+        Auburn
+      </span>
+      <span class="wordmark__sub" aria-hidden="true">
+        Resources
+      </span>
+    </a>
+
+    {sheet && (
+      <p class="site-header__sheet">
+        <SheetRef sheet={sheet} label={sheetLabel} />
+      </p>
+    )}
+
+    <nav class="site-nav" aria-label="Main">
+      <ul class="site-nav__list" role="list">
+        {SECTIONS.map((section) => (
+          <li>
+            <a
+              class="site-nav__link"
+              href={section.href}
+              aria-current={currentSection === section.id ? 'true' : undefined}
+            >
+              <span class="site-nav__number">{section.id}</span>
+              {section.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="site-header__contact" href={CONTACT_LINK.href}>
+        {CONTACT_LINK.label}
+      </a>
+      <Button href={INVESTOR_UPDATES_LINK.href} variant="secondary">
+        {INVESTOR_UPDATES_LINK.label}
+      </Button>
+    </div>
+
+    <a class="site-header__menu" href="#site-navigation">
+      Menu
+    </a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: var(--rule);
+    background-color: var(--paper);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--header-height-mobile);
+  }
+
+  /* ── Wordmark ── */
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    align-self: center;
+    padding-block: var(--space-1);
+    color: var(--ink-survey);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wordmark__name {
+    font-size: var(--text-h3);
+    letter-spacing: var(--tracking-display);
+    line-height: 1;
+  }
+
+  .wordmark__sub {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    letter-spacing: var(--tracking-wordmark);
+    text-transform: uppercase;
+  }
+
+  /* ── Sheet reference: only from 90rem, after a thin rule ── */
+  .site-header__sheet {
+    display: none;
+  }
+
+  /* ── Navigation: hidden below 80rem (reached via "Menu") ── */
+  .site-nav,
+  .site-header__actions {
+    display: none;
+  }
+
+  .site-header__menu {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    margin-left: auto;
+    padding-inline: var(--space-2);
+    border: var(--rule);
+    color: var(--ink-survey);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 80rem) {
+    .site-header__inner {
+      min-height: var(--header-height);
+    }
+
+    .site-header__menu {
+      display: none;
+    }
+
+    .site-nav {
+      display: block;
+      margin-left: auto;
+    }
+
+    .site-nav__list {
+      display: flex;
+      gap: var(--space-3);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .site-nav__link {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space-1);
+      min-height: var(--touch-target);
+      padding-block: var(--space-2);
+      color: var(--ink-survey);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .site-nav__link:hover,
+    .site-nav__link[aria-current] {
+      text-decoration-line: underline;
+      text-decoration-thickness: var(--rule-width);
+      text-underline-offset: 0.35em;
+    }
+
+    .site-nav__number {
+      color: var(--color-label);
+      font-family: var(--font-mono);
+      font-size: var(--text-mono);
+      letter-spacing: var(--tracking-mono);
+    }
+
+    .site-header__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .site-header__contact {
+      color: var(--ink-survey);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .site-header__contact:hover {
+      text-decoration-line: underline;
+    }
+  }
+
+  @media (min-width: 90rem) {
+    .site-header__sheet {
+      display: block;
+      padding-left: var(--space-3);
+      border-left: var(--rule);
+      line-height: 1;
+    }
+  }
+</style>

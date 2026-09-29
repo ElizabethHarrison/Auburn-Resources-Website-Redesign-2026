@@ -1,0 +1,116 @@
+---
+/**
+ * Map legend (docs/DESIGN-DIRECTION.md): paper box, 1 px Survey Blue border, mono "LEGEND" header.
+ * Only the Auburn project area is copper. Default keys are the four in the design direction; `town`
+ * is available for maps that show towns.
+ */
+export type LegendKey = 'auburn' | 'deposit' | 'state-border' | 'form-lines' | 'town';
+
+export interface Props {
+  keys?: readonly LegendKey[];
+}
+
+const { keys = ['auburn', 'deposit', 'state-border', 'form-lines'] } = Astro.props;
+
+const LABELS: Record<LegendKey, string> = {
+  auburn: 'Auburn project area',
+  deposit: 'Reference deposit',
+  'state-border': 'State border',
+  'form-lines': 'Form lines',
+  town: 'Town',
+};
+---
+
+<div class="map-legend">
+  <p class="map-legend__title">Legend</p>
+  <ul class="map-legend__keys" role="list">
+    {keys.map((key) => (
+      <li>
+        <svg
+          class="swatch"
+          viewBox="0 0 24 14"
+          width="24"
+          height="14"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {key === 'auburn' && <rect x="1" y="1" width="22" height="12" class="swatch--auburn" />}
+          {key === 'deposit' && <circle cx="12" cy="7" r="5" class="swatch--line" />}
+          {key === 'state-border' && <path d="M0 7h24" class="swatch--line swatch--dashed" />}
+          {key === 'form-lines' && (
+            <path d="M0 9c4-5 8-5 12 0s8 5 12 0" class="swatch--line swatch--contour" />
+          )}
+          {key === 'town' && <rect x="9" y="4" width="6" height="6" class="swatch--town" />}
+        </svg>
+        <span>{LABELS[key]}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .map-legend {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    border: var(--rule);
+    background-color: var(--paper);
+  }
+
+  .map-legend__title {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .map-legend__keys {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .map-legend__keys li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--ink-graphite);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .swatch {
+    flex-shrink: 0;
+  }
+
+  .swatch--auburn {
+    fill: var(--copper);
+    stroke: var(--copper);
+  }
+
+  .swatch--line {
+    fill: none;
+    stroke: var(--ink-survey);
+    stroke-width: 1.25;
+  }
+
+  .swatch--dashed {
+    stroke-dasharray: 3 2;
+  }
+
+  .swatch--contour {
+    stroke: var(--ink-contour);
+    stroke-width: 1.5;
+  }
+
+  .swatch--town {
+    fill: var(--ink-graphite);
+  }
+</style>

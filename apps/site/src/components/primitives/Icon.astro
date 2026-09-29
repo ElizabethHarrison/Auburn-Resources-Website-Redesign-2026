@@ -1,0 +1,53 @@
+---
+/**
+ * Inline SVG icons drawn in the survey-sheet line style (1.5 px stroke, square caps, currentColor).
+ * No icon library: the set is deliberately small. Decorative by default (aria-hidden); pass `label`
+ * when the icon carries meaning on its own.
+ */
+export type IconName = 'arrow-right' | 'arrow-down' | 'plus' | 'minus' | 'north-arrow' | 'file';
+
+export interface Props {
+  name: IconName;
+  /** Accessible name. Omit for decorative icons next to visible text. */
+  label?: string;
+}
+
+const { name, label } = Astro.props;
+
+const PATHS: Record<IconName, string> = {
+  'arrow-right': 'M4 12h15M13 6l6 6-6 6',
+  'arrow-down': 'M12 4v15M6 13l6 6 6-6',
+  plus: 'M12 5v14M5 12h14',
+  minus: 'M5 12h14',
+  // North arrow: a half-filled pointer, as on survey sheets.
+  'north-arrow': 'M12 2 6 21l6-4 6 4Z M12 2v15',
+  file: 'M6 3h8l4 4v14H6Z M14 3v4h4',
+};
+---
+
+<svg
+  class:list={['icon', `icon--${name}`]}
+  viewBox="0 0 24 24"
+  width="1em"
+  height="1em"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="square"
+  stroke-linejoin="miter"
+  focusable="false"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  <path d={PATHS[name]}></path>
+  {name === 'north-arrow' && <path d="M12 2 6 21l6-4Z" fill="currentColor" stroke="none" />}
+</svg>
+
+<style>
+  .icon {
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: -0.125em;
+  }
+</style>

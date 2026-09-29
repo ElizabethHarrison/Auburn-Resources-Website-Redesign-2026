@@ -1,0 +1,156 @@
+---
+/**
+ * Project sheet card (docs/DESIGN-DIRECTION.md): ruled cell with `SHEET 02.1` + state, project name
+ * (34 px), commodity tags, one line, and "Read the dossier →". The whole card is one link (the name);
+ * the arrow line is visual only, so keyboard users meet a single tab stop per card.
+ *
+ * The page decides which projects to show (`isProjectListable`); inside the card, unapproved facts are
+ * hidden in production and shown as placeholders in preview.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { Project } from '~/lib/content/types';
+import { COMMODITY_LABELS } from '~/lib/format';
+import { projectUrl } from '~/lib/urls';
+import Icon from '../primitives/Icon.astro';
+import SheetRef from '../primitives/SheetRef.astro';
+import Tag from '../primitives/Tag.astro';
+import FactValue from './FactValue.astro';
+import Placeholder from './Placeholder.astro';
+import StatusDot from './StatusDot.astro';
+
+export interface Props {
+  project: Project;
+  headingLevel?: 2 | 3 | 4;
+  mode?: ContentMode | undefined;
+}
+
+const { project, headingLevel = 3 } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const commodities = resolve(project.commodities, mode);
+const thesis = resolve(project.heroThesis, mode);
+---
+
+<article class="sheet-card">
+  <p class="sheet-card__meta">
+    <SheetRef sheet={project.sheetNumber} />
+    <FactValue fact={project.state} field="State" mode={mode} />
+  </p>
+  <Heading class="sheet-card__name">
+    <a href={projectUrl(project)} class="sheet-card__link">
+      {project.name}
+    </a>
+  </Heading>
+  {commodities.kind === 'value' && (
+    <ul class="sheet-card__tags" role="list" aria-label="Commodities">
+      {commodities.item.value.map((commodity) => (
+        <li>
+          <Tag variant="commodity">{COMMODITY_LABELS[commodity]}</Tag>
+        </li>
+      ))}
+      {mode === 'preview' && (
+        <li>
+          <StatusDot status={commodities.status} compact mode={mode} />
+        </li>
+      )}
+    </ul>
+  )}
+  {commodities.kind === 'placeholder' && (
+    <Placeholder brief={commodities.brief} field="Commodities" variant="inline" mode={mode} />
+  )}
+  {thesis.kind === 'value' && <p class="sheet-card__line">{thesis.item.text}</p>}
+  {thesis.kind === 'placeholder' && (
+    <Placeholder brief={thesis.brief} field="One line" mode={mode} />
+  )}
+  <p class="sheet-card__more" aria-hidden="true">
+    Read the dossier <Icon name="arrow-right" />
+  </p>
+</article>
+
+<style>
+  .sheet-card {
+    container-type: inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    height: 100%;
+    padding: var(--space-3);
+    border: var(--rule);
+    background-color: var(--paper);
+  }
+
+  .sheet-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1);
+    max-width: none;
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  /* The name scales with the card (never above the 34 px token) so names never break mid-word. */
+  .sheet-card__name {
+    font-size: clamp(1.25rem, 11cqi, var(--text-card-title));
+    overflow-wrap: normal;
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .sheet-card__link {
+    color: var(--ink-survey);
+    text-decoration: none;
+  }
+
+  /* The name's link covers the whole card. */
+  .sheet-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .sheet-card__link:focus-visible {
+    outline: none;
+  }
+
+  .sheet-card:has(.sheet-card__link:focus-visible) {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  .sheet-card:hover .sheet-card__link,
+  .sheet-card:hover .sheet-card__more {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.2em;
+  }
+
+  .sheet-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sheet-card__line {
+    color: var(--ink-graphite);
+  }
+
+  .sheet-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: auto;
+    color: var(--color-link);
+  }
+</style>

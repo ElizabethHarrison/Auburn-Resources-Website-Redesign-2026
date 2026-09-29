@@ -1,0 +1,105 @@
+---
+/**
+ * Fact cell (docs/DESIGN-DIRECTION.md): mono label (Cyanotype) · value (Survey Blue, 20–44 px) ·
+ * source line with status dot. Accepts a Fact slot only, never a raw string or number.
+ *
+ * Renders nothing when the slot is hidden in this mode. In preview, a missing value shows the
+ * INPUT NEEDED placeholder in the value position.
+ *
+ * `variant="counter"` puts the value first and the label beneath, for counter rows.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import { formatFactValue, type FactDisplay } from '~/lib/format';
+import type { SourceIndex } from '~/lib/content/sources';
+import Placeholder from './Placeholder.astro';
+import SourceLine from './SourceLine.astro';
+
+export interface Props {
+  item: FactDisplay;
+  sources?: SourceIndex | undefined;
+  variant?: 'cell' | 'counter';
+  mode?: ContentMode | undefined;
+}
+
+const { item, sources, variant = 'cell' } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const resolved = resolve(item.slot, mode);
+---
+
+{resolved.kind !== 'hidden' && (
+  <dl class:list={['fact-cell', `fact-cell--${variant}`]}>
+    <dt class="fact-cell__label">{item.label}</dt>
+    {resolved.kind === 'value' ? (
+      <>
+        <dd class="fact-cell__value" data-fact>
+          {formatFactValue(resolved.item, item.format)}
+        </dd>
+        <dd class="fact-cell__source">
+          <SourceLine item={resolved.item} sources={sources} mode={mode} />
+        </dd>
+      </>
+    ) : (
+      <dd class="fact-cell__value">
+        <Placeholder brief={resolved.brief} mode={mode} />
+      </dd>
+    )}
+  </dl>
+)}
+
+<style>
+  .fact-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    margin: 0;
+    /* Size container: the value scales down in narrow cells instead of breaking. */
+    container-type: inline-size;
+  }
+
+  .fact-cell dd {
+    margin: 0;
+  }
+
+  .fact-cell__label {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    line-height: var(--leading-mono);
+    text-transform: uppercase;
+  }
+
+  /* Values never break inside a number: they wrap only at spaces and shrink to fit the cell (never
+     larger than the 20–44 px token, never smaller than 20 px). */
+  .fact-cell__value {
+    color: var(--ink-survey);
+    font-size: clamp(1.25rem, 17cqi, var(--text-fact-value));
+    line-height: var(--leading-heading);
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+
+  .fact-cell__value :global(.placeholder) {
+    font-size: var(--text-body);
+  }
+
+  .fact-cell__source {
+    margin-top: auto;
+  }
+
+  /* Counter: value first, label beneath. Visual order only — the DOM keeps dt before dd. */
+  .fact-cell--counter .fact-cell__label {
+    order: 2;
+  }
+  .fact-cell--counter .fact-cell__value {
+    order: 1;
+    font-size: clamp(1.25rem, 17cqi, var(--text-counter));
+  }
+  .fact-cell--counter .fact-cell__source {
+    order: 3;
+  }
+</style>

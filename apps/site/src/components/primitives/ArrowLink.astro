@@ -1,0 +1,48 @@
+---
+/**
+ * Standalone text link with a trailing arrow ("Read the dossier →"). The arrow is decorative. Use
+ * plain <a> for links inside running text.
+ */
+import Icon from './Icon.astro';
+
+export interface Props {
+  href: string;
+  /** `on-dark` for Survey Blue grounds. */
+  tone?: 'default' | 'on-dark';
+}
+
+const { href, tone = 'default' } = Astro.props;
+---
+
+<a class:list={['arrow-link', `arrow-link--${tone}`]} href={href}>
+  <span class="arrow-link__text">
+    <slot />
+  </span>
+  <Icon name="arrow-right" />
+</a>
+
+<style>
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  .arrow-link:hover .arrow-link__text {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 0.2em;
+  }
+
+  .arrow-link--on-dark,
+  .arrow-link--on-dark:hover {
+    color: var(--on-survey);
+  }
+
+  .arrow-link--on-dark:focus-visible {
+    outline: var(--focus-ring-on-dark);
+  }
+</style>

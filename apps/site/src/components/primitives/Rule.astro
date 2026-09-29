@@ -1,0 +1,30 @@
+---
+/**
+ * A 1 px rule. `structure` is Survey Blue, `secondary` Contour Blue. Decorative by default; set
+ * `semantic` for a thematic break (<hr>) that assistive technology announces.
+ */
+export interface Props {
+  variant?: 'structure' | 'secondary';
+  semantic?: boolean;
+}
+
+const { variant = 'structure', semantic = false } = Astro.props;
+const classes = ['rule', `rule--${variant}`];
+---
+
+{semantic ? <hr class:list={classes} /> : <div class:list={classes} aria-hidden="true" />}
+
+<style>
+  .rule {
+    width: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
+  }
+  .rule--structure {
+    border-top: var(--rule);
+  }
+  .rule--secondary {
+    border-top: var(--rule-secondary);
+  }
+</style>

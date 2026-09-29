@@ -1,0 +1,121 @@
+---
+/**
+ * Key-facts strip: ruled cells like a map-sheet margin (home: five cells; project: six). Cells whose
+ * facts are hidden in this mode drop out individually; if none remain the strip renders nothing.
+ *
+ * Grid: 2 columns on mobile, 3 on tablet, all cells (up to six) in one row from 64rem.
+ */
+import type { ContentMode, IsoDate } from '~/lib/facts';
+import { isRenderable } from '~/lib/facts';
+import { renderMode } from '~/lib/config';
+import type { FactDisplay } from '~/lib/format';
+import type { SourceIndex } from '~/lib/content/sources';
+import DateMono from '../primitives/DateMono.astro';
+import FactCell from './FactCell.astro';
+
+export interface Props {
+  items: readonly FactDisplay[];
+  /** Accessible name for the strip, e.g. "Key facts". */
+  label: string;
+  /** Strip-level as-at date, when all cells share one. Pass an approved date only. */
+  asAt?: IsoDate | undefined;
+  sources?: SourceIndex | undefined;
+  mode?: ContentMode | undefined;
+}
+
+const { items, label, asAt, sources } = Astro.props;
+const mode = renderMode(Astro.props.mode);
+const visible = items.filter((item) => isRenderable(item.slot, mode));
+---
+
+{visible.length > 0 && (
+  <section class="fact-strip" aria-label={label}>
+    <ul class="fact-strip__cells" role="list" data-cells={Math.min(visible.length, 6)}>
+      {visible.map((item) => (
+        <li class="fact-strip__cell">
+          <FactCell item={item} sources={sources} mode={mode} />
+        </li>
+      ))}
+    </ul>
+    {asAt && (
+      <p class="fact-strip__as-at">
+        As at <DateMono date={asAt} />
+      </p>
+    )}
+  </section>
+)}
+
+<style>
+  .fact-strip__cells {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    border-top: var(--rule);
+    border-left: var(--rule);
+    list-style: none;
+  }
+
+  .fact-strip__cell {
+    padding: var(--space-2);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+
+  /* A last cell alone on its row spans the row, so the ruled grid never has an open corner. */
+  .fact-strip__cell:nth-child(odd):last-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 48rem) {
+    .fact-strip__cells {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .fact-strip__cell {
+      padding: var(--space-3);
+    }
+    .fact-strip__cell:nth-child(odd):last-child {
+      grid-column: auto;
+    }
+    .fact-strip__cell:nth-child(3n + 1):last-child {
+      grid-column: 1 / -1;
+    }
+    .fact-strip__cell:nth-child(3n + 2):last-child {
+      grid-column: span 2;
+    }
+    .fact-strip__cells[data-cells='1'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fact-strip__cells[data-cells='2'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fact-strip__cells[data-cells='2'] .fact-strip__cell:last-child {
+      grid-column: auto;
+    }
+  }
+
+  /* One row from 64rem. Data attribute rather than an inline style, to stay CSP-friendly. */
+  @media (min-width: 64rem) {
+    .fact-strip__cells[data-cells] .fact-strip__cell:last-child {
+      grid-column: auto;
+    }
+    .fact-strip__cells[data-cells='4'] {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .fact-strip__cells[data-cells='5'] {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .fact-strip__cells[data-cells='6'] {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  .fact-strip__as-at {
+    margin-top: var(--space-1);
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-xs);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+/**
+ * /_catalogue — design-system catalogue (CLAUDE.md §5). PREVIEW BUILDS ONLY.
+ *
+ * The route is injected by astro.config.ts only when CONTENT_MODE=preview, so it does not exist in a
+ * production build; it is also noindex, disallowed in robots.txt and linked from nowhere. It renders
+ * every primitive and pattern with fixture data and catalogue specimens.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { createSourceIndex } from '~/lib/content/sources';
+import CatalogueSection from './CatalogueSection.astro';
+import DataFacts from './sections/DataFacts.astro';
+import Documents from './sections/Documents.astro';
+import Foundations from './sections/Foundations.astro';
+import PageFrame from './sections/PageFrame.astro';
+import Patterns from './sections/Patterns.astro';
+import People from './sections/People.astro';
+import Primitives from './sections/Primitives.astro';
+import Projects from './sections/Projects.astro';
+import { specimenSource } from './specimens';
+
+// Defence in depth: the route is never injected in production, but refuse to render there regardless.
+if (!config.isPreview)
+  throw new Error('The design-system catalogue is available in preview builds only.');
+
+const [settings, people, projects, documents, workItems] = await Promise.all([
+  content.getSiteSettings(),
+  content.getPeople(),
+  content.getProjects(),
+  content.getDocuments(),
+  content.getWorkItems(),
+]);
+const sources = createSourceIndex([...documents, specimenSource]);
+
+const index = [
+  ['foundations', 'A', 'Foundations'],
+  ['primitives', 'B', 'Primitives'],
+  ['patterns', 'C', 'Patterns'],
+  ['page-frame', 'D', 'Page frame'],
+  ['data', 'E', 'Data and fact components'],
+  ['documents', 'F', 'Documents'],
+  ['people', 'G', 'People'],
+  ['projects', 'H', 'Project components'],
+] as const;
+---
+
+<BaseLayout
+  title="Design-system catalogue"
+  description="Internal design-system catalogue for the Auburn Resources website. Preview builds only; not a public page."
+  noindex
+>
+  <div class="l-container">
+    <header class="catalogue-intro">
+      <p class="catalogue-intro__kicker">Internal · Preview builds only · Phase 2</p>
+      <h1>Design-system catalogue</h1>
+      <p>
+        Every primitive and pattern of the “Survey Sheet” design system, rendered with fixture data
+        and catalogue specimens. Company fixtures are unverified; specimens are artificial approved
+        values used only to show the production state. Nothing on this page is a company fact.
+      </p>
+      <nav class="catalogue-index" aria-label="Catalogue sections">
+        <ol role="list">
+          {index.map(([id, letter, title]) => (
+            <li>
+              <a href={`#${id}`}>
+                <span class="catalogue-index__letter">{letter}</span> {title}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </header>
+
+    <Foundations />
+    <Primitives />
+    <Patterns settings={settings} sources={sources} />
+    <PageFrame settings={settings} projects={projects} />
+    <DataFacts settings={settings} workItems={workItems} sources={sources} />
+    <Documents documents={documents} />
+    <People people={people} sources={sources} />
+    <Projects projects={projects} sources={sources} />
+
+    <CatalogueSection id="end" number="—" title="End of catalogue">
+      <p>
+        Components not yet built: navigation panels, mobile menu, strat-column nav, map, lightbox,
+        forms and search (Phase 4 islands).
+      </p>
+    </CatalogueSection>
+  </div>
+</BaseLayout>
+
+<style>
+  .catalogue-intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block: var(--section-padding);
+  }
+
+  .catalogue-intro__kicker {
+    color: var(--copper-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .catalogue-index ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .catalogue-index a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-lg);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .catalogue-index__letter {
+    color: var(--color-meta);
+  }
+</style>
