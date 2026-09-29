@@ -1,0 +1,60 @@
+---
+/**
+ * Sheet 03.6 · Email alerts (docs/SITEMAP.md 03.6): the subscription form (name, email, alert types;
+ * double opt-in) arrives with Phase 4 forms and the email platform decision (Q-11). Until then the page
+ * carries its title, links to the announcements and privacy policy, and — in preview — the form's place.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('alerts'),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+---
+
+<ContentLayout
+  heading="Email alerts"
+  description="Sign up for Auburn Resources announcements, reports and news by email, with double opt-in."
+  frame={frame}
+  href="/investors/alerts"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/announcements" variant="secondary">
+      Read the latest announcements
+    </Button>
+    <ArrowLink href="/privacy">Privacy policy</ArrowLink>
+  </Fragment>
+  {mode === 'preview' && (
+    <Container>
+      <div class="form-slot">
+        <Placeholder
+          brief="Subscription form (Phase 4): name, email, alert types (announcements, reports, news); double opt-in; email platform undecided (Q-11)"
+          field="Form"
+          mode={mode}
+        />
+      </div>
+    </Container>
+  )}
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+</ContentLayout>
+
+<style>
+  .form-slot {
+    padding-block: var(--space-4);
+  }
+</style>

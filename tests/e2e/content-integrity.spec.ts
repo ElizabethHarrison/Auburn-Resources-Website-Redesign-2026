@@ -62,7 +62,9 @@ test.describe('production build integrity', () => {
       expect(files()).not.toContain(join(DIST, 'projects', `${project.slug}.html`));
     }
     const sitemap = readFileSync(join(DIST, 'sitemap-0.xml'), 'utf8');
-    expect(sitemap).not.toMatch(/\/projects\/[a-z]/);
+    for (const project of projects) {
+      expect(sitemap).not.toContain(`/projects/${project.slug}<`);
+    }
   });
 
   test('contains none of the unapproved fixture statements', () => {

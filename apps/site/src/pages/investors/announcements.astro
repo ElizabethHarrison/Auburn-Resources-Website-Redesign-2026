@@ -1,0 +1,42 @@
+---
+/**
+ * Sheet 03.1 · Announcements (docs/SITEMAP.md 03.1): the complete record, grouped by year. Each row
+ * links to its announcement page. Filters and search arrive with the Phase 4 islands.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import Button from '~/components/primitives/Button.astro';
+import DocumentLibrary from '~/components/modules/investors/DocumentLibrary.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('announcements'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading="Announcements"
+  description="Every Auburn Resources announcement, newest first, each with its own page and PDF."
+  frame={frame}
+  href="/investors/announcements"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts" variant="secondary">
+      Get investor updates
+    </Button>
+  </Fragment>
+  <DocumentLibrary
+    documents={documents}
+    docTypes={['announcement']}
+    label="Announcements"
+    emptyBrief="Announcements, each with its release date, reference and re-hosted PDF"
+    mode={mode}
+  />
+</ContentLayout>

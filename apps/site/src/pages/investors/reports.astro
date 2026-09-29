@@ -1,0 +1,40 @@
+---
+/**
+ * Sheet 03.2 · Reports (docs/SITEMAP.md 03.2): annual, half-yearly and quarterly reports and meeting
+ * notices, grouped by year. The "latest feature" and filters arrive with the Phase 4 islands.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import DocumentLibrary from '~/components/modules/investors/DocumentLibrary.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('reports'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading="Reports"
+  description="Annual, half-yearly and quarterly reports and meeting notices from Auburn Resources, newest first."
+  frame={frame}
+  href="/investors/reports"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <ArrowLink href="/investors/announcements">All announcements</ArrowLink>
+  </Fragment>
+  <DocumentLibrary
+    documents={documents}
+    docTypes={['annual', 'halfYear', 'quarterly', 'notice']}
+    label="Reports"
+    emptyBrief="Annual reports 2023–2025, half-year and quarterly reports"
+    mode={mode}
+  />
+</ContentLayout>

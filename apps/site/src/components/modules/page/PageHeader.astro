@@ -1,0 +1,58 @@
+---
+/**
+ * Title block for fixed pages: breadcrumb (with sheet reference), H1, the page's one-paragraph intro
+ * (Narrative: hidden until approved; INPUT NEEDED in preview) and optional structural actions in the
+ * default slot (navigation links, never content claims).
+ */
+import type { ContentMode, NarrativeSlot } from '~/lib/facts';
+import { resolve } from '~/lib/facts';
+import type { SheetNumber } from '~/lib/content/types';
+import type { BreadcrumbItem } from '~/lib/seo';
+import PageTitle from '~/components/patterns/PageTitle.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+
+export interface Props {
+  heading: string;
+  breadcrumbs: readonly BreadcrumbItem[];
+  sheet?: SheetNumber | undefined;
+  sheetLabel?: string | undefined;
+  intro?: NarrativeSlot | undefined;
+  mode: ContentMode;
+}
+
+const { heading, breadcrumbs, sheet, sheetLabel, intro, mode } = Astro.props;
+const resolved = resolve(intro, mode);
+const hasActions = Astro.slots.has('default');
+---
+
+{resolved.kind === 'hidden' && !hasActions ? (
+  <PageTitle heading={heading} breadcrumbs={breadcrumbs} sheet={sheet} sheetLabel={sheetLabel} />
+) : (
+  <PageTitle heading={heading} breadcrumbs={breadcrumbs} sheet={sheet} sheetLabel={sheetLabel}>
+    {resolved.kind === 'value' && (
+      <p>
+        {resolved.item.text}
+        {mode === 'preview' && <StatusDot status={resolved.status} compact mode={mode} />}
+      </p>
+    )}
+    {resolved.kind === 'placeholder' && (
+      <Placeholder brief={resolved.brief} field="Introduction" mode={mode} />
+    )}
+    {hasActions && (
+      <div class="page-header__actions">
+        <slot />
+      </div>
+    )}
+  </PageTitle>
+)}
+
+<style>
+  .page-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-top: var(--space-1);
+  }
+</style>

@@ -15,16 +15,16 @@ import BaseLayout from './BaseLayout.astro';
 
 export interface Props {
   /** Page title without the site name; omit on the home page. */
-  title?: string;
+  title?: string | undefined;
   description: string;
   frame: FrameData;
-  sheet?: SheetNumber;
-  sheetLabel?: string;
-  currentSection?: SectionId;
-  sectionBar?: { sectionLabel: string; pages: readonly NavLink[]; currentHref: string };
-  breadcrumbs?: readonly BreadcrumbItem[];
-  jsonLd?: readonly JsonLd[];
-  noindex?: boolean;
+  sheet?: SheetNumber | undefined;
+  sheetLabel?: string | undefined;
+  currentSection?: SectionId | undefined;
+  sectionBar?: { sectionLabel: string; pages: readonly NavLink[]; currentHref: string } | undefined;
+  breadcrumbs?: readonly BreadcrumbItem[] | undefined;
+  jsonLd?: readonly JsonLd[] | undefined;
+  noindex?: boolean | undefined;
 }
 
 const {

@@ -1,0 +1,81 @@
+---
+/**
+ * Sheet 03.4 · Shareholder information (docs/SITEMAP.md 03.4): capital structure (HTML table, never an
+ * image) · major shareholders · IPO status · how to invest · registry · FAQs. The capital table and
+ * registry need registry data (Q-22), so preview shows them as INPUT NEEDED.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { factDisplay } from '~/lib/format';
+import Button from '~/components/primitives/Button.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('shareholders'),
+  content.getDocuments(),
+]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
+---
+
+<ContentLayout
+  heading="Shareholder information"
+  description="Practical information for Auburn Resources shareholders: capital structure, major holders, IPO status and the share registry."
+  frame={frame}
+  href="/investors/shareholders"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="secondary">
+      Contact the company secretary
+    </Button>
+  </Fragment>
+  <PageSections
+    sections={page.sections}
+    ids={['capital-structure']}
+    sources={sources}
+    mode={mode}
+  />
+  <FactList
+    id="major-shareholders"
+    heading="Major shareholders"
+    items={[
+      factDisplay('Shares on issue', settings.keyFacts.sharesOnIssue),
+      factDisplay('DGR Global Ltd', settings.keyFacts.dgrHolding),
+    ]}
+    sources={sources}
+    mode={mode}
+  />
+  <FactList
+    id="ipo-status"
+    heading="IPO status"
+    items={[factDisplay('IPO status', settings.keyFacts.ipoStatus)]}
+    sources={sources}
+    mode={mode}
+  >
+    <p class="note">
+      The IPO status is forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+    </p>
+  </FactList>
+  <PageSections
+    sections={page.sections}
+    ids={['how-to-invest', 'registry', 'faqs']}
+    sources={sources}
+    mode={mode}
+  />
+</ContentLayout>
+
+<style>
+  .note {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+</style>

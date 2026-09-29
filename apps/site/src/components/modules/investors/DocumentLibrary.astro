@@ -1,0 +1,66 @@
+---
+/**
+ * Document library (docs/SITEMAP.md 03.1–03.3): registers grouped by release year, newest first
+ * ("paginated by year" as static sections; filters and search arrive with the Phase 4 islands).
+ *
+ * Rows follow `isDocumentListable`. A year appears only with at least one row; undated records exist
+ * only in preview (production requires an approved date) and are grouped last. With no rows, preview
+ * shows what is missing and production renders nothing.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DocType, DocumentRecord } from '~/lib/content/types';
+import { latestDocuments } from '~/lib/content/visibility';
+import Container from '~/components/primitives/Container.astro';
+import DocumentRegister from '~/components/patterns/DocumentRegister.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import PageBlock from '../page/PageBlock.astro';
+
+export interface Props {
+  documents: readonly DocumentRecord[];
+  docTypes: readonly DocType[];
+  /** Plural name of what is listed, e.g. "Announcements". */
+  label: string;
+  /** Brief for the preview placeholder when nothing is recorded. */
+  emptyBrief: string;
+  mode: ContentMode;
+}
+
+const { documents, docTypes, label, emptyBrief, mode } = Astro.props;
+const rows = latestDocuments(documents, mode, { docTypes });
+const UNDATED = 'undated';
+const groups = new Map<string, DocumentRecord[]>();
+for (const document of rows) {
+  const year = document.releaseAt.kind === 'fact' ? document.releaseAt.value.slice(0, 4) : UNDATED;
+  groups.set(year, [...(groups.get(year) ?? []), document]);
+}
+const idOf = (year: string) => `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${year}`;
+---
+
+{[...groups].map(([year, list]) => (
+  <PageBlock id={idOf(year)} heading={year === UNDATED ? 'Date to confirm' : year}>
+    <div class="library__register">
+      <DocumentRegister
+        documents={list}
+        caption={year === UNDATED ? `${label}, date to confirm` : `${label} ${year}`}
+        mode={mode}
+      />
+    </div>
+  </PageBlock>
+))}
+{rows.length === 0 && mode === 'preview' && (
+  <Container>
+    <div class="library__empty">
+      <Placeholder brief={emptyBrief} field={label} mode={mode} />
+    </div>
+  </Container>
+)}
+
+<style>
+  .library__register {
+    width: 100%;
+  }
+
+  .library__empty {
+    padding-block: var(--space-6);
+  }
+</style>

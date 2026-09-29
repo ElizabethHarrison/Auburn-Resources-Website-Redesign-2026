@@ -1,0 +1,55 @@
+---
+/**
+ * Sheet 01.1 · Leadership (docs/SITEMAP.md 01.1): board cards · management cards · links to governance
+ * and the company secretary. People appear only when listable (approved role in production).
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import Button from '~/components/primitives/Button.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+import PeopleGroup from '~/components/modules/page/PeopleGroup.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents, people] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('leadership'),
+  content.getDocuments(),
+  content.getPeople(),
+]);
+const sources = createSourceIndex(documents);
+---
+
+<ContentLayout
+  heading="Leadership"
+  description="The board and management of Auburn Resources: roles, qualifications and experience."
+  frame={frame}
+  href="/company/leadership"
+  section="01"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/governance">Read the governance framework</Button>
+    <Button href="/contact" variant="secondary">
+      Contact the company secretary
+    </Button>
+  </Fragment>
+  <PeopleGroup
+    id="board"
+    heading="Board"
+    people={people.filter((person) => person.group === 'board')}
+    sources={sources}
+    mode={mode}
+  />
+  <PeopleGroup
+    id="management"
+    heading="Management"
+    people={people.filter((person) => person.group === 'management')}
+    sources={sources}
+    mode={mode}
+  />
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+</ContentLayout>

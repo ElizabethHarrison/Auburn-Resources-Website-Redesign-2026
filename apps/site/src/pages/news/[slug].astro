@@ -1,0 +1,121 @@
+---
+/**
+ * Sheet 05.x · Article (docs/SITEMAP.md 05.x): title (date, project tags) · lead · linked announcement
+ * and projects · more news. Routes exist only for articles renderable in this mode; none exist yet, so
+ * this template currently generates no pages. Article bodies (portable text) arrive with Sanity.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import type { Article } from '~/lib/content/types';
+import { isDocumentListable, latestArticles } from '~/lib/content/visibility';
+import { resolve } from '~/lib/facts';
+import { articleJsonLd, canonicalUrl } from '~/lib/seo';
+import { documentPageUrl, projectUrl } from '~/lib/urls';
+import ArrowLink from '~/components/primitives/ArrowLink.astro';
+import Container from '~/components/primitives/Container.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+
+export async function getStaticPaths() {
+  const articles = await content.getArticles();
+  return latestArticles(articles, config.contentMode).map((article) => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
+}
+
+interface Props {
+  article: Article;
+}
+
+const { article } = Astro.props;
+const mode = config.contentMode;
+const [frame, documents, articles] = await Promise.all([
+  loadFrame(content, mode),
+  content.getDocuments(),
+  content.getArticles(),
+]);
+const path = `/news/${article.slug}`;
+const lead = resolve(article.lead, mode);
+const linked = documents.find((document) => document.id === article.linkedDocumentId);
+const linkedHref = linked && isDocumentListable(linked, mode) ? documentPageUrl(linked) : undefined;
+const projects = frame.projects.filter((project) => article.projectIds.includes(project.id));
+const more = latestArticles(articles, mode, 4)
+  .filter((other) => other.id !== article.id)
+  .slice(0, 3);
+const breadcrumbs = [
+  { name: 'Home', path: '/' },
+  { name: '05 News', path: '/news' },
+  { name: article.title, path },
+];
+const site = Astro.site ?? Astro.url;
+---
+
+<ContentLayout
+  heading={article.title}
+  description={`${article.title}: news from Auburn Resources.`}
+  frame={frame}
+  href="/news"
+  section="05"
+  sheetLabel="Article"
+  breadcrumbs={breadcrumbs}
+  jsonLd={[articleJsonLd(article.title, article.date, mode, canonicalUrl(path, site))]}
+  mode={mode}
+>
+  <Container>
+    <div class="article">
+      <p class="article__date">
+        <FactValue fact={article.date} field="Date" mode={mode} />
+      </p>
+      {lead.kind === 'value' && <p class="article__lead">{lead.item.text}</p>}
+      {lead.kind === 'placeholder' && <Placeholder brief={lead.brief} field="Lead" mode={mode} />}
+      {linked && linkedHref && (
+        <p>
+          <ArrowLink href={linkedHref}>Read the full announcement</ArrowLink>
+        </p>
+      )}
+      {projects.map((project) => (
+        <p>
+          <ArrowLink href={projectUrl(project)}>View the {project.name} project</ArrowLink>
+        </p>
+      ))}
+      {more.length > 0 && (
+        <nav aria-label="More news">
+          <ul class="article__more" role="list">
+            {more.map((other) => (
+              <li>
+                <a href={`/news/${other.slug}`}>{other.title}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+  </Container>
+</ContentLayout>
+
+<style>
+  .article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: var(--measure);
+    padding-block: var(--space-4);
+  }
+
+  .article__date {
+    font-family: var(--font-mono);
+  }
+
+  .article__lead {
+    font-size: var(--text-lead);
+  }
+
+  .article__more {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

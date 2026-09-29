@@ -1,0 +1,49 @@
+---
+/**
+ * Sheet 03.3 · Presentations (docs/SITEMAP.md 03.3): presentations grouped by year. Featuring a
+ * "current" presentation depends on Q-08 (what counts as current), so it is not built yet.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import Button from '~/components/primitives/Button.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import DocumentLibrary from '~/components/modules/investors/DocumentLibrary.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('presentations'),
+  content.getDocuments(),
+]);
+---
+
+<ContentLayout
+  heading="Presentations"
+  description="Corporate presentations from Auburn Resources, newest first, with the archive of earlier presentations."
+  frame={frame}
+  href="/investors/presentations"
+  section="03"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/investors/alerts" variant="secondary">
+      Get investor updates
+    </Button>
+    <Placeholder
+      brief="Featuring a current presentation depends on Q-08; the newest on record is from Feb 2022"
+      field="Current presentation"
+      variant="inline"
+      mode={mode}
+    />
+  </Fragment>
+  <DocumentLibrary
+    documents={documents}
+    docTypes={['presentation']}
+    label="Presentations"
+    emptyBrief="Current corporate presentation and archive"
+    mode={mode}
+  />
+</ContentLayout>

@@ -28,6 +28,7 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-16 | Phase 2 review: approve D-013 (catalogue specimens with `approved` status, preview-only) and D-014 (container queries)? | none | Project owner |  **Approved** with Phase 2 (29 Sep 2026) → D-013, D-014 |
 | Q-17 | Access to the design canvas artboards ("1b · Survey Sheet — Century Gothic", "Project page template — Nicholson") or exports, for a side-by-side comparison before Phase 3. | none | Project owner |  **Do not block**: the approved written design specification is the source of truth |
 | Q-18 | The mockup map (Fig. 1) and cross-section (Fig. 2) now appear in preview, labelled indicative (D-017). Should production show them before tenement GIS / a CP-approved section exist — labelled "indicative" — or stay hidden until replaced? Showing them changes the rule that mockup geometry never ships (CLAUDE.md §3, §9). | none (preview only until decided) | Project owner + CP |  **Decided** 29 Sep 2026: keep hidden from production. Mockup-derived graphics are preview-only, labelled indicative/to verify, excluded from production by build and CI, and replaced later by approved GIS/technical figures. The content-governance rule is unchanged. |
+| Q-19 | Before launch, production pages with no approved content show only their title block and navigation (legal pages: title only). Acceptable while content is approved, or should such routes be withheld (which would break approved navigation links)? (D-019) | none (launch readiness) | Project owner | |
 
 ## Company secretary
 
@@ -40,6 +41,8 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-24 | Disclaimer, Privacy and Terms text (must be supplied by the company, not drafted by us). | launch | |
 | Q-25 | Governance documents as files, and 2023–2025 reports and current presentation. | launch | |
 | Q-26 | Acknowledgement of Country — final approved wording. | launch | |
+| Q-27 | Governance: which of the fourteen documents named on the old site are current, and their files and adoption dates? Is the Privacy Policy listed there the same text as the website privacy page? | launch | |
+| Q-28 | Investor centre and Media fact sheet: confirm which key facts appear and their labels (e.g. "DGR Global holding" as the major-holder figure). | none | |
 
 ## Competent person / technical
 
@@ -58,3 +61,4 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | --- | --- | --- | --- |
 | Q-40 | Logo: vector originals, and is the logo being redesigned? (Header uses a text wordmark until then.) | none | |
 | Q-41 | Field photography shoot and consistent leadership portraits — timing and consent process. | none | |
+| Q-42 | Contact page office map (SITEMAP §6): static image, map island (Phase 4) or omit? | none | |

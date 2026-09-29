@@ -1,0 +1,81 @@
+---
+/**
+ * Legal page body (docs/SITEMAP.md, Legal template): last-updated date and numbered clauses. The text is
+ * supplied by the company and never drafted here (CLAUDE.md §2.3). A clause renders only when its text
+ * renders; with no supplied text, preview shows INPUT NEEDED and production shows nothing.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable, resolve } from '~/lib/facts';
+import type { LegalPageContent } from '~/lib/content/types';
+import Container from '~/components/primitives/Container.astro';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+
+export interface Props {
+  page: LegalPageContent;
+  mode: ContentMode;
+}
+
+const { page, mode } = Astro.props;
+const clauses =
+  'kind' in page.clauses
+    ? []
+    : page.clauses
+        .map((clause) => ({ heading: clause.heading, text: resolve(clause.text, mode) }))
+        .filter((clause) => clause.text.kind !== 'hidden');
+const missing = 'kind' in page.clauses ? resolve(page.clauses, mode) : undefined;
+---
+
+<Container>
+  <div class="legal">
+    {isRenderable(page.lastUpdated, mode) && (
+      <p class="legal__updated">
+        Last updated <FactValue fact={page.lastUpdated} field="Last updated" mode={mode} />
+      </p>
+    )}
+    {clauses.length > 0 && (
+      <ol class="legal__clauses">
+        {clauses.map((clause, index) => (
+          <li class="legal__clause">
+            <h2 id={`clause-${index + 1}`}>{clause.heading}</h2>
+            {clause.text.kind === 'value' && <p>{clause.text.item.text}</p>}
+            {clause.text.kind === 'placeholder' && (
+              <Placeholder brief={clause.text.brief} field={clause.heading} mode={mode} />
+            )}
+          </li>
+        ))}
+      </ol>
+    )}
+    {missing?.kind === 'placeholder' && (
+      <Placeholder brief={missing.brief} field="Legal text" mode={mode} />
+    )}
+  </div>
+</Container>
+
+<style>
+  .legal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  .legal__updated {
+    color: var(--color-meta);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .legal__clauses {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-left: var(--space-4);
+  }
+
+  .legal__clause h2 {
+    font-size: var(--text-h3);
+  }
+</style>

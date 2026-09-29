@@ -1,0 +1,43 @@
+---
+/**
+ * A titled page section: ruled heading (SectionHeading) and body. Callers render a PageBlock only when
+ * its body has content in this mode, so a heading is never followed by nothing.
+ */
+import Container from '~/components/primitives/Container.astro';
+import SectionHeading from '~/components/patterns/SectionHeading.astro';
+
+export interface Props {
+  id: string;
+  heading: string;
+  kicker?: string | undefined;
+  action?: { label: string; href: string } | undefined;
+}
+
+const { id, heading, kicker, action } = Astro.props;
+const headingId = `${id}-heading`;
+---
+
+<section id={id} class="page-block" aria-labelledby={headingId}>
+  <Container>
+    <SectionHeading id={headingId} heading={heading} kicker={kicker} action={action} />
+    <div class="page-block__body">
+      <slot />
+    </div>
+  </Container>
+</section>
+
+<style>
+  .page-block {
+    padding-block: var(--space-6);
+    scroll-margin-top: var(--space-4);
+  }
+
+  .page-block__body {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+/**
+ * Sheet 01 · Company overview (docs/SITEMAP.md 01): who we are · strategy · relationship with DGR Global ·
+ * milestone timeline (verified dates only) · leadership teaser. Company facts come from site settings;
+ * copy from the page record. Unapproved content is hidden in production, placeholders in preview.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import type { PostalAddress } from '~/lib/content/types';
+import { isRenderable } from '~/lib/facts';
+import { factDisplay } from '~/lib/format';
+import Button from '~/components/primitives/Button.astro';
+import FactList from '~/components/modules/page/FactList.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+import PeopleGroup from '~/components/modules/page/PeopleGroup.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents, people] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('company'),
+  content.getDocuments(),
+  content.getPeople(),
+]);
+const { settings } = frame;
+const sources = createSourceIndex(documents);
+const address = (value: PostalAddress) => value.lines.join(', ');
+const facts = [
+  factDisplay('Company type', settings.companyType),
+  factDisplay('Status', settings.keyFacts.companyStatus),
+  factDisplay('DGR Global holding', settings.keyFacts.dgrHolding),
+  factDisplay('IPO status', settings.keyFacts.ipoStatus),
+  factDisplay('Head office', settings.streetAddress, address),
+];
+const forwardLooking = isRenderable(settings.keyFacts.ipoStatus, mode);
+const board = people.filter((person) => person.group === 'board');
+---
+
+<ContentLayout
+  heading="Company overview"
+  description="Who Auburn Resources is: the company, its strategy, its relationship with DGR Global and its leadership."
+  frame={frame}
+  href="/company"
+  section="01"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/projects">Explore the projects</Button>
+    <Button href="/company/leadership" variant="secondary">
+      Meet the leadership
+    </Button>
+  </Fragment>
+  <FactList id="at-a-glance" heading="At a glance" items={facts} sources={sources} mode={mode}>
+    {forwardLooking && (
+      <p class="note">
+        The IPO status is forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+      </p>
+    )}
+  </FactList>
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <PeopleGroup
+    id="leadership"
+    heading="Leadership"
+    people={board}
+    limit={3}
+    action={{ label: 'Meet the leadership', href: '/company/leadership' }}
+    sources={sources}
+    mode={mode}
+  />
+</ContentLayout>
+
+<style>
+  .note {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+</style>

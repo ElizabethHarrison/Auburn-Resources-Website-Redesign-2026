@@ -1,0 +1,83 @@
+---
+/**
+ * Page copy sections (PageContent.sections). A section renders only when at least one of its
+ * paragraphs renders in this mode. Narrative paragraphs are plain prose; Interpretation paragraphs
+ * carry their source line. Pass `ids` to render a subset, in the given order.
+ */
+import type { ContentMode } from '~/lib/facts';
+import { isRenderable, resolve } from '~/lib/facts';
+import type { PageSection } from '~/lib/content/types';
+import type { SourceIndex } from '~/lib/content/sources';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import SourceLine from '~/components/patterns/SourceLine.astro';
+import StatusDot from '~/components/patterns/StatusDot.astro';
+import PageBlock from './PageBlock.astro';
+
+export interface Props {
+  sections: readonly PageSection[];
+  ids?: readonly string[] | undefined;
+  sources: SourceIndex;
+  mode: ContentMode;
+}
+
+const { sections, ids, sources, mode } = Astro.props;
+const chosen = ids
+  ? ids.flatMap((id) => sections.filter((section) => section.id === id))
+  : sections;
+const visible = chosen
+  .filter((section) => section.paragraphs.some((paragraph) => isRenderable(paragraph, mode)))
+  .map((section) => ({
+    section,
+    paragraphs: section.paragraphs
+      .map((paragraph) => resolve(paragraph, mode))
+      .filter((paragraph) => paragraph.kind !== 'hidden'),
+  }));
+---
+
+{visible.map(({ section, paragraphs }) => (
+  <PageBlock id={section.id} heading={section.heading}>
+    <div class="page-copy">
+      {paragraphs.map((paragraph) =>
+        paragraph.kind === 'placeholder' ? (
+          <Placeholder brief={paragraph.brief} field={section.heading} mode={mode} />
+        ) : paragraph.kind === 'value' && paragraph.item.kind === 'interpretation' ? (
+          <div class="page-copy__paragraph">
+            <p>{paragraph.item.text}</p>
+            <SourceLine item={paragraph.item} sources={sources} mode={mode} />
+          </div>
+        ) : paragraph.kind === 'value' ? (
+          <p>
+            {paragraph.item.text}
+            {mode === 'preview' && <StatusDot status={paragraph.status} compact mode={mode} />}
+          </p>
+        ) : null,
+      )}
+      {section.forwardLooking && (
+        <p class="page-copy__note">
+          This section is forward-looking. <a href="/disclaimer">Read the disclaimer</a>
+        </p>
+      )}
+    </div>
+  </PageBlock>
+))}
+
+<style>
+  .page-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+  }
+
+  .page-copy__note {
+    color: var(--color-meta);
+    font-size: var(--text-small);
+  }
+
+  .page-copy__paragraph {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+</style>

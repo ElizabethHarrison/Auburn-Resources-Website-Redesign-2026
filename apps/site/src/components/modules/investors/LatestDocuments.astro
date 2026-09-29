@@ -1,0 +1,115 @@
+---
+/**
+ * Investor centre "latest" cards (docs/SITEMAP.md 03): the newest listable announcement, report and
+ * presentation. A card appears only for a listable document; in preview a missing one shows what is
+ * needed. With no card in production, the block — heading included — renders nothing.
+ */
+import type { ContentMode } from '~/lib/facts';
+import type { DocType, DocumentRecord } from '~/lib/content/types';
+import { latestDocuments } from '~/lib/content/visibility';
+import { DOC_TYPE_LABELS } from '~/lib/format';
+import { documentPageUrl, documentPdfUrl } from '~/lib/urls';
+import FactValue from '~/components/patterns/FactValue.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import PageBlock from '../page/PageBlock.astro';
+
+export interface Props {
+  documents: readonly DocumentRecord[];
+  mode: ContentMode;
+}
+
+const { documents, mode } = Astro.props;
+const KINDS: readonly { label: string; docTypes: readonly DocType[]; href: string }[] = [
+  { label: 'Latest announcement', docTypes: ['announcement'], href: '/investors/announcements' },
+  {
+    label: 'Latest report',
+    docTypes: ['annual', 'halfYear', 'quarterly'],
+    href: '/investors/reports',
+  },
+  { label: 'Latest presentation', docTypes: ['presentation'], href: '/investors/presentations' },
+];
+const cards = KINDS.map((kind) => {
+  const document = latestDocuments(documents, mode, { docTypes: kind.docTypes, limit: 1 })[0];
+  const href = document
+    ? (documentPageUrl(document) ??
+      (document.file.kind === 'fact' && mode === 'production'
+        ? documentPdfUrl(document)
+        : kind.href))
+    : undefined;
+  return { ...kind, document, href };
+}).filter((card) => card.document !== undefined || mode === 'preview');
+const visible = cards.length > 0;
+---
+
+{visible && (
+  <PageBlock id="latest" heading="Latest documents">
+    <ul class="latest" role="list">
+      {cards.map((card) =>
+        card.document ? (
+          <li class="latest__card">
+            <p class="latest__kind">
+              {card.label} · {DOC_TYPE_LABELS[card.document.docType]}
+            </p>
+            <h3 class="latest__title">
+              <a href={card.href}>{card.document.title}</a>
+            </h3>
+            <p class="latest__date">
+              <FactValue fact={card.document.releaseAt} field="Release date" mode={mode} />
+            </p>
+          </li>
+        ) : (
+          <li class="latest__card">
+            <Placeholder
+              brief={`No listable document of this type yet`}
+              field={card.label}
+              mode={mode}
+            />
+          </li>
+        ),
+      )}
+    </ul>
+  </PageBlock>
+)}
+
+<style>
+  .latest {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @container (min-width: 48rem) {
+    .latest {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .latest__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--rule);
+  }
+
+  .latest__kind {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono-wide);
+    text-transform: uppercase;
+  }
+
+  .latest__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-heading);
+  }
+
+  .latest__title a {
+    color: var(--ink-survey);
+  }
+</style>

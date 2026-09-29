@@ -1,0 +1,68 @@
+---
+/**
+ * Sheet 04 · Sustainability (docs/SITEMAP.md 04): acknowledgement of Country · approach (specific,
+ * verifiable commitments) · two cards · who is responsible. The old site's generic ESG copy is not
+ * reused; the acknowledgement's final wording is Q-26.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import { resolve } from '~/lib/facts';
+import { sectionById } from '~/lib/navigation';
+import Button from '~/components/primitives/Button.astro';
+import Container from '~/components/primitives/Container.astro';
+import Placeholder from '~/components/patterns/Placeholder.astro';
+import LinkCards from '~/components/modules/page/LinkCards.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('sustainability'),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+const acknowledgement = resolve(frame.settings.acknowledgementOfCountry, mode);
+const cards = sectionById('04').pages.filter((link) => link.href !== '/sustainability');
+---
+
+<ContentLayout
+  heading="Sustainability"
+  description="How Auburn Resources works with Traditional Owners, landholders and communities, and its environmental and safety commitments."
+  frame={frame}
+  href="/sustainability"
+  section="04"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/sustainability/community">Community and Country</Button>
+  </Fragment>
+  {acknowledgement.kind !== 'hidden' && (
+    <Container>
+      <div class="acknowledgement">
+        {acknowledgement.kind === 'value' && <p>{acknowledgement.item.text}</p>}
+        {acknowledgement.kind === 'placeholder' && (
+          <Placeholder
+            brief={acknowledgement.brief}
+            field="Acknowledgement of Country"
+            mode={mode}
+          />
+        )}
+      </div>
+    </Container>
+  )}
+  <PageSections sections={page.sections} ids={['approach']} sources={sources} mode={mode} />
+  <LinkCards id="in-this-section" heading="In this section" links={cards} />
+  <PageSections sections={page.sections} ids={['responsibility']} sources={sources} mode={mode} />
+</ContentLayout>
+
+<style>
+  .acknowledgement {
+    max-width: var(--measure);
+    padding-block: var(--space-4);
+    font-size: var(--text-lead);
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+/**
+ * Disclaimer (docs/SITEMAP.md, Legal template; no sheet number — D-010). The text is supplied by the company
+ * (Q-24); nothing is drafted here.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import LegalText from '~/components/modules/legal/LegalText.astro';
+
+const mode = config.contentMode;
+const [frame, page] = await Promise.all([
+  loadFrame(content, mode),
+  content.getLegalPage('disclaimer'),
+]);
+---
+
+<ContentLayout
+  heading="Disclaimer"
+  description="The Auburn Resources disclaimer: forward-looking statements, the JORC 2012 basis of reporting and competent persons."
+  frame={frame}
+  href="/disclaimer"
+  mode={mode}
+>
+  <LegalText page={page} mode={mode} />
+</ContentLayout>

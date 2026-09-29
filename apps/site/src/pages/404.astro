@@ -1,0 +1,41 @@
+---
+/**
+ * 404 (docs/SITEMAP.md, Utility): "Unmapped sheet" message and links to the five sections. Not indexed.
+ * Document search (Pagefind) arrives with Phase 4.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { HOME_LINK, SECTIONS } from '~/lib/navigation';
+import Container from '~/components/primitives/Container.astro';
+import LinkCards from '~/components/modules/page/LinkCards.astro';
+
+const mode = config.contentMode;
+const frame = await loadFrame(content, mode);
+const links = [HOME_LINK, ...SECTIONS.map(({ sheet, label, href }) => ({ sheet, label, href }))];
+---
+
+<ContentLayout
+  heading="Unmapped sheet"
+  title="Page not found"
+  description="This page is not on any sheet of the Auburn Resources website. Start from one of the five sections."
+  frame={frame}
+  href="/404"
+  noindex
+  mode={mode}
+>
+  <Container>
+    <p class="lost">
+      This address is not on any of our sheets. It may have moved, or never existed.
+    </p>
+  </Container>
+  <LinkCards id="sections" heading="Start from a section" links={links} />
+</ContentLayout>
+
+<style>
+  .lost {
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+  }
+</style>

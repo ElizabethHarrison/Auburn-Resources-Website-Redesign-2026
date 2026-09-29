@@ -1,0 +1,40 @@
+---
+/**
+ * Sheet 04.1 · Community and Country (docs/SITEMAP.md 04.1): working on Country · landholders and land
+ * access · local participation · community contact. Traditional Owner groups are named only with their
+ * recorded consent (CLAUDE.md §2.3); nothing here is drafted.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import { createSourceIndex } from '~/lib/content/sources';
+import Button from '~/components/primitives/Button.astro';
+import PageSections from '~/components/modules/page/PageSections.astro';
+
+const mode = config.contentMode;
+const [frame, page, documents] = await Promise.all([
+  loadFrame(content, mode),
+  content.getPage('community'),
+  content.getDocuments(),
+]);
+const sources = createSourceIndex(documents);
+---
+
+<ContentLayout
+  heading="Community and Country"
+  description="How Auburn Resources works on Country with Traditional Owners, landholders and local communities."
+  frame={frame}
+  href="/sustainability/community"
+  section="04"
+  intro={page.intro}
+  mode={mode}
+>
+  <Fragment slot="actions">
+    <Button href="/contact">Contact us about a project area</Button>
+    <Button href="/projects" variant="secondary">
+      See where we work
+    </Button>
+  </Fragment>
+  <PageSections sections={page.sections} sources={sources} mode={mode} />
+</ContentLayout>

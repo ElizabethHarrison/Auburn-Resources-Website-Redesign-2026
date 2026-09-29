@@ -22,13 +22,15 @@ Read these before writing code, in this order:
 - **Phase 2** (design system) — done, approved: tokens tagged approved/derived, 11 primitives, static
   patterns and page frame in `apps/site/src/components/`, preview-only catalogue at `/_catalogue`
   (`src/catalogue/`), design-system/contrast tests, JS budget check. Review: `docs/reviews/phase-2-design-review.md`.
-- **Phase 3** (page templates on fixtures) — in progress, reviewed page by page: **Home** and **Projects
-  portfolio** (`/projects`) approved; **Project dossier** (`/projects/[slug]`, one template, D-018) built,
-  awaiting review. Next, after approval: investor centre → document library → other pages.
-  Pages use `layouts/SiteLayout.astro` + `loadFrame()`; modules live in `components/modules/<page>/`.
+- **Phase 3** (page templates on fixtures) — checkpoint awaiting review: **Home** and **Projects portfolio**
+  approved; **Project dossier** (`/projects/[slug]`, D-018) approved; every other sitemap route built (D-019):
+  company, leadership, how we explore, investor centre and its six pages, announcement pages, sustainability
+  (three), news, article template, media, contact, legal (three), 404. Pages use `layouts/SiteLayout.astro` +
+  `loadFrame()` (fixed pages via `layouts/ContentLayout.astro`); modules live in `components/modules/<page>/`
+  (shared page modules in `modules/page/`). Page copy comes from `page` records (`getPage`, `getLegalPage`).
   Dossier module rules are in `lib/content/dossier.ts`. Playwright + axe tests in `tests/e2e` run against both
-  builds; `content-integrity.spec.ts` scans the production build.
-- **Not yet built:** remaining Phase 3 pages, islands (Phase 4), Sanity Studio (Phase 5), `workers/edge`,
+  builds; `content-integrity.spec.ts` scans the production build; `links.spec.ts` crawls every internal link.
+- **Not yet built:** islands and forms (Phase 4), Sanity Studio (Phase 5), `workers/edge`,
   Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.

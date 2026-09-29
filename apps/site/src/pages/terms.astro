@@ -1,0 +1,24 @@
+---
+/**
+ * Terms of use (docs/SITEMAP.md, Legal template; no sheet number — D-010). The text is supplied by the company
+ * (Q-24); nothing is drafted here.
+ */
+import ContentLayout from '~/layouts/ContentLayout.astro';
+import { config } from '~/lib/config';
+import { content } from '~/lib/content';
+import { loadFrame } from '~/lib/content/frame';
+import LegalText from '~/components/modules/legal/LegalText.astro';
+
+const mode = config.contentMode;
+const [frame, page] = await Promise.all([loadFrame(content, mode), content.getLegalPage('terms')]);
+---
+
+<ContentLayout
+  heading="Terms of use"
+  description="The terms that apply to using the Auburn Resources website and its documents."
+  frame={frame}
+  href="/terms"
+  mode={mode}
+>
+  <LegalText page={page} mode={mode} />
+</ContentLayout>
