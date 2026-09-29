@@ -6,6 +6,11 @@
  */
 import { defineConfig, devices } from '@playwright/test';
 
+// Specs import fixture records for expected slugs and names. The fixtures read the compile-time
+// `__PREVIEW_BUILD__` flag (a Vite define); outside Vite it must exist, and indicative figures are
+// never needed by the tests. Workers load this file before any spec.
+(globalThis as { __PREVIEW_BUILD__?: boolean }).__PREVIEW_BUILD__ = false;
+
 const PRODUCTION_PORT = 4600;
 const PREVIEW_PORT = 4601;
 

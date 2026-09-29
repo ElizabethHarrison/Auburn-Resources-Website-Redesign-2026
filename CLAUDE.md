@@ -19,14 +19,15 @@ Read these before writing code, in this order:
 - **Phase 0** (housekeeping) — done.
 - **Phase 1** (scaffold) — done: pnpm workspace, Astro site in `apps/site`, tokens and base CSS, `BaseLayout`,
   SEO helpers, content adapter with typed fixtures, `Fact` rendering rules, unit tests, CI.
-- **Phase 2** (design system) — done, awaiting review: tokens tagged approved/derived, 11 primitives, static
+- **Phase 2** (design system) — done, approved: tokens tagged approved/derived, 11 primitives, static
   patterns and page frame in `apps/site/src/components/`, preview-only catalogue at `/_catalogue`
   (`src/catalogue/`), design-system/contrast tests, JS budget check. Review: `docs/reviews/phase-2-design-review.md`.
-- **Phase 3** (page templates on fixtures) — in progress, reviewed page by page: **Home** approved;
-  **Projects portfolio** (`/projects`) built, awaiting review. Next, after approval: project dossier → investor
-  centre → document library → other pages.
+- **Phase 3** (page templates on fixtures) — in progress, reviewed page by page: **Home** and **Projects
+  portfolio** (`/projects`) approved; **Project dossier** (`/projects/[slug]`, one template, D-018) built,
+  awaiting review. Next, after approval: investor centre → document library → other pages.
   Pages use `layouts/SiteLayout.astro` + `loadFrame()`; modules live in `components/modules/<page>/`.
-  Playwright + axe tests in `tests/e2e` run against both builds.
+  Dossier module rules are in `lib/content/dossier.ts`. Playwright + axe tests in `tests/e2e` run against both
+  builds; `content-integrity.spec.ts` scans the production build.
 - **Not yet built:** remaining Phase 3 pages, islands (Phase 4), Sanity Studio (Phase 5), `workers/edge`,
   Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
 

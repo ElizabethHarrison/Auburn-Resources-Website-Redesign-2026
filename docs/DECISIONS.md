@@ -152,3 +152,28 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   Showing them publicly would need an explicit owner decision (Q-18) and a change to those rules.
 - **Also:** `sharp` added as a build-time dependency of the site (required by Astro's `<Image>` pipeline,
   part of the approved stack).
+
+## D-018 · Project dossier: one data-driven template
+- **Date:** 29 Sep 2026 · **Status:** Proposed (Phase 3C, awaiting dossier review)
+- **Decision:** `/projects/[slug]` renders every project through one template. `lib/content/dossier.ts` decides
+  from data alone which of modules 01–09 appear (approved order, SITEMAP §8): preview shows all nine with
+  INPUT NEEDED; production shows a module only with approved content — 01 needs an approved map; 02 and 04–06
+  also need an approved competent-person statement; 04 shows only rows whose every cell is approved. The
+  compliance block appears whenever 02/04/05/06 do. Related sheets use only facts renderable in the mode.
+- **Publishing:** a dossier route is generated only when `isProjectPublishable` (production: approved holding,
+  area and ownership — SITEMAP §8 "ownership + area required to publish"). Listing (`isProjectListable`) now
+  also requires this, so no card, menu or footer link can lead to a missing dossier. Production currently
+  generates no dossier (Q-20).
+- **Content model:** `Project` gains tenements, page as-at, setting facts, hero photo, setting map, section
+  figure, photos, CP statement and an internal `heldBackNote` (preview-only; the held-back wording itself is
+  never stored). New record types and adapter methods: prospects, resource estimates, results, milestones
+  (the last three have no source content yet, so their fixtures are empty).
+- **Presentation:** module headings from the approved Nicholson mockup (Q-34); hero photo falls back to the
+  setting map (unnumbered; it is Fig. 1 in module 01); figures numbered in page order; strat-column index is
+  static in Phase 3 (Phase 4 island adds the current band and mobile chip); CTA band "Get [project]
+  announcements by email." with "Get investor updates" / "Discuss a partnership".
+- **Tests:** `tests/e2e/dossier.spec.ts` (every fixture slug; outline, keyboard, focus, figures, sources,
+  related links, no empty headings or labels, axe, overflow at five widths) and
+  `tests/e2e/content-integrity.spec.ts` (scans the production build: HOLD wording, preview output, statuses,
+  indicative assets, unapproved statements, no dossier routes). Playwright defines `__PREVIEW_BUILD__ = false`
+  so specs can import fixture records.

@@ -49,6 +49,8 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-31 | Tenement numbers, holders, areas, dates and GIS outlines; licence for GIS files and base-map tiles. | launch (maps) | |
 | Q-32 | Treatment of HOLD exploration-target wording (Nicholson, Calgoa): restate per JORC 2012 or remove. | none (held back) | |
 | Q-33 | CP-approved replacement for the schematic cross-section (Fig. 2). | launch | |
+| Q-34 | Project dossier module headings are taken from the approved Nicholson mockup ("Where it sits", "Why this ground", "Where we will drill", …). "Where we will drill" is forward-looking; keep it (the module links to the disclaimer) or use the neutral kicker "Exploration targets"? | none | |
+| Q-35 | Two old-site claims are stored as project setting facts rather than statements: Nicholson neighbouring deposits "Walford Creek; Century" and Tanumbirini infrastructure "Sealed Carpentaria Highway; gas pipeline". Confirm, with sources, when the setting facts are reviewed. | none | |
 
 ## Brand / assets
 
