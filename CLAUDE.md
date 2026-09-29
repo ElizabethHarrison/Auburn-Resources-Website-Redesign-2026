@@ -163,12 +163,10 @@ pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
 pnpm budget         # JS-on-page-load budget (30 KB compressed) against the production build
-pnpm check          # all of the above plus both builds — run before pushing
-```
 pnpm test:e2e       # Playwright + axe against both builds (build both first; `pnpm check` does)
+pnpm check          # all of the above plus both builds and e2e — run before pushing
 ```
 Planned: `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also start the Studio from Phase 5.
-```
 
 ### 4.4 Content access and modes (approved — D-003, D-005, D-009)
 - Components never fetch. Pages call `src/lib/content/*` loaders, which return typed records from fixtures or Sanity.
