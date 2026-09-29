@@ -146,8 +146,82 @@ export interface Project {
   readonly geologySummary: InterpretationSlot;
   /** Technical statements captured from the old site, each awaiting CP review. */
   readonly statements: readonly InterpretationSlot[];
+  /** Tenement numbers as reported (e.g. EPM numbers). */
+  readonly tenements: FactSlot<string>;
+  /** Page as-at date, set when the project's facts are approved. */
+  readonly asAt: FactSlot<IsoDate>;
+  /** Module 01 fact list. */
+  readonly setting: ProjectSetting;
+  /** Hero field photograph; the hero falls back to the setting map without one. */
+  readonly heroPhoto: FigureSlot;
+  /** Module 01 map (Fig. 1). Required for module 01 to publish. */
+  readonly settingMap: FigureSlot;
+  /** Module 02 cross-section (Fig. 2), competent-person approved. */
+  readonly sectionFigure: FigureSlot;
+  /** Module 07 field photography. */
+  readonly photos: readonly FigureSlot[];
+  /** Competent person statement covering this project's technical content (modules 02, 04–06). */
+  readonly cpStatement: InterpretationSlot;
+  /**
+   * Internal note that the old site carried wording held back for compliance (HOLD). The held-back wording
+   * itself is never stored or rendered; preview shows only this note.
+   */
+  readonly heldBackNote?: string;
   /** Path on the old site, used to generate redirects. */
   readonly legacyPath?: string;
+}
+
+/** Project module 01 fact list (docs/SITEMAP.md §8). */
+export interface ProjectSetting {
+  readonly neighbouringDeposits: FactSlot<string>;
+  readonly nearestTown: FactSlot<string>;
+  readonly access: FactSlot<string>;
+  readonly infrastructure: FactSlot<string>;
+  /** Name Traditional Owner groups only with recorded consent (CLAUDE.md §2.3). */
+  readonly traditionalOwners: FactSlot<string>;
+}
+
+/** Target / prospect (docs/SITEMAP.md §8 `prospect`), module 05. */
+export interface Prospect {
+  readonly id: string;
+  readonly projectId: string;
+  readonly name: string;
+  readonly summary: InterpretationSlot;
+  readonly targetType: FactSlot<string>;
+}
+
+/** JORC 2012 Mineral Resource row (docs/SITEMAP.md §8 `resourceEstimate`), module 04. */
+export interface ResourceEstimate {
+  readonly id: string;
+  readonly projectId: string;
+  readonly category: FactSlot<string>;
+  readonly tonnesMt: FactSlot<number>;
+  readonly grades: FactSlot<string>;
+  readonly containedMetal: FactSlot<string>;
+  readonly cutOff: FactSlot<string>;
+  readonly estimateDate: FactSlot<IsoDate>;
+}
+
+/** Reported drilling/geochemistry result (docs/SITEMAP.md §8 `result`), module 06. */
+export interface ResultRecord {
+  readonly id: string;
+  readonly projectId: string;
+  /** Headline exactly as reported, e.g. interval @ grade from depth. */
+  readonly headline: FactSlot<string>;
+  readonly holeOrSurveyId: FactSlot<string>;
+  readonly prospectName: string;
+  /** The announcement that reported it (required: a result cannot exist without one). */
+  readonly reportedIn: DocumentRef;
+}
+
+/** Project milestone (docs/SITEMAP.md §8 `milestone`), module 08. Forward-looking when planned. */
+export interface ProjectMilestone {
+  readonly id: string;
+  readonly projectId: string;
+  readonly title: string;
+  readonly state: 'done' | 'next' | 'planned';
+  readonly when: FactSlot<string>;
+  readonly status: ContentStatus;
 }
 
 /** Exploration work completed (docs/SITEMAP.md §8, `workItem`). */
@@ -162,7 +236,7 @@ export interface WorkItem {
 
 // ── Figures (docs/SITEMAP.md §8, `figure`) ─────────────────────────────────────────────────────
 
-export type FigureType = 'map' | 'section' | 'geophysics' | 'other';
+export type FigureType = 'map' | 'section' | 'geophysics' | 'photo' | 'other';
 
 /** A supplied figure asset. Maps and sections need CP approval before `status` is approved. */
 export interface FigureRecord {

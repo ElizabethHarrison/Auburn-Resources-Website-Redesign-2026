@@ -31,13 +31,32 @@ export function isPersonListable(person: Person, mode: ContentMode): boolean {
 }
 
 /**
- * A project may be listed (cards, menus, footer) only when it is confirmed as held. Until the verified
- * project list exists (docs/OPEN-QUESTIONS.md Q-20), no project is listable in production.
+ * A project dossier may be published when the project's holding, area and ownership are approved —
+ * docs/SITEMAP.md §8: "ownership + area required to publish". Relinquished projects keep their page
+ * (marked "No longer held"), so any approved holding value qualifies.
+ */
+export function isProjectPublishable(project: Project, mode: ContentMode): boolean {
+  if (mode === 'preview') return true;
+  return (
+    isRenderable(project.holding, mode) &&
+    isRenderable(project.areaKm2, mode) &&
+    isRenderable(project.ownership, mode)
+  );
+}
+
+/**
+ * A project may be listed (cards, menus, footer) when its dossier is publishable and it is still held.
+ * Until the verified project list exists (docs/OPEN-QUESTIONS.md Q-20), no project is listable in
+ * production. Listing implies a dossier exists, so card links never lead to a missing page.
  */
 export function isProjectListable(project: Project, mode: ContentMode): boolean {
   if (mode === 'preview') return true;
   const { holding } = project;
-  return holding.kind === 'fact' && isRenderable(holding, mode) && holding.value !== 'noLongerHeld';
+  return (
+    isProjectPublishable(project, mode) &&
+    holding.kind === 'fact' &&
+    holding.value !== 'noLongerHeld'
+  );
 }
 
 // ── Figures ─────────────────────────────────────────────────────────────────────────────────────

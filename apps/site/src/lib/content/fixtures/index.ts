@@ -7,6 +7,8 @@ import { articles } from './data/articles';
 import { documents } from './data/documents';
 import { homePage } from './data/home-page';
 import { portfolioPage } from './data/portfolio-page';
+import { prospects } from './data/prospects';
+import { milestones, resourceEstimates, results } from './data/technical';
 import { people } from './data/people';
 import { projects } from './data/projects';
 import { siteSettings } from './data/site-settings';
@@ -25,4 +27,9 @@ export const fixturesAdapter: ContentAdapter = {
   getArticles: async () => articles,
   getHomePage: async () => homePage,
   getPortfolioPage: async () => portfolioPage,
+  getProspects: async (projectId) => prospects.filter((item) => item.projectId === projectId),
+  getResourceEstimates: async (projectId) =>
+    resourceEstimates.filter((item) => item.projectId === projectId),
+  getResults: async (projectId) => results.filter((item) => item.projectId === projectId),
+  getMilestones: async (projectId) => milestones.filter((item) => item.projectId === projectId),
 };

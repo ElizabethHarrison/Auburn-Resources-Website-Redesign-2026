@@ -13,6 +13,7 @@ import { homePage } from './data/home-page';
 import { portfolioPage } from './data/portfolio-page';
 import { people } from './data/people';
 import { projects } from './data/projects';
+import { prospects } from './data/prospects';
 import { siteSettings } from './data/site-settings';
 import { workItems } from './data/work-items';
 
@@ -25,6 +26,7 @@ const all = {
   homePage,
   articles,
   portfolioPage,
+  prospects,
 };
 const slots = collectSlots(all);
 const documentIds = new Set(documents.map((document) => document.id));

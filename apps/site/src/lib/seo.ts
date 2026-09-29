@@ -8,7 +8,8 @@
 import type { ContentMode } from './facts';
 import { isRenderable } from './facts';
 import type { FactSlot } from './facts';
-import type { SiteSettings } from './content/types';
+import type { Project, SiteSettings } from './content/types';
+import { STATE_NAMES } from './format';
 
 export const SITE_NAME = 'Auburn Resources';
 
@@ -132,4 +133,20 @@ export function serializeJsonLd(blocks: readonly JsonLd[]): string {
           '@graph': blocks,
         };
   return JSON.stringify(graph).replace(/</g, '\\u003c');
+}
+
+/**
+ * Place JSON-LD for a project page (CLAUDE.md §7). Only approved facts are used: the state is added as
+ * the containing area when approved; coordinates are never included until approved GIS exists.
+ */
+export function placeJsonLd(project: Project, mode: ContentMode, url: string): JsonLd {
+  const state = renderedValue(project.state, mode);
+  return {
+    '@type': 'Place',
+    name: project.name,
+    url,
+    ...(state === undefined
+      ? {}
+      : { containedInPlace: { '@type': 'AdministrativeArea', name: STATE_NAMES[state] } }),
+  };
 }

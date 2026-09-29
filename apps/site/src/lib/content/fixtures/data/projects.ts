@@ -6,12 +6,15 @@
  * - Every technical statement awaits competent-person review.
  * - Excluded (HOLD / do not publish): exploration-target wording for Nicholson and Calgoa, the
  *   promotional "smoke" line, and Hawkwood's outdated work plan.
+ * - Some claims are restructured into records, never reworded: Nicholson's neighbouring deposits and
+ *   Tanumbirini's infrastructure are setting facts; Nicholson's drill targets are prospects (./prospects.ts).
  * - Third-party deposit figures (McArthur River, Nova-Bollinger, Voisey's Bay) are omitted until each
  *   has a source and date.
  */
 import { inputNeeded } from '../../../facts';
-import type { Project } from '../../types';
+import type { Project, ProjectSetting } from '../../types';
 import { siteFact, siteStatement } from '../helpers';
+import { crossSection, nicholsonSettingMap } from './figures';
 
 const stillHeld = inputNeeded('Whether the project is still held (docs/OPEN-QUESTIONS.md Q-20)');
 const stage = inputNeeded('Current exploration stage');
@@ -19,6 +22,36 @@ const area = inputNeeded('Area in km² from the tenement schedule');
 const ownership = inputNeeded('Holder, ownership percentage and any JV terms');
 const heroThesis = inputNeeded('Hero thesis: one line, no digits, 120 characters or fewer');
 const geologySummary = inputNeeded('Geological setting, 120 words or fewer, CP-approved');
+
+const tenements = inputNeeded(
+  'Tenement numbers (e.g. EPM numbers) from the tenement schedule (Q-31)',
+);
+const pageAsAt = inputNeeded('Page as-at date, set when the project facts are approved');
+const noSettingMap = inputNeeded('Fig. 1 regional setting map from tenement GIS (Q-31)');
+const noSection = inputNeeded('Fig. 2 cross-section approved by the competent person (Q-33)');
+
+function heroPhoto(name: string) {
+  return inputNeeded(
+    `Hero photograph at ${name}: landscape, natural light, field activity if possible. Commissioned only (no stock imagery); caption and date required.`,
+  );
+}
+
+function cpStatement(name: string) {
+  return inputNeeded(
+    `Competent person statement for ${name}: name, qualifications, membership, relationship to Auburn and consent wording (Q-30)`,
+  );
+}
+
+function setting(overrides: Partial<ProjectSetting> = {}): ProjectSetting {
+  return {
+    neighbouringDeposits: inputNeeded('Neighbouring deposits, each with a source'),
+    nearestTown: inputNeeded('Nearest town and distance'),
+    access: inputNeeded('Access: roads, seasonal access'),
+    infrastructure: inputNeeded('Infrastructure: power, port, rail, water'),
+    traditionalOwners: inputNeeded('Traditional Owners: named only with their consent'),
+    ...overrides,
+  };
+}
 
 export const projects: readonly Project[] = [
   {
@@ -35,22 +68,32 @@ export const projects: readonly Project[] = [
     heroThesis,
     geologySummary,
     statements: [
-      siteStatement('Located between the Walford Creek and Century zinc deposits.'),
       siteStatement(
         'Historically under-explored due to widespread cover: multiple blind, fertile structures.',
       ),
       siteStatement(
         'Prospective host rocks underlie the entire project (within 100 m of surface).',
       ),
-      siteStatement("Drill targets defined at Border, Hell's Gate and Elizabeth Creek."),
-      siteStatement('The Shadforth Structure has 15 km of anomalous base metals.'),
       siteStatement('Historical exploration targeted rare outcropping zones.'),
       siteStatement(
         'Limited strike targeted with 225 drillholes (averaging 27 m); host sequence below 100 m.',
         'How the 5,000 m of drilling relates to the 225 historic holes: INPUT NEEDED.',
       ),
-      siteStatement('Border VTEM anomaly along the Nicholson Fault: Nicholson West core.'),
     ],
+    tenements,
+    asAt: pageAsAt,
+    setting: setting({
+      neighbouringDeposits: siteFact('Walford Creek; Century', {
+        note: 'Site: "Located between Walford Creek and Century zinc deposits."',
+      }),
+    }),
+    heroPhoto: heroPhoto('Nicholson'),
+    settingMap: nicholsonSettingMap,
+    sectionFigure: crossSection,
+    photos: [],
+    cpStatement: cpStatement('Nicholson'),
+    heldBackNote:
+      'The current website carries exploration-target wording that is held back until the competent person restates it under JORC 2012 or removes it (Q-32).',
     legacyPath: '/nicholson-project',
   },
   {
@@ -85,6 +128,16 @@ export const projects: readonly Project[] = [
         'Two Auburn diamond holes represent a near-miss in proximal alteration to the system core.',
       ),
     ],
+    tenements,
+    asAt: pageAsAt,
+    setting: setting(),
+    heroPhoto: heroPhoto('Calgoa'),
+    settingMap: noSettingMap,
+    sectionFigure: noSection,
+    photos: [],
+    cpStatement: cpStatement('Calgoa'),
+    heldBackNote:
+      'The current website carries exploration-target wording that is held back until the competent person restates it under JORC 2012 or removes it (Q-32).',
     legacyPath: '/calgoa-project',
   },
   {
@@ -116,6 +169,14 @@ export const projects: readonly Project[] = [
         'Supplejack Dolostone traps fluids within the Timber Creek Formation: a Century analogue.',
       ),
     ],
+    tenements,
+    asAt: pageAsAt,
+    setting: setting(),
+    heroPhoto: heroPhoto('Victoria River Downs'),
+    settingMap: noSettingMap,
+    sectionFigure: noSection,
+    photos: [],
+    cpStatement: cpStatement('Victoria River Downs'),
     legacyPath: '/victoria-river-downs',
   },
   {
@@ -145,12 +206,23 @@ export const projects: readonly Project[] = [
         'Old site also quotes McArthur River resource figures; omitted until sourced and dated.',
       ),
       siteStatement('Potential for Mt Isa-type, Zambian-type, IOCG and Ni-Cu sulphide deposits.'),
-      siteStatement('Traversed by the sealed Carpentaria Highway and a gas pipeline.'),
       siteStatement('Anomalism focused on a central magnetic anomaly: a deep-seated structure.'),
       siteStatement(
         'North-east McArthur–Beetaloo sub-basin margin: analogous to the Century structural architecture.',
       ),
     ],
+    tenements,
+    asAt: pageAsAt,
+    setting: setting({
+      infrastructure: siteFact('Sealed Carpentaria Highway; gas pipeline', {
+        note: 'Site: "Traversed by the sealed Carpentaria Highway and gas pipeline."',
+      }),
+    }),
+    heroPhoto: heroPhoto('Tanumbirini'),
+    settingMap: noSettingMap,
+    sectionFigure: noSection,
+    photos: [],
+    cpStatement: cpStatement('Tanumbirini'),
     legacyPath: '/tanumbirini-project',
   },
   {
@@ -185,6 +257,16 @@ export const projects: readonly Project[] = [
         'Surface Ni ± Cu ± PGE anomalism at Jack Shay broadly coincident with VTEM conductors.',
       ),
     ],
+    tenements,
+    asAt: pageAsAt,
+    setting: setting(),
+    heroPhoto: heroPhoto('Hawkwood'),
+    settingMap: noSettingMap,
+    sectionFigure: noSection,
+    photos: [],
+    cpStatement: cpStatement('Hawkwood'),
+    heldBackNote:
+      'The current website carries an outdated forward-looking work plan that is not published.',
     legacyPath: '/hawkwood-project',
   },
 ];

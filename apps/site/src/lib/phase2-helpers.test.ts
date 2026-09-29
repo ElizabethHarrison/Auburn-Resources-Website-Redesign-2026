@@ -80,8 +80,12 @@ describe('record visibility', () => {
     expect(isDocumentListable({ ...approved, status: 'toVerify' }, 'production')).toBe(false);
   });
 
-  it('lists a project in production only when confirmed held', () => {
-    const base = projects[0] as Project;
+  it('lists a project in production only when held, with approved area and ownership (SITEMAP §8)', () => {
+    const base: Project = {
+      ...(projects[0] as Project),
+      areaKm2: fact(100, { unit: 'km²' }),
+      ownership: fact({ holder: 'Holder', percent: 100 }),
+    };
     expect(isProjectListable({ ...base, holding: fact('active' as const) }, 'production')).toBe(
       true,
     );
@@ -91,6 +95,12 @@ describe('record visibility', () => {
     expect(
       isProjectListable(
         { ...base, holding: fact('active' as const, {}, 'toVerify') },
+        'production',
+      ),
+    ).toBe(false);
+    expect(
+      isProjectListable(
+        { ...base, holding: fact('active' as const), areaKm2: inputNeeded('Area') },
         'production',
       ),
     ).toBe(false);

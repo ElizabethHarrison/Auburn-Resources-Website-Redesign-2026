@@ -19,3 +19,8 @@ export const portfolioMap: FigureSlot =
 export const crossSection: FigureSlot =
   indicative?.crossSection ??
   inputNeeded('Fig. 2 cross-section approved by the competent person (Q-33).');
+
+/** Nicholson regional setting (dossier module 01). */
+export const nicholsonSettingMap: FigureSlot =
+  indicative?.nicholsonSettingMap ??
+  inputNeeded('Fig. 1 Nicholson regional setting map from tenement GIS (Q-31).');

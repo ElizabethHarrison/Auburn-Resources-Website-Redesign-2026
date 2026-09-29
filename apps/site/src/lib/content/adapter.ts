@@ -15,6 +15,10 @@ import type {
   PortfolioPageContent,
   Person,
   Project,
+  ProjectMilestone,
+  Prospect,
+  ResourceEstimate,
+  ResultRecord,
   SiteSettings,
   WorkItem,
 } from './types';
@@ -32,4 +36,8 @@ export interface ContentAdapter {
   getArticles(): Promise<readonly Article[]>;
   getHomePage(): Promise<HomePageContent>;
   getPortfolioPage(): Promise<PortfolioPageContent>;
+  getProspects(projectId: string): Promise<readonly Prospect[]>;
+  getResourceEstimates(projectId: string): Promise<readonly ResourceEstimate[]>;
+  getResults(projectId: string): Promise<readonly ResultRecord[]>;
+  getMilestones(projectId: string): Promise<readonly ProjectMilestone[]>;
 }
