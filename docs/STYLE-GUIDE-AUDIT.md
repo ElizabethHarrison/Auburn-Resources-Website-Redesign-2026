@@ -126,4 +126,6 @@ stay derived.
 
 ## 5. Decisions needed
 
+The implementation proposal is `docs/BRAND-MIGRATION-PLAN.md` (D-031, Proposed).
+
 See Q-53 to Q-56 in `docs/OPEN-QUESTIONS.md`.

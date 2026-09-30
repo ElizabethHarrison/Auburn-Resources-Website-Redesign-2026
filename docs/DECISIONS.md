@@ -375,3 +375,16 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   routing (D-023) is unchanged. Details: `docs/SECURITY-HEADERS.md`.
 - **Consequences:** later islands (map, forms/Turnstile, search, analytics) must extend the CSP explicitly with their
   own approval. Nothing is deployed.
+
+## D-031 · Brand migration: keep the token architecture, change the values to the company palette
+- **Date:** 30 Sep 2026 · **Status:** Proposed (awaiting Q-53–Q-56 and Q-12)
+- **Context:** the company style guide (one slide, Nov 2019) is the brand authority, but the site uses the "Survey
+  Sheet" palette and a text wordmark (`docs/STYLE-GUIDE-AUDIT.md`). The guide gives colours, the logo and Century
+  Gothic, and nothing else.
+- **Proposal:** keep token names, components, layouts and tests' structure; add the guide's colours as brand tokens
+  and a small set of derived text shades and tints (for WCAG); re-point the role tokens (dark teal primary, charcoal
+  body, orange as the Auburn-ground accent, white ground); replace the wordmark with the supplied vector logo; keep
+  weight 400 until Century Gothic is licensed. Details, contrast and order: `docs/BRAND-MIGRATION-PLAN.md`.
+- **Consequences if approved:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md §3 wording change; token and
+  contrast tests take the new approved values. No layout or content change.
+
