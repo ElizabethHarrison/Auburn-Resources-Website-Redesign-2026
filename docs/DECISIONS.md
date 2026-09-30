@@ -377,14 +377,30 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   own approval. Nothing is deployed.
 
 ## D-031 · Brand migration: keep the token architecture, change the values to the company palette
-- **Date:** 30 Sep 2026 · **Status:** Proposed (awaiting Q-53–Q-56 and Q-12)
+- **Date:** 30 Sep 2026 · **Status:** **Approved** (owner, 30 Sep 2026) with the rulings below; the final token mapping
+  (`docs/BRAND-MIGRATION-PLAN.md` §4) awaits the owner's approval before any code changes
 - **Context:** the company style guide (one slide, Nov 2019) is the brand authority, but the site uses the "Survey
   Sheet" palette and a text wordmark (`docs/STYLE-GUIDE-AUDIT.md`). The guide gives colours, the logo and Century
   Gothic, and nothing else.
-- **Proposal:** keep token names, components, layouts and tests' structure; add the guide's colours as brand tokens
-  and a small set of derived text shades and tints (for WCAG); re-point the role tokens (dark teal primary, charcoal
-  body, orange as the Auburn-ground accent, white ground); replace the wordmark with the supplied vector logo; keep
-  weight 400 until Century Gothic is licensed. Details, contrast and order: `docs/BRAND-MIGRATION-PLAN.md`.
-- **Consequences if approved:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md §3 wording change; token and
-  contrast tests take the new approved values. No layout or content change.
-
+- **Decision:** preserve the architecture, page structure, module order, content and URLs; change the colour tokens
+  to the brand palette; remove the copper wording from the design direction; document the distinction between
+  official brand colours and accessibility-derived functional colours; do not redesign components unnecessarily; do
+  not invent brand rules where the guide is silent.
+- **Rulings:**
+  - **Q-54:** the final swatch is **white**; "R0 G0 B0" is treated as a typo unless the guide or brand owner shows
+    otherwise. Black is not a brand colour.
+  - **Q-53:** **dark teal** `#275259` is the primary semantic colour (headings, rules/dividers where appropriate,
+    primary buttons, footer background where appropriate). The two logo colours are restricted to the logo/brand mark
+    unless the brand owner specifies otherwise. **Orange** `#D45A1C` replaces copper as the accent. No additional
+    colours are presented as brand colours.
+  - **Derived colours:** not approved; they remain *proposed accessibility/functional colours*. The official palette
+    is preferred wherever it meets WCAG (the proposed mapping uses none).
+  - **Q-56 / Q-12:** regular weight throughout; no Century Gothic web licence now; browser-synthesised bold is never
+    treated as a brand weight; the fallback strategy is unchanged.
+  - **Q-55:** the 2019 wave-mark lock-up is the current logo **provisionally**; it is not traced or recreated; the
+    current wordmark stays until the official vector files are supplied, which are then used as supplied. **No footer
+    logo**; footer structure unchanged.
+  - **Error/success colours:** open; not part of the migration (no existing component needs them).
+- **Consequences:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording change at implementation;
+  token and contrast tests take the new approved values; the three `--copper*` tokens are renamed `--accent*`. No
+  layout or content change.

@@ -1,7 +1,8 @@
 # Brand migration plan
 
-Status: **proposal, 30 Sep 2026 — nothing implemented.** No token, component, layout, font, logo or asset has been
-changed. Implementation starts only after the owner decides the items in §13 (Q-53–Q-56, Q-12, D-031).
+Status: **D-031 approved with rulings (30 Sep 2026); final token mapping (§4) awaiting the owner's approval — nothing
+implemented.** No token, component, layout, font, logo or asset has been changed. Token changes start only after the
+owner approves §4; the logo waits for the official vector files.
 
 Sources: the company style guide (one slide, Nov 2019; transcribed in `docs/STYLE-GUIDE-AUDIT.md` §1), the approved
 "Survey Sheet" direction (`docs/DESIGN-DIRECTION.md`), and the repository as it stands. Contrast ratios are WCAG 2.2
@@ -17,6 +18,18 @@ values computed from the printed RGB values.
 - **KEEP** — current implementation, retained because the guide is silent and nothing conflicts.
 
 ---
+
+## 0. Decisions recorded (owner, 30 Sep 2026)
+
+| Item | Ruling |
+| --- | --- |
+| **Q-54** | The final swatch is **white** `#FFFFFF`; "R0 G0 B0" is treated as a typo unless the style guide or brand owner shows otherwise. Black is not a brand colour. |
+| **Q-53** | **Dark teal** `#275259` is the primary semantic colour: headings, rules/dividers where appropriate, primary buttons, footer background where appropriate. The two **logo colours stay restricted to the logo/brand mark** unless the brand owner specifies otherwise. **Orange** `#D45A1C` replaces copper as the site accent. No additional colours are presented as brand colours. |
+| **Derived colours** | Not approved. They stay marked as *proposed accessibility/functional colours*; the official palette is preferred wherever it meets WCAG. The final mapping (§4) uses **none**. |
+| **Q-56 / Q-12** | Regular weight (400) throughout. No Century Gothic web licence now. Browser-synthesised bold is never treated as a brand weight. The Didact Gothic fallback strategy stays. |
+| **Q-55** | The 2019 wave-mark lock-up is the current logo **provisionally**. It is not traced or recreated. The owner obtains the official vector files; the header keeps the current text wordmark until they arrive, then uses them as supplied. **No footer logo**; footer structure unchanged. |
+| **D-031** | Approved: preserve architecture, page structure, module order, content and URLs; change colour tokens to the brand palette; remove the copper wording from the design direction; document official vs derived colours; no unnecessary component redesign; no invented brand rules. |
+| **Error / success colours** | Open. Not part of the migration: no existing component has error or success states (§7.1). |
 
 ## 1. Current state
 
@@ -43,7 +56,7 @@ content structure.** That is the core of the plan.
 That is everything the guide states or shows. It gives **no** colour roles, combinations, type scale, weights rule,
 logo clear space, minimum size, reversed logo, UI components, imagery, tone or accessibility rules.
 
-## 3. The four ambiguities (not decided here)
+## 3. The four ambiguities (as analysed; rulings in §0)
 
 ### Q-54 — the last primary swatch
 
@@ -95,59 +108,84 @@ logo clear space, minimum size, reversed logo, UI components, imagery, tone or a
   file and will not be traced, converted or redrawn** without your explicit approval.
 - Files required and where to get them: §9.
 
-## 4. Proposed semantic tokens
+## 4. Final proposed token mapping (awaiting approval)
 
-Approach: **keep the existing token names** (they are already roles; renaming would touch about 30 files for no
-visual gain) and change their **values**. Add the guide's raw colours as brand tokens so every role points at a
-named brand value. Optional later clean-up: rename `--ink-survey` / `--copper` to brand-neutral names (§8.6).
+Approach (D-031): keep the token architecture. Add the official colours as **brand tokens**; point each existing
+**role token** at one of them. Nothing in components changes except the three `--copper*` names, which are renamed to
+`--accent*` because D-031 removes the copper wording and the old names would now be false (a mechanical rename in the
+files listed in §4.4). All other role names stay.
 
-### 4.1 Brand tokens (new, GUIDE)
+### 4.1 Brand tokens to add (BRAND-OFFICIAL)
 
-| Token | Value | Source |
-| --- | --- | --- |
-| `--brand-logo-blue` | `#1586E2` | GUIDE (logo) |
-| `--brand-logo-navy` | `#012361` | GUIDE (logo) |
-| `--brand-dark-teal` | `#275259` | GUIDE |
-| `--brand-teal` | `#81B8C2` | GUIDE |
-| `--brand-orange` | `#D45A1C` | GUIDE |
-| `--brand-charcoal` | `#3B3838` | GUIDE |
-| `--brand-white` | `#FFFFFF` | GUIDE, if Q-54 = white |
-| `--brand-mid-teal` | `#4899A6` | GUIDE |
-| `--brand-light-teal` | `#B1D3D9` | GUIDE |
-| `--brand-peach` | `#F0AD8C` | GUIDE |
-| `--brand-grey` | `#ADA9A9` | GUIDE |
-
-### 4.2 Derived tokens (new, DERIVED — need approval)
-
-| Token | Value | Derivation | Why |
+| New token | Hex | Official name in the guide | Used by the site? |
 | --- | --- | --- | --- |
-| `--derived-orange-text` | `#AA4816` | orange × 0.8 (shaded) | orange fails body text (3.98); this passes (5.76 on white) for tag text and small accent text |
-| `--derived-grey-text` | `#686565` | grey × 0.6 (shaded) | no guide colour works for meta / source lines; this passes (5.77 on white) |
-| `--derived-light-teal-tint` | `#ECF4F6` | light teal at 25 % on white | alternating bands, table stripes, map sea |
-| `--derived-peach-tint` | `#FCEFE8` | peach at 20 % on white | preview placeholder fill; orange-tag ground |
+| `--brand-dark-teal` | `#275259` | Primary palette | yes |
+| `--brand-orange` | `#D45A1C` | Primary palette | yes |
+| `--brand-charcoal` | `#3B3838` | Primary palette | yes |
+| `--brand-white` | `#FFFFFF` | Primary palette (Q-54: white) | yes |
+| `--brand-light-teal` | `#B1D3D9` | Primary palette | yes |
+| `--brand-peach` | `#F0AD8C` | Primary palette | yes |
+| `--brand-teal` | `#81B8C2` | Primary palette | no role yet (declared for completeness) |
+| `--brand-mid-teal` | `#4899A6` | Primary palette | no role yet |
+| `--brand-grey` | `#ADA9A9` | Primary palette | no role yet (fails as a band behind labels: §4.3) |
+| `--brand-logo-blue` | `#1586E2` | Logo colours | **logo only** (not used by any role) |
+| `--brand-logo-navy` | `#012361` | Logo colours | **logo only** (not used by any role) |
 
-### 4.3 Role tokens (existing names, new values)
+### 4.2 Role mapping: OLD TOKEN → NEW TOKEN → HEX → PURPOSE → STATUS
 
-| Role token (unchanged name) | Current | Proposed | Label |
+"NEW TOKEN" is the role token after migration (same name unless renamed) and the brand token it points to.
+
+| Old token (value) | New token → points to | Hex | Purpose | Status |
+| --- | --- | --- | --- | --- |
+| `--ink-survey` (`#1B3A5C`) | `--ink-survey` → `--brand-dark-teal` | `#275259` | headings, structural rules, primary buttons, fact values, footer and CTA ground | BRAND-OFFICIAL |
+| `--ink-cyanotype` (`#2C5F8F`) | `--ink-cyanotype` → `--brand-dark-teal` | `#275259` | links (underlined), mono labels, figure lines, focus ring | BRAND-OFFICIAL |
+| `--ink-contour` (`#A9C1D9`) | `--ink-contour` → `--brand-light-teal` | `#B1D3D9` | secondary rules (decorative), map contours, text-selection ground | BRAND-OFFICIAL |
+| `--ink-graphite` (`#262A2E`) | `--ink-graphite` → `--brand-charcoal` | `#3B3838` | body text | BRAND-OFFICIAL |
+| `--ink-muted` (`#5A6B7C`) | `--ink-muted` → `--brand-charcoal` | `#3B3838` | source lines, meta (distinguished by size and mono face, not a lighter ink) | BRAND-OFFICIAL |
+| `--paper` (`#F5F2EA`) | `--paper` → `--brand-white` | `#FFFFFF` | page ground, card ground | BRAND-OFFICIAL |
+| `--paper-deep` (`#ECE6D8`) | `--paper-deep` → `--brand-peach` | `#F0AD8C` | preview banner and catalogue panels (**preview only**) | BRAND-OFFICIAL |
+| `--water` (`#EEF2F4`) | `--water` → `--brand-light-teal` | `#B1D3D9` | map sea, strat-column band, figure placeholder (preview) | BRAND-OFFICIAL |
+| `--band-grey` (`#E6ECF1`) | `--band-grey` → `--brand-light-teal` | `#B1D3D9` | strat-column band (brand grey rejected: dark-teal labels on it are 3.70:1) | BRAND-OFFICIAL |
+| `--copper` (`#B8672E`) | **`--accent`** → `--brand-orange` | `#D45A1C` | Auburn-ground accent: map fills, commodity-tag borders, status dots, placeholder borders; large type only | BRAND-OFFICIAL |
+| `--copper-text` (`#8A4A1E`) | **`--accent-text`** → `--brand-charcoal` | `#3B3838` | text that used to be copper-coloured (commodity-tag lettering; preview notes and labels). The orange stays in the border/dot beside it | BRAND-OFFICIAL |
+| `--copper-tint` (`#F3E5D8`) | **`--accent-tint`** → `--brand-peach` | `#F0AD8C` | target-number ground, strat-column Auburn band | BRAND-OFFICIAL |
+| `--on-survey` (`#F5F2EA`) | `--on-survey` → `--brand-white` | `#FFFFFF` | text, outlines and focus ring on the dark-teal ground | BRAND-OFFICIAL |
+| `--on-survey-muted` (`#D8E2EC`) | `--on-survey-muted` → `--brand-light-teal` | `#B1D3D9` | secondary text and rules on the dark-teal ground | BRAND-OFFICIAL |
+| `--placeholder-fill` (`#F8EFE6`) | `--placeholder-fill` → `--brand-white` | `#FFFFFF` | INPUT NEEDED box ground (**preview only**); white keeps the orange dashed border at 3.98:1 | BRAND-OFFICIAL |
+| `--placeholder-border` (→ copper) | `--placeholder-border` → `--accent` | `#D45A1C` | dashed placeholder border (preview only) | BRAND-OFFICIAL |
+| `--status-approved` (→ survey) | unchanged → `--ink-survey` | `#275259` | status dot: approved (preview only) | BRAND-OFFICIAL |
+| `--status-to-verify`, `--status-input-needed` (→ copper) | → `--accent` | `#D45A1C` | status dots (preview only) | BRAND-OFFICIAL |
+| `--color-*` semantic aliases | unchanged (they point at the role tokens above) | — | — | — |
+| `--color-focus` / `--color-focus-on-dark` | unchanged → cyanotype / on-survey | `#275259` / `#FFFFFF` | focus rings | BRAND-OFFICIAL |
+
+**Result: every colour on the site is an official brand colour. No derived colour is used.**
+
+### 4.3 Where derived colours would be used — none in this mapping
+
+The earlier proposal's derived colours are **not used**. They are listed only as fallbacks, each tied to a specific
+trade-off you might reject during the visual review. Each remains *proposed, not approved*.
+
+| Derived colour (proposed, not approved) | Would replace | Only if you decide | Every place it would then be used |
 | --- | --- | --- | --- |
-| `--ink-survey` (headings, rules, buttons, footer ground) | `#1B3A5C` | `var(--brand-dark-teal)` | INTERPRETATION (Q-53) |
-| `--ink-cyanotype` (links, mono labels, figure lines) | `#2C5F8F` | `var(--brand-dark-teal)` | DECISION: no second brand colour passes for small text except navy; links stay distinguished by underline |
-| `--ink-contour` (secondary rules, tints) | `#A9C1D9` | `var(--brand-light-teal)` | INTERPRETATION |
-| `--ink-graphite` (body text) | `#262A2E` | `var(--brand-charcoal)` | INTERPRETATION |
-| `--ink-muted` (source lines, meta) | `#5A6B7C` | `var(--derived-grey-text)` | DERIVED |
-| `--paper` (page ground) | `#F5F2EA` | `var(--brand-white)` | Q-54 |
-| `--paper-deep` (preview banner, panels) | `#ECE6D8` | `var(--derived-peach-tint)` | DERIVED (preview only) |
-| `--water` (map sea, bands) | `#EEF2F4` | `var(--derived-light-teal-tint)` | DERIVED |
-| `--band-grey` | `#E6ECF1` | `var(--derived-light-teal-tint)` | DERIVED |
-| `--copper` (Auburn ground: map fills, tag borders, large type) | `#B8672E` | `var(--brand-orange)` | INTERPRETATION (Q-53) |
-| `--copper-text` | `#8A4A1E` | `var(--derived-orange-text)` | DERIVED |
-| `--copper-tint` | `#F3E5D8` | `var(--derived-peach-tint)` | DERIVED |
-| `--on-survey` (text on the dark ground) | `#F5F2EA` | `var(--brand-white)` | DECISION |
-| `--on-survey-muted` | `#D8E2EC` | `var(--brand-light-teal)` | INTERPRETATION |
-| `--placeholder-fill` (preview only) | `#F8EFE6` | `var(--derived-peach-tint)` | DERIVED |
-| `--color-focus` / `--color-focus-on-dark` | cyanotype / on-survey | dark teal / white | DECISION |
+| grey text `#686565` | `--ink-muted` = charcoal | source lines and meta must look lighter than body text | via `--color-meta`: `PageSections`, `LegalText`, `PortfolioLinks`, `ProjectResults`, `ProjectTargets`, `ComplianceBlock`, `Breadcrumb`, `MilestoneTrack` (×2), `Figure`, `DocumentRegister`, `PersonCard`, `SourceLine`, `FactStrip`, `MonoLabel` (meta tone), `pages/investors/shareholders`, `pages/news`, `pages/company`, `pages/investors`, catalogue (`Foundations`, `CataloguePage`) |
+| orange text `#AA4816` | `--accent-text` = charcoal | commodity-tag lettering and preview notes must be orange | `Tag` (commodity), `MonoLabel` (copper tone; catalogue only), `ProjectGeology` note (preview), `HomeHero` note (preview), `StatusDot` labels (preview), `Placeholder` label (preview), preview banner in `BaseLayout`, `CataloguePage` |
+| light-teal tint `#ECF4F6` | `--water`, `--band-grey` = light teal | full-strength light teal looks too heavy for bands | `StratColumn` (water and grey bands), `FigurePlaceholder` (preview), catalogue (`Primitives`, `Patterns`) |
+| peach tint `#FCEFE8` | `--accent-tint`, `--paper-deep` = peach | full-strength peach looks too heavy | `ProjectTargets` (target number), `StratColumn` (Auburn band), preview banner in `BaseLayout` |
 
-If you choose navy as primary (Q-53 alternative): `--ink-survey` → `var(--brand-logo-navy)`; everything else as above.
+### 4.4 Files touched by the implementation
+
+| Change | Files |
+| --- | --- |
+| Values and new brand tokens | `apps/site/src/styles/tokens.css` |
+| Rename `--copper` → `--accent` | `MapLegend.astro`, `Tag.astro`, `tokens.css` (placeholder border, status dots) |
+| Rename `--copper-text` → `--accent-text` | `ProjectGeology.astro`, `HomeHero.astro`, `StatusDot.astro`, `Placeholder.astro`, `Tag.astro`, `MonoLabel.astro` (tone `copper` → `accent`), `BaseLayout.astro`, `catalogue/CataloguePage.astro` |
+| Rename `--copper-tint` → `--accent-tint` | `ProjectTargets.astro`, `StratColumn.astro` |
+| Comments that say "copper" / "Survey Blue" | the files above plus `Button.astro`, `Tag.astro` header comment, `tokens.css` |
+| Catalogue swatches | `catalogue/sections/Foundations.astro` |
+| Tests | `lib/tokens.test.ts`, `lib/contrast.test.ts` |
+| Docs | `docs/DESIGN-DIRECTION.md` (colour section), CLAUDE.md §3 and §6 (copper wording), `docs/STYLE-GUIDE-AUDIT.md` |
+
+No layout, module, page, content or URL changes. No new assets or fonts in this step.
 
 ## 5. Accessibility
 
@@ -168,52 +206,46 @@ icons and UI boundaries 3:1. Ratios below are against white; the dark-ground col
 | light teal `#B1D3D9` | 1.59 | no | no | yes, with dark teal (5.41), navy (9.33), charcoal (7.29) text | **no** (decorative rules only) | no | tints |
 | peach `#F0AD8C` | 1.90 | no | no | yes, with dark teal (4.54) or charcoal text | no | no | tints |
 | grey `#ADA9A9` | 2.33 | no | no | fills only | no | no | disabled fills only (with a text label) |
-| derived orange text `#AA4816` | 5.76 | yes | yes | — | yes | — | small accent text |
-| derived grey text `#686565` | 5.77 | yes | yes | — | yes | — | meta text |
+| *derived orange text `#AA4816` (proposed, not approved; unused)* | 5.76 | yes | yes | — | yes | — | — |
+| *derived grey text `#686565` (proposed, not approved; unused)* | 5.77 | yes | yes | — | yes | — | — |
 
 **Never use for text:** teal, light teal, peach, grey; orange, logo blue and mid teal except as large text.
 **Orange on dark teal (2.17) and on navy (3.73 — large only):** the Auburn-ground accent never sits on the dark ground.
 
-### 5.2 Every proposed pairing (becomes `contrast.test.ts`)
+### 5.2 Every pairing in the final mapping (becomes `contrast.test.ts`)
 
 | Foreground | Background | Ratio | Needed | Use |
 | --- | --- | --- | --- | --- |
-| charcoal | white | 11.61 | 4.5 | body text |
-| charcoal | light-teal tint | 10.41 | 4.5 | body text on bands |
-| charcoal | peach tint | 10.31 | 4.5 | placeholder brief (preview) |
-| dark teal | white | 8.62 | 4.5 | headings, links, labels, fact values, outline button text |
-| dark teal | light-teal tint | 7.73 | 4.5 | labels on bands |
-| dark teal | light teal | 5.41 | 4.5 | text on light-teal panels (if used) |
-| derived grey text | white | 5.77 | 4.5 | source lines, meta |
-| derived grey text | light-teal tint | 5.18 | 4.5 | meta on bands |
-| derived grey text | peach tint | 5.13 | 4.5 | meta in preview panels |
-| derived orange text | white | 5.76 | 4.5 | tag text, small accent text |
-| derived orange text | light-teal tint | 5.16 | 4.5 | tags on bands |
-| derived orange text | peach tint | 5.11 | 4.5 | INPUT NEEDED label, preview banner |
-| orange | white | 3.98 | 3.0 | large accent type; tag borders; status dots; map fills |
-| orange | light-teal tint | 3.57 | 3.0 | map fill against sea |
-| white | dark teal | 8.62 | 4.5 | footer text, CTA band, primary button label |
-| light teal | dark teal | 5.41 | 4.5 | secondary footer text |
+| charcoal | white | 11.61 | 4.5 | body text, meta, accent text (tags, preview labels) |
+| dark teal | white | 8.62 | 4.5 | headings, links, labels, fact values, outline-button text |
+| charcoal | light teal | 7.29 | 4.5 | body text on light-teal bands; text selection |
+| dark teal | light teal | 5.41 | 4.5 | labels on light-teal bands (strat column) |
+| dark teal | peach | 4.54 | 4.5 | target number, Auburn strat band label (**narrow margin**) |
+| charcoal | peach | 6.12 | 4.5 | preview banner text |
+| white | dark teal | 8.62 | 4.5 | footer text, CTA band, primary-button label |
+| light teal | dark teal | 5.41 | 4.5 | secondary text in the footer and CTA band |
+| dark teal | white | 8.62 | 3.0 | structural rules, button outlines, focus ring, approved dot |
+| dark teal | light teal | 5.41 | 3.0 | focus ring on light-teal bands |
+| dark teal | peach | 4.54 | 3.0 | focus ring on peach |
 | white | dark teal | 8.62 | 3.0 | focus ring and light outlines on the dark ground |
-| dark teal | white | 8.62 | 3.0 | rules, button outlines, focus ring, status dot |
-| logo blue | white | 3.79 | 3.0 | logo waves (graphic) |
-| logo navy | white | 14.85 | 4.5 | logo lettering |
-| logo navy (lettering) | dark teal | 1.72 | — | **fails**: the full-colour logo cannot sit on the dark footer — a reversed logo is required |
+| orange | white | 3.98 | 3.0 | commodity-tag border, status dots, placeholder border, map fill, large accent type |
 
-Kept as documented failures (tests assert they fail, so no component uses them): orange on dark teal (2.17),
-light teal on white (1.59, decorative rules only), mid teal on dark teal (2.62), orange with white label (3.98).
+Documented failures (asserted in the test so no component relies on them): orange on dark teal (2.17), orange on
+light teal (2.50) and on peach (2.10) — **a map fill of orange over a light-teal sea needs a dark-teal outline** —
+light teal on white (1.59; decorative rules only, as today's contour), dark teal on brand grey (3.70; why grey is not
+used for bands), orange with a white label (3.98; never a normal-size button fill).
 
 ## 6. Typography
 
 | Item | Label | Proposal |
 | --- | --- | --- |
 | Typeface | GUIDE | Century Gothic (unchanged) |
-| Web availability | DECISION (Q-12) | buy a Century Gothic web licence (regular + bold), or keep Didact Gothic as the visible fallback |
-| Weights | Q-56 | 400 everywhere until the licence exists (KEEP) |
+| Web availability | DECIDED (Q-12) | no web licence now; Didact Gothic stays the self-hosted fallback |
+| Weights | DECIDED (Q-56) | 400 everywhere; browser-synthesised bold is never used as a brand weight (KEEP; the existing weight test enforces it) |
 | Case | DECISION | sentence case for headings (KEEP); uppercase only for mono labels as now; the guide's uppercase title is not treated as a rule |
 | Mono face | DECISION (guide silent) | keep IBM Plex Mono for labels, sheet numbers, tables, dates (KEEP) |
 | Scale and hierarchy | DECISION (guide silent) | keep the tested fluid scale (KEEP) |
-| Heading colour | INTERPRETATION | dark teal (via `--ink-survey`); body charcoal |
+| Heading colour | DECIDED (Q-53) | dark teal (via `--ink-survey`); body charcoal |
 
 ## 7. Component-by-component
 
@@ -221,31 +253,31 @@ For each: **Guide** (what the guide requires) · **Decision** (where it is silen
 
 | Component | Guide | Decision (guide silent) | Proposal | Files |
 | --- | --- | --- | --- | --- |
-| **Logo** | wave lock-up; logo blue + navy | size, clear space, reversed version, favicon | vector lock-up in the header linking home, with an accessible name "Auburn Resources — home"; reversed (white) in the footer if the footer carries a logo; favicon from the wave mark | `Header.astro`, `Footer.astro` (optional), `BaseLayout.astro` (favicon links); new files in `apps/site/src/assets/brand/` |
+| **Logo** | wave lock-up; logo blue + navy | size, clear space, reversed version, favicon | **after the official vectors arrive (Q-55):** the supplied SVG in the header linking home, accessible name "Auburn Resources — home"; favicon from the supplied mark. **No footer logo.** Until then: the current text wordmark | `Header.astro`, `BaseLayout.astro` (favicon links); supplied files in `apps/site/src/assets/brand/` |
 | **Header / navigation** | — | ground, rule and link colours | white ground, dark-teal bottom rule, dark-teal nav text, underline on hover (KEEP layout, breakpoints, sheet numbers) | `Header.astro` (logo only; colours via tokens) |
 | **Mobile menu** | — | as header | same tokens; no structural change | `islands/MobileMenu.astro` (none beyond tokens) |
 | **Buttons** | — | fills and states | primary: dark-teal fill, white label; secondary: dark-teal outline; on dark: white outline or white fill with dark-teal label; **no orange or logo-blue buttons** (labels fail AA); square (KEEP) | `primitives/Button.astro` (none beyond tokens) |
 | **Links** | — | colour, underline | dark teal, always underlined in body text, hover = thicker/solid underline (KEEP behaviour) | tokens only |
 | **Cards** (sheet cards, link cards, person cards) | — | ground, borders | white ground, dark-teal 1 px frame, dark-teal titles, orange only for Auburn-ground tags (KEEP structure) | tokens only |
-| **Backgrounds** | white (Q-54) | tints, bands | page white; bands light-teal tint; dark ground dark teal (footer, CTA band); peach tint preview-only | tokens only |
+| **Backgrounds** | white (Q-54) | tints, bands | page white; bands light teal; dark ground dark teal (footer, CTA band); peach for the Auburn band, target numbers and preview panels | tokens only |
 | **Borders / dividers** | — | weights and colours | 1 px dark-teal structural rules (pass 3:1); light-teal secondary rules — decorative only, never the sole boundary of a control (KEEP rule) | tokens only |
 | **Forms** (filter form now; contact and alerts later) | — | fields, labels, focus, errors | white field, dark-teal 1 px border (8.62), charcoal text, visible labels, dark-teal focus ring; error and success states: §7.1 | `DocumentFilterForm.astro` (none beyond tokens) |
 | **Alerts / status states** | — | colours | §7.1 | tokens; later forms |
-| **Tables** (document registers, fact lists) | — | header and row styling | dark-teal header rule and mono labels; light-teal-tint zebra optional; charcoal cells (KEEP) | tokens only |
-| **Tags** | — | — | orange border + derived orange text for Auburn ground; dark-teal tags otherwise (KEEP rule) | tokens only |
-| **Maps / figures** | — | cartographic palette | Auburn ground orange fill (3.98 vs white; 3.57 vs sea tint), other tenure grey/mid-teal outline, sea light-teal tint, dark-teal frame and captions; legend and text equivalent unchanged | `MapLegend.astro`, `Figure.astro` (tokens only); future SVG/MapLibre styles read the same tokens |
-| **Footer** | — | ground | dark-teal ground, white text, light-teal secondary text (5.41), white focus ring; reversed logo if a logo is added | `Footer.astro` (tokens; logo optional) |
-| **Status dots, placeholders, preview banner** (preview only) | — | — | approved = dark teal; to verify / input needed = orange; placeholder fill peach tint with derived orange-text label | tokens only |
+| **Tables** (document registers, fact lists) | — | header and row styling | dark-teal header rule and mono labels; charcoal cells; no zebra striping (KEEP) (KEEP) | tokens only |
+| **Tags** | — | — | orange border + charcoal lettering for Auburn ground; dark-teal tags otherwise (KEEP rule) | token rename only |
+| **Maps / figures** | — | cartographic palette | Auburn ground orange fill **with a dark-teal outline** (orange is 3.98 vs white but 2.50 vs a light-teal sea), sea light teal, dark-teal frame and captions; legend and text equivalent unchanged. Other tenure: decide when maps are built | `MapLegend.astro`, `Figure.astro` (tokens only); future SVG/MapLibre styles read the same tokens |
+| **Footer** | — | ground | dark-teal ground, white text, light-teal secondary text (5.41), white focus ring; **structure unchanged, no logo** (Q-55) | tokens only |
+| **Status dots, placeholders, preview banner** (preview only) | — | — | approved = dark teal; to verify / input needed = orange; placeholder: white ground, orange dashed border, charcoal label; banner: peach with charcoal text | token rename only |
 | **Responsive / mobile** | — | — | no change: breakpoints, 44 px targets, 360 px layout stay; logo needs a compact form that fits the 56 px mobile header (ask for a mark-only or stacked version) | `Header.astro` |
 
-### 7.1 Alerts and status states (DECISION — the guide has no state colours)
+### 7.1 Alerts and status states (DECISION — open; not part of this migration)
 
 Orange is proposed as the "Auburn ground" accent, so using it for errors would give it two meanings. Options:
 
 | Option | Error | Success | Info |
 | --- | --- | --- | --- |
-| **A (proposed)** | charcoal text + icon + **2 px dark-teal left border** + the word "Error" | dark teal + icon + "Done" | light-teal-tint panel, dark-teal text |
-| B | derived orange text + icon (orange used for "attention" as well as Auburn ground) | as A | as A |
+| A | charcoal text + icon + **2 px dark-teal left border** + the word "Error" | dark teal + icon + "Done" | light-teal panel, dark-teal text |
+| B | orange border/icon + charcoal text (orange then means "attention" as well as Auburn ground) | as A | as A |
 | C | a new, non-brand red for errors (contrast-tested) | as A | as A |
 
 Whichever option: never colour alone (icon + text), messages linked with `aria-describedby`, focus moved to the error
@@ -255,8 +287,8 @@ summary. Not needed until forms are built.
 
 ### 8.1 Tokens
 
-`apps/site/src/styles/tokens.css`: add §4.1 brand tokens (tagged, e.g. `[G]`) and §4.2 derived tokens (`[D]`);
-re-point the §4.3 role tokens; update comments. Nothing else in `tokens.css` changes (spacing, type scale, layout,
+`apps/site/src/styles/tokens.css`: add the §4.1 brand tokens (tagged, e.g. `[B]` brand-official); re-point the §4.2
+role tokens; rename `--copper*` → `--accent*`; update comments. No derived token is added. Nothing else in `tokens.css` changes (spacing, type scale, layout,
 radius, motion).
 
 ### 8.2 Components
@@ -266,7 +298,6 @@ radius, motion).
 | None beyond token values | all other components (about 30 reference tokens only) | the token architecture already isolates colour |
 | Logo instead of the text wordmark | `components/patterns/Header.astro` | GUIDE G-3 (needs §9 files) |
 | Favicon and app icons | `layouts/BaseLayout.astro` | no favicon today |
-| Reversed logo in the footer (optional) | `components/patterns/Footer.astro` | only if you want a footer logo |
 | Swatches | `src/catalogue/sections/Foundations.astro` | shows the new palette (preview only) |
 | Heading weight (only if Q-56 = bold) | `styles/base.css`, `tokens.css` (`--font-weight-*`) | Q-56 |
 
@@ -284,7 +315,7 @@ pages, the catalogue (preview).
 
 | Test | Change |
 | --- | --- |
-| `lib/tokens.test.ts` | new approved values; new literal list (brand + derived tokens); tag checks |
+| `lib/tokens.test.ts` | new approved values; literal list = the eleven brand tokens only; tag checks |
 | `lib/contrast.test.ts` | replace pairings with §5.2; update the documented-failures list |
 | `lib/design-system.test.ts` | unchanged (no raw colours in components); weight rule changes only if Q-56 = bold |
 | e2e axe (all pages, four builds) | unchanged; re-verifies contrast on rendered pages |
@@ -293,7 +324,7 @@ pages, the catalogue (preview).
 
 These are value updates approved by the owner, not weakened checks.
 
-### 8.6 Optional clean-up (not required)
+### 8.6 Optional clean-up (not required; the `--copper*` → `--accent*` rename is already in §4.4)
 
 Rename role tokens to brand-neutral names (`--ink-survey` → `--ink-primary`, `--copper` → `--accent-ground`, …) in a
 separate mechanical commit. Recommended only after the migration is approved and stable.
@@ -312,7 +343,7 @@ status.
 | --- | --- |
 | Full-colour lock-up, **SVG** (outlined text) | header |
 | Same as **EPS or AI, or vector PDF** | master for print and future edits |
-| **Reversed** lock-up (white, or white waves + white lettering) | dark footer / CTA band (navy lettering on dark teal is 1.72:1) |
+| **Reversed** lock-up (white, or white waves + white lettering) | any future use on dark grounds (navy lettering on dark teal is 1.72:1); no footer logo for now |
 | **Mark only** (the waves), SVG | favicon, compact mobile header, social image |
 | Compact / stacked version, if one exists | 56 px mobile header |
 | One-colour (navy) version | documents, embossing |
@@ -331,7 +362,7 @@ depends on Q-49.
 
 ## 10. Accessibility considerations
 
-- Only navy, dark teal and charcoal (and the two derived text colours) are ever used for normal-size text.
+- Only dark teal and charcoal are used for normal-size text (navy is reserved for the logo).
 - Orange, logo blue and mid teal: large text or graphics only; never button labels on those fills.
 - Light tones: backgrounds and decoration only; never the only boundary of an input or control.
 - Dark ground (footer, CTA band): white or light-teal text only; no orange, no full-colour logo.
@@ -351,34 +382,28 @@ depends on Q-49.
 - Manual: eye review of home, project page, investor centre, footer and catalogue in both modes; screenshots attached
   to the review.
 
-## 12. Implementation order (after approval)
+## 12. Implementation order
 
-1. Record D-031 (Approved) and the answers to Q-53–Q-56 in DECISIONS / OPEN-QUESTIONS; update DESIGN-DIRECTION and
-   CLAUDE.md wording.
-2. Tokens: add brand + derived tokens; re-point roles; update `tokens.test.ts` and `contrast.test.ts`. One commit.
-3. Catalogue swatches; screenshots; eye review. One commit.
-4. Logo (only when vector files arrive): header logo, favicon set, optional footer logo; tests. One commit.
-5. Heading weight (only if Q-56 = bold and the licence exists): font files, weights, tests. One commit.
-6. Optional token rename (§8.6).
-
-Steps 2–3 can ship before the logo arrives; step 4 waits for the files.
+1. **Now (done):** decisions recorded (§0, D-031, OPEN-QUESTIONS).
+2. **After you approve §4:** update `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording; tokens (brand
+   tokens + role values + `--accent*` rename); `tokens.test.ts` and `contrast.test.ts`; catalogue swatches;
+   screenshots for your review. One or two commits, `pnpm check` green.
+3. **When the official vectors arrive:** header logo and favicon from the supplied files; tests. One commit.
+4. Not planned: bold weights (Q-56), footer logo (Q-55), error/success colours (§7.1).
 
 ## 13. Acceptance criteria
 
-- Every colour on the site resolves to a guide colour or an approved derived colour; `tokens.test.ts` lists them.
+- Every colour on the site resolves to an official brand colour (no derived colour unless you later approve one); `tokens.test.ts` lists them.
 - Every pairing used passes WCAG 2.2 AA (`contrast.test.ts`); zero axe violations on all pages in four builds.
-- The header shows the company logo from supplied vector files (not traced); favicon present.
+- (Step 3 only) The header shows the company logo from the supplied vector files (not traced); favicon present.
 - No layout, module order, content or URL change; no new runtime dependency; no third-party font or CDN load.
 - The "accent marks Auburn ground only" rule still holds, with orange as the accent.
 - `pnpm check` green; screenshots reviewed and approved by you.
 
-## 14. Decisions you need to make
+## 14. Decisions
 
-1. **Q-54:** white intended for the "R0 G0 B0" swatch (page ground white), or black?
-2. **Q-53:** primary structural colour — dark teal (proposed) or navy; logo colours reserved for the logo; orange
-   replaces copper as the Auburn-ground accent.
-3. **Derived colours (§4.2):** approve the two text shades and two tints, or have the brand owner supply them.
-4. **Q-56 + Q-12:** keep weight 400 (proposed), or bold headings with a Century Gothic web licence.
-5. **Q-55:** confirm the 2019 lock-up is current and request the vector files in §9; footer logo yes/no.
-6. **Status states (§7.1):** option A, B or C (can wait until forms are built).
-7. **Approve D-031** (roles kept, values changed; DESIGN-DIRECTION colour section replaced).
+Recorded: Q-53, Q-54, Q-55 (provisional), Q-56, Q-12 (not now), D-031 — see §0.
+
+Still needed before the token change: **your approval of the §4.2 mapping** (and, after the visual review, whether any
+§4.3 trade-off makes you want a derived colour). Still open, not blocking this step: official logo vectors (Q-55),
+error/success colours (§7.1).

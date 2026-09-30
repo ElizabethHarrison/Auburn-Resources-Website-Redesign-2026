@@ -42,11 +42,11 @@ Read these before writing code, in this order:
   shared content-rules package, redirects, security headers (D-030, Proposed), launch-readiness report.
 - **Launch preparation** (docs only): `docs/LAUNCH-GATE.md` (blockers, checklist), `docs/STYLE-GUIDE-AUDIT.md` (the
   company style guide vs the site: palette and logo differ, Q-53–Q-56; no design change made), `docs/BRAND-MIGRATION-PLAN.md`
-  (D-031, Proposed: not implemented), `docs/content-request/`
+  (D-031 approved with rulings on Q-53–Q-56; final token mapping awaiting approval; **not implemented**), `docs/content-request/`
   (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
   `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
-  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51 and Q-53–Q-60 are open and must not be decided silently.
+  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51, Q-55 (provisional) and Q-57–Q-60 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
