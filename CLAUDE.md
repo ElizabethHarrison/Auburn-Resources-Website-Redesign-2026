@@ -31,10 +31,15 @@ Read these before writing code, in this order:
   (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** built, awaiting
   review: native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
   `workers/edge`, `docs/WORKER.md`; not deployed). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
-  `components/islands/`. Playwright + axe tests in `tests/e2e` run against both builds;
-  `content-integrity.spec.ts` scans the production build; `links.spec.ts` crawls every internal link.
-- **Not yet built:** Phase 4 items 3–8 (the Worker exists only for filter routing), Sanity Studio (Phase 5),
-  Lighthouse budgets in CI. Q-05, Q-07 and Q-08 are open and must not be decided silently.
+  `components/islands/`. Items 3–8 are intentionally deferred.
+- **Phase 5** (CMS) — checkpoint awaiting review (D-024–D-028; `docs/CMS.md`): Sanity schemas and Studio in
+  `apps/studio` (local only, nothing created or deployed), Sanity adapter behind `ContentAdapter` in
+  `apps/site/src/lib/content/sanity/` (fail-closed approval/provenance checks), `sanity-export` NDJSON snapshot source,
+  fixture exporter, round-trip and hostile-content tests, typegen drift check. Playwright + axe tests in `tests/e2e`
+  run against four builds (fixtures and Sanity snapshot, each in production and preview);
+  `content-integrity.spec.ts` scans the production builds; `links.spec.ts` crawls every internal link.
+- **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
+  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-47 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
@@ -150,7 +155,7 @@ see D-008).
 /
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
-├─ apps/studio/          Sanity Studio (schemas/documents, schemas/objects, structure, validation, actions)
+├─ apps/studio/          Sanity Studio (schemaTypes/{objects,documents}, structure, validation; local only)
 ├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
@@ -164,6 +169,11 @@ pnpm install        # install (Node 24, pnpm via Corepack)
 pnpm dev            # site dev server, preview mode (placeholders visible)
 pnpm build          # production build → apps/site/dist (Approved content only)
 pnpm build:preview  # preview build → apps/site/dist-preview (noindex)
+pnpm build:sanity-export  # both modes through the Sanity adapter from the NDJSON snapshot → dist-sanity, dist-sanity-preview
+pnpm studio         # Sanity Studio locally (apps/studio; not hosted — Q-45)
+pnpm typegen        # regenerate Sanity types from the Studio schema (commit the result)
+pnpm typegen:check  # fail if the committed Sanity types are out of date
+pnpm content:export # regenerate the NDJSON snapshots from the fixtures
 pnpm serve          # serve the last production build locally
 pnpm serve:production  # serve apps/site/dist at http://localhost:4600 (static, behind the edge Worker, like Cloudflare)
 pnpm serve:preview     # serve apps/site/dist-preview at http://localhost:4601
@@ -171,11 +181,11 @@ pnpm test           # unit tests (Vitest)
 pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
-pnpm budget         # JS-on-page-load budget (30 KB compressed) against the production build
-pnpm test:e2e       # Playwright + axe against both builds (build both first; `pnpm check` does)
+pnpm budget         # JS-on-page-load budget (30 KB compressed) against both production builds
+pnpm test:e2e       # Playwright + axe against all four builds (build them first; `pnpm check` does)
 pnpm check          # all of the above plus both builds and e2e — run before pushing
 ```
-Planned: `pnpm sanity:typegen` (Phase 5); `pnpm dev` will also start the Studio from Phase 5.
+The Studio runs separately (`pnpm studio`); CMS details, environments and migration are in `docs/CMS.md`.
 
 ### 4.4 Content access and modes (approved — D-003, D-005, D-009)
 - Components never fetch. Pages call `src/lib/content/*` loaders, which return typed records from fixtures or Sanity.

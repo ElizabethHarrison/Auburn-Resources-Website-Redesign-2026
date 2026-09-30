@@ -1,8 +1,10 @@
 /**
- * End-to-end and accessibility tests (CLAUDE.md §6, §10). Runs against the two static builds:
- *   production → apps/site/dist         (what the public sees)
- *   preview    → apps/site/dist-preview (what editors see: placeholders, status, catalogue)
- * Build both first: `pnpm build && pnpm build:preview`, then `pnpm test:e2e`.
+ * End-to-end and accessibility tests (CLAUDE.md §6, §10). Runs against four static builds:
+ *   production        → apps/site/dist                (fixtures; what the public sees)
+ *   preview           → apps/site/dist-preview        (fixtures; placeholders, status, catalogue)
+ *   sanity-production → apps/site/dist-sanity         (the Sanity adapter over the NDJSON snapshot, D-024)
+ *   sanity-preview    → apps/site/dist-sanity-preview
+ * Build them first (`pnpm build && pnpm build:preview && pnpm build:sanity-export`), then `pnpm test:e2e`.
  */
 import { defineConfig, devices } from '@playwright/test';
 
@@ -13,6 +15,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PRODUCTION_PORT = 4600;
 const PREVIEW_PORT = 4601;
+const SANITY_PRODUCTION_PORT = 4602;
+const SANITY_PREVIEW_PORT = 4603;
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -27,6 +31,8 @@ export default defineConfig({
   projects: [
     { name: 'production', use: { baseURL: `http://localhost:${PRODUCTION_PORT}` } },
     { name: 'preview', use: { baseURL: `http://localhost:${PREVIEW_PORT}` } },
+    { name: 'sanity-production', use: { baseURL: `http://localhost:${SANITY_PRODUCTION_PORT}` } },
+    { name: 'sanity-preview', use: { baseURL: `http://localhost:${SANITY_PREVIEW_PORT}` } },
   ],
   webServer: [
     {
@@ -37,6 +43,16 @@ export default defineConfig({
     {
       command: `node tests/static-server.mjs apps/site/dist-preview ${PREVIEW_PORT}`,
       port: PREVIEW_PORT,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `node tests/static-server.mjs apps/site/dist-sanity ${SANITY_PRODUCTION_PORT}`,
+      port: SANITY_PRODUCTION_PORT,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `node tests/static-server.mjs apps/site/dist-sanity-preview ${SANITY_PREVIEW_PORT}`,
+      port: SANITY_PREVIEW_PORT,
       reuseExistingServer: !process.env.CI,
     },
   ],

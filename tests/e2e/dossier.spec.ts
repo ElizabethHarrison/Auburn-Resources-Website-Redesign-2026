@@ -15,6 +15,7 @@ import {
   expectOnlyApprovedScripts,
   expectSeoBasics,
   isPreview,
+  isSanity,
 } from './helpers';
 
 const MODULE_IDS = [
@@ -105,9 +106,16 @@ test.describe('project dossier (preview)', () => {
     }
   });
 
-  test('figures have alt text, numbered captions and a source line', async ({ page }) => {
+  test('figures have alt text, numbered captions and a source line', async ({ page }, testInfo) => {
     await gotoDossier(page, 'nicholson');
     const images = page.locator('main img');
+    if (isSanity(testInfo)) {
+      // Indicative mockup graphics never enter the CMS (D-024 §12): the Sanity build shows their INPUT NEEDED frames.
+      await expect(images).toHaveCount(0);
+      await expect(page.locator('main')).not.toContainText(/indicative/i);
+      await expect(page.getByText('Fig. 1 — Nicholson regional setting.')).toBeVisible();
+      return;
+    }
     expect(await images.count()).toBeGreaterThan(0);
     for (const image of await images.all()) {
       expect((await image.getAttribute('alt'))?.trim()).toBeTruthy();

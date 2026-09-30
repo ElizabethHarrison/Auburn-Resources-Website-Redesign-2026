@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { isIsoDate } from '../../dates';
 import { NARRATIVE_LIMITS, validateNarrative } from '../../facts';
 import { collectSlots, tallySlots } from '../audit';
+import { HELD_BACK_PATTERNS } from '../held-back';
 import { fixturesAdapter } from './index';
 import { articles } from './data/articles';
 import { documents } from './data/documents';
@@ -81,20 +82,7 @@ describe('fixture provenance and status', () => {
 
 describe('held-back and banned content', () => {
   // docs/CONTENT-SOURCE.md HOLD / FIX / do-not-reuse items, and CLAUDE.md §2.4.
-  const banned = [
-    /40\s?Mt/i, // Nicholson exploration-target wording
-    /200\s?Mt/i, // Calgoa exploration-target wording
-    /25\s?Mt/i, // Calgoa oxide wording
-    /smoke/i, // promotional line
-    /aircore/i, // Hawkwood outdated work plan
-    /entitlement offer/i, // 2021 Entitlement Offer (HOLD)
-    /email@email\.com/i,
-    /squarespace\.com/i,
-    /pexels/i,
-    /227\s?Mt/i, // unsourced third-party figures
-    /13\.6\s?Mt/i,
-    /77\.6\s?Mt/i,
-  ];
+  const banned = HELD_BACK_PATTERNS;
   const serialized = JSON.stringify(all);
 
   it.each(banned.map((pattern) => [pattern.source, pattern] as const))(

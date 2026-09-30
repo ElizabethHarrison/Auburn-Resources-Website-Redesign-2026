@@ -113,7 +113,14 @@ export interface Person {
   /** Competent person details, when this person acts as one. */
   readonly cpMembership?: FactSlot<string>;
   readonly cpConsent?: FactSlot<boolean>;
+  /**
+   * What this person may approve: `corporate` (company secretary) or `technical` (competent person). Checked at build
+   * time for every approval that names them (D-027).
+   */
+  readonly approverFor?: readonly ApproverKind[];
 }
+
+export type ApproverKind = 'corporate' | 'technical';
 
 // ── Projects ────────────────────────────────────────────────────────────────────────────────────
 

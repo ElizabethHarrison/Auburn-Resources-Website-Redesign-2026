@@ -32,3 +32,5 @@ Thumbs.db
 
 # Preview-mode build output
 dist-preview/
+dist-sanity/
+dist-sanity-preview/

@@ -9,13 +9,19 @@
     "build:preview": "CONTENT_MODE=preview astro build --outDir dist-preview",
     "serve": "astro preview",
     "typecheck": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "content:export": "UPDATE_SNAPSHOT=1 vitest run src/lib/content/sanity/roundtrip.test.ts src/lib/content/sanity/hostile.test.ts",
+    "build:sanity-export": "CONTENT_MODE=production CONTENT_SOURCE=sanity-export astro build --outDir dist-sanity",
+    "build:sanity-export:preview": "CONTENT_MODE=preview CONTENT_SOURCE=sanity-export astro build --outDir dist-sanity-preview"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource/didact-gothic": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
-    "astro": "^7.3.5"
+    "@sanity/client": "^8.8.0",
+    "@sanity/image-url": "^2.1.1",
+    "astro": "^7.3.5",
+    "groq": "^6.16.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

@@ -5,7 +5,19 @@ import { expect, type Page, type TestInfo } from '@playwright/test';
 /** Required viewport widths (Phase 3 brief; CLAUDE.md §10). */
 export const WIDTHS = [360, 768, 1024, 1280, 1440] as const;
 
-export const isPreview = (testInfo: TestInfo) => testInfo.project.name === 'preview';
+/**
+ * Projects: `production` / `preview` (fixture builds) and `sanity-production` / `sanity-preview` (the same site built
+ * through the Sanity adapter from the NDJSON snapshot, D-024). Every spec runs against all four.
+ */
+export const isPreview = (testInfo: TestInfo) => testInfo.project.name.endsWith('preview');
+export const isSanity = (testInfo: TestInfo) => testInfo.project.name.startsWith('sanity');
+
+/** The production build directory this project serves (for specs that scan files). */
+export const productionDist = (testInfo: TestInfo) =>
+  new URL(
+    isSanity(testInfo) ? '../../apps/site/dist-sanity/' : '../../apps/site/dist/',
+    import.meta.url,
+  ).pathname;
 
 /** WCAG 2.2 A/AA rules only; best-practice findings are reviewed by hand. */
 export async function expectNoAxeViolations(page: Page) {
