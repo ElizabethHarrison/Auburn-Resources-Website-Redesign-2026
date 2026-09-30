@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SECURITY_HEADERS } from '@auburn/security-headers';
 import { handle, type Env } from './index.ts';
 
 // A stand-in for the static-assets binding: these paths exist, everything else is the 404 page.
@@ -83,5 +84,29 @@ describe('Worker responses', () => {
         /^\/(filtered\/[a-z]+\/[a-z0-9-]+|404|investors\/[a-z]+)$/.test(path),
       ),
     ).toBe(true);
+  });
+
+  it('sets the security headers on every response, whatever the route (D-030)', async () => {
+    for (const path of [
+      '/company',
+      '/investors/reports',
+      '/investors/reports?year=2022',
+      '/investors/reports?year=1999',
+      '/investors/reports?year=bad',
+      '/investors/reports?utm_source=x',
+      '/filtered/reports/year-2022',
+    ]) {
+      const response = await get(path);
+      for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+        expect(response.headers.get(name), `${path} ${name}`).toBe(value);
+      }
+    }
+  });
+
+  it('keeps the asset response intact when adding headers', async () => {
+    const response = await get('/investors/reports');
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe('reports');
+    expect(response.headers.get('Content-Type')).toBe('text/html');
   });
 });

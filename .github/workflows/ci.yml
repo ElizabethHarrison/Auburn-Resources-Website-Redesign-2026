@@ -1,5 +1,6 @@
 # Continuous integration: lint, typecheck, unit tests, schema/typegen drift, fixture and Sanity-snapshot builds,
-# leak guards, JS budget, Playwright + axe. Lighthouse budgets are added later (CLAUDE.md §8).
+# leak guards, redirects and security headers, launch-readiness report, JS budget, Playwright + axe.
+# Lighthouse budgets are added later (CLAUDE.md §8; Q-50).
 # No deployment happens here; hosting accounts are not configured yet (docs/OPEN-QUESTIONS.md Q-09).
 name: CI
 
@@ -64,6 +65,18 @@ jobs:
       - name: Build from the Sanity snapshot (production and preview)
         run: pnpm build:sanity-export
 
+      # What production hides and why, overdue reviews and the approval audit (D-019, D-026, D-027). Reports only;
+      # never fails the build for missing content. Kept as an artifact, never deployed (docs/LAUNCH-READINESS.md).
+      - name: Launch-readiness report
+        run: pnpm readiness
+
+      - name: Upload launch-readiness report
+        uses: actions/upload-artifact@v5
+        with:
+          name: launch-readiness
+          path: apps/site/reports/
+          retention-days: 30
+
       # JS loaded on page load < 30 KB compressed on every page (CLAUDE.md §8, D-006).
       - name: JavaScript budget
         run: pnpm budget
@@ -84,6 +97,15 @@ jobs:
             fi
             if find "$dist" -path '*_catalogue*' | grep .; then
               echo "::error::The design-system catalogue must not exist in $dist."
+              exit 1
+            fi
+          done
+          # Every build ships its redirects and security headers; the readiness data never ships (Phase 6).
+          for dist in apps/site/dist apps/site/dist-preview apps/site/dist-sanity apps/site/dist-sanity-preview; do
+            test -s "$dist/_redirects" || { echo "::error::$dist/_redirects missing."; exit 1; }
+            test -s "$dist/_headers" || { echo "::error::$dist/_headers missing."; exit 1; }
+            if find "$dist" -name '*readiness*' | grep .; then
+              echo "::error::Launch-readiness data found in $dist; it must never be deployed."
               exit 1
             fi
           done

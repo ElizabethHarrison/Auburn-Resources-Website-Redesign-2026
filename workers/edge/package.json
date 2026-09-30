@@ -7,6 +7,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "@auburn/security-headers": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "~6.0.3",
     "vitest": "^5.0.2"

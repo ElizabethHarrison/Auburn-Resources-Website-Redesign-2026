@@ -1,9 +1,12 @@
 /**
  * Edge Worker entry (D-023). Scope: document-filter routing only — the PDF proxy, contact and alerts
- * APIs are later Phase 4 work. Every other request is served by static assets unchanged.
+ * APIs are later Phase 4 work. Every other request is served by static assets unchanged, apart from the
+ * security headers (D-030), which the Worker sets on every response it returns because Cloudflare's
+ * `_headers` file is not guaranteed to reach Worker responses.
  *
  * Deployment is documented in docs/WORKER.md §8 and is not done yet.
  */
+import { SECURITY_HEADERS } from '@auburn/security-headers';
 import { decide } from './document-filters.ts';
 
 /** The static-assets binding (Cloudflare Workers static assets), or the local test server's stand-in. */
@@ -28,7 +31,18 @@ function withNoindex(response: Response, status = response.status): Response {
   return new Response(response.body, { status, headers });
 }
 
+/** Every response leaves with the constant security headers (never derived from the request). */
+function secured(response: Response): Response {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+  return new Response(response.body, { status: response.status, headers });
+}
+
 export async function handle(request: Request, env: Env): Promise<Response> {
+  return secured(await route(request, env));
+}
+
+async function route(request: Request, env: Env): Promise<Response> {
   const decision = decide(new URL(request.url), request.method);
   switch (decision.kind) {
     case 'pass':

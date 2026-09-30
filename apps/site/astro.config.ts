@@ -1,6 +1,9 @@
 import { defineConfig, envField } from 'astro/config';
 import type { AstroIntegration } from 'astro';
 import sitemap from '@astrojs/sitemap';
+import { headers } from './integrations/headers';
+import { readiness } from './integrations/readiness';
+import { redirects } from './integrations/redirects';
 
 /**
  * Astro configuration for auburnresources.com.au.
@@ -44,15 +47,52 @@ export default defineConfig({
     format: 'file',
   },
   compressHTML: true,
+  // Content Security Policy (D-030, Proposed; docs/SECURITY-HEADERS.md): Astro writes a <meta> policy into every page
+  // with the hash of each inline script and style it emits, so no 'unsafe-inline' or 'unsafe-eval' is needed.
+  // Directives a <meta> policy cannot carry (frame-ancestors) and the other security headers are HTTP headers
+  // (@auburn/security-headers).
+  security: {
+    csp: {
+      algorithm: 'SHA-256',
+      directives: [
+        "default-src 'self'",
+        // Approved figures and photos may come from the Sanity image CDN (D-024, D-028).
+        "img-src 'self' https://cdn.sanity.io",
+        "font-src 'self'",
+        "connect-src 'none'",
+        "form-action 'self'",
+        "frame-src 'none'",
+        "worker-src 'none'",
+        "manifest-src 'self'",
+        "base-uri 'none'",
+        "object-src 'none'",
+        'upgrade-insecure-requests',
+      ],
+      // Preview only: the design-system catalogue's colour swatches use style attributes. Production pages have none
+      // (an e2e test checks), so production allows no inline style attributes.
+      ...(isPreview
+        ? {
+            styleDirective: {
+              resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' as const }],
+            },
+          }
+        : {}),
+    },
+  },
   vite: {
     // Compile-time flag: preview-only code (e.g. indicative mockup figures) is removed from
     // production bundles by dead-code elimination, so its assets are never emitted.
     define: { __PREVIEW_BUILD__: JSON.stringify(isPreview) },
   },
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
+  // Every build emits `_redirects` from redirects.csv (docs/REDIRECTS.md) and `_headers` (docs/SECURITY-HEADERS.md), and
+  // moves the launch-readiness data out of the output (docs/LAUNCH-READINESS.md).
   integrations: isPreview
-    ? [catalogue]
+    ? [catalogue, redirects({ preview: true }), headers({ preview: true }), readiness()]
     : [
+        redirects({ preview: false }),
+        headers({ preview: false }),
+        readiness(),
         sitemap({
           filter: (page) => {
             const { pathname } = new URL(page);

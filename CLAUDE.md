@@ -28,18 +28,25 @@ Read these before writing code, in this order:
   live in `components/modules/<page>/` (shared page modules in `modules/page/`). Page copy comes from `page`
   records (`getPage`, `getLegalPage`). Dossier module rules are in `lib/content/dossier.ts`.
 - **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** approved
-  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** built, awaiting
-  review: native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
+  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** approved (D-023):
+  native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
   `workers/edge`, `docs/WORKER.md`; not deployed). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
   `components/islands/`. Items 3–8 are intentionally deferred.
-- **Phase 5** (CMS) — checkpoint awaiting review (D-024–D-028; `docs/CMS.md`): Sanity schemas and Studio in
+- **Phase 5** (CMS) — done, pushed on `claude/phase-5-cms`, not yet merged (D-024–D-028; `docs/CMS.md`): Sanity schemas and Studio in
   `apps/studio` (local only, nothing created or deployed), Sanity adapter behind `ContentAdapter` in
   `apps/site/src/lib/content/sanity/` (fail-closed approval/provenance checks), `sanity-export` NDJSON snapshot source,
   fixture exporter, round-trip and hostile-content tests, typegen drift check. Playwright + axe tests in `tests/e2e`
   run against four builds (fixtures and Sanity snapshot, each in production and preview);
   `content-integrity.spec.ts` scans the production builds; `links.spec.ts` crawls every internal link.
+- **Phase 6** (launch hardening, repository side) — plan awaiting review: `docs/PHASE-6-PLAN.md`. Steps 6.0–6.4:
+  shared content-rules package, redirects, security headers (D-030, Proposed), launch-readiness report.
+- **Launch preparation** (docs only): `docs/LAUNCH-GATE.md` (blockers, checklist), `docs/STYLE-GUIDE-AUDIT.md` (the
+  company style guide vs the site: palette and logo differ, Q-53–Q-56; no design change made), `docs/BRAND-MIGRATION-PLAN.md`
+  (D-031 approved with rulings on Q-53–Q-56; final token mapping awaiting approval; **not implemented**), `docs/content-request/`
+  (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
+  `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
-  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-47 are open and must not be decided silently.
+  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51, Q-55 (provisional) and Q-57–Q-60 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
@@ -156,6 +163,8 @@ see D-008).
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemaTypes/{objects,documents}, structure, validation; local only)
+├─ packages/content-rules/  shared content rules: the held-back list (D-029)
+├─ packages/security-headers/  HTTP security headers for _headers and the Worker (D-030)
 ├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
@@ -182,6 +191,7 @@ pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
 pnpm budget         # JS-on-page-load budget (30 KB compressed) against both production builds
+pnpm readiness      # launch-readiness report from the last production + preview builds → apps/site/reports/
 pnpm test:e2e       # Playwright + axe against all four builds (build them first; `pnpm check` does)
 pnpm check          # all of the above plus both builds and e2e — run before pushing
 ```

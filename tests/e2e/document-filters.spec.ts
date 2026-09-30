@@ -44,7 +44,8 @@ for (const listing of Object.values(LISTINGS)) {
     test('unfiltered page is canonical and indexable (production)', async ({ page }, testInfo) => {
       const response = await page.goto(listing.path);
       expect(response?.status()).toBe(200);
-      expect(response?.headers()['x-robots-tag']).toBeUndefined();
+      // Production: no noindex header on the canonical listing. Preview: every response is noindex (D-030 _headers).
+      expect(response?.headers()['x-robots-tag']).toBe(isPreview(testInfo) ? 'noindex' : undefined);
       const canonical = await page.getAttribute('link[rel="canonical"]', 'href');
       expect(new URL(canonical ?? '').pathname).toBe(listing.path);
       expect(await page.getAttribute('meta[name="robots"]', 'content')).toBe(

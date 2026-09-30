@@ -3,9 +3,11 @@
  * unit-tested, and wired into the schemas as custom validation.
  *
  * These help editors; they are NOT the security boundary. The site's build re-validates everything and fails
- * closed (apps/site/src/lib/content/sanity/validate.ts), because Studio validation can be bypassed through the
+ * closed (apps/site/src/lib/content/sanity/map.ts), because Studio validation can be bypassed through the
  * API and, without Enterprise custom roles, the CMS cannot restrict who approves (D-027).
  */
+
+import { HELD_BACK_PATTERNS } from '@auburn/content-rules';
 
 export const STATUSES = ['draft', 'toVerify', 'approved', 'superseded'] as const;
 export type Status = (typeof STATUSES)[number];
@@ -18,23 +20,10 @@ export const STATUS_OPTIONS = [
 ];
 
 /**
- * Held-back (HOLD) wording from docs/CONTENT-SOURCE.md that must never be stored or rendered, and other banned
- * strings (CLAUDE.md §2.3–2.4). Keep in step with the site's copy (a test compares them).
+ * Held-back (HOLD) wording and other banned strings (CLAUDE.md §2.3–2.4): the one shared list, also used by the
+ * site's build (`@auburn/content-rules`).
  */
-export const HELD_BACK_PATTERNS: readonly RegExp[] = [
-  /40\s?Mt/i, // Nicholson exploration-target wording
-  /200\s?Mt/i, // Calgoa exploration-target wording
-  /25\s?Mt/i, // Calgoa oxide wording
-  /smoke/i, // promotional line
-  /aircore/i, // Hawkwood outdated work plan
-  /entitlement offer/i, // 2021 Entitlement Offer (HOLD)
-  /email@email\.com/i,
-  /squarespace\.com/i,
-  /pexels/i,
-  /227\s?Mt/i, // unsourced third-party figures
-  /13\.6\s?Mt/i,
-  /77\.6\s?Mt/i,
-];
+export { HELD_BACK_PATTERNS };
 
 export function heldBackIssue(text: string | undefined): string | true {
   if (!text) return true;

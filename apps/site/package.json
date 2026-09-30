@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
+    "@auburn/content-rules": "workspace:*",
+    "@auburn/security-headers": "workspace:*",
     "@fontsource/didact-gothic": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@sanity/client": "^8.8.0",

@@ -44,7 +44,7 @@ meta); `interpretation`; `narrative`; `figureSlot`; `photoSlot`; `keyFacts`; `pr
 | `approved` but approver missing, unknown, wrong kind, or no date | **build fails**; content downgraded | downgraded to to verify, reported |
 | Approved narrative containing digits | **build fails**; downgraded | downgraded, reported |
 | Held-back wording anywhere (even a draft) | **build fails** | **build fails** |
-| Review-by date passed (D-026) | still rendered; warning in the build log | same |
+| Review-by date passed (D-026) | still rendered; warning in the build log and the launch-readiness report | same |
 
 Approver kinds: `corporate` (company secretary: company facts, documents, pages, most project facts) and `technical`
 (competent person: geology, statements, targets, resources, results, work, maps, sections, neighbouring deposits). A
@@ -99,7 +99,7 @@ Either way, content access is governed by Sanity project membership and roles (s
 
 ## 9. Tests
 
-- Studio: validation rules; held-back list identical to the site's.
+- Studio: validation rules; the held-back list is the shared `@auburn/content-rules` list (D-029), not a copy.
 - Site: `roundtrip.test.ts` (snapshot drift, exporter safety, exact round trip, nothing renderable in production),
   `hostile.test.ts` (forged, mis-attributed and incomplete approvals; digits; held-back wording; missing and dangling
   sources; malformed values; drafts; figures; overdue reviews; the hostile snapshot fails a production build),

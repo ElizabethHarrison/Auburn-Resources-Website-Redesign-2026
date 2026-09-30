@@ -41,7 +41,58 @@ async function isFile(path) {
   }
 }
 
+/**
+ * Cloudflare's `_redirects` (static assets), the subset the build emits: exact-path `source target 301` lines
+ * (docs/REDIRECTS.md). Read once at start-up.
+ */
+async function loadRedirects() {
+  const file = join(root, '_redirects');
+  if (!(await isFile(file))) return new Map();
+  const rules = new Map();
+  for (const line of (await readFile(file, 'utf8')).split('\n')) {
+    const text = line.trim();
+    if (text === '' || text.startsWith('#')) continue;
+    const [from, to, status] = text.split(/\s+/);
+    rules.set(from, { to, status: Number(status) });
+  }
+  return rules;
+}
+const REDIRECTS = await loadRedirects();
+
+/**
+ * Cloudflare's `_headers` (static assets), the subset the build emits: a path line (`/*` or `/prefix/*`) followed by
+ * indented `Name: value` lines, applied to every static response whose path matches (docs/SECURITY-HEADERS.md).
+ */
+async function loadHeaders() {
+  const file = join(root, '_headers');
+  if (!(await isFile(file))) return [];
+  const rules = [];
+  for (const line of (await readFile(file, 'utf8')).split('\n')) {
+    if (line.trim() === '' || line.trim().startsWith('#')) continue;
+    if (!/^\s/.test(line)) {
+      rules.push({ prefix: line.trim().replace(/\*$/, ''), headers: [] });
+      continue;
+    }
+    const colon = line.indexOf(':');
+    rules.at(-1)?.headers.push([line.slice(0, colon).trim(), line.slice(colon + 1).trim()]);
+  }
+  return rules;
+}
+const HEADER_RULES = await loadHeaders();
+
+function withStaticHeaders(pathname, headers) {
+  for (const rule of HEADER_RULES) {
+    if (pathname.startsWith(rule.prefix))
+      for (const [name, value] of rule.headers) headers.set(name, value);
+  }
+  return headers;
+}
+
+/** Cloudflare never serves its configuration files as assets. */
+const CONFIG_FILES = new Set(['/_redirects', '/_headers']);
+
 async function locate(pathname) {
+  if (CONFIG_FILES.has(pathname)) return undefined;
   const safe = normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, '');
   const base = join(root, safe);
   if (!base.startsWith(root)) return undefined;
@@ -53,23 +104,34 @@ async function locate(pathname) {
 }
 
 /**
- * The static-assets binding, as Cloudflare provides it to the Worker: `/x` → x.html, `/` → index.html,
- * unknown paths → the 404 page with status 404.
+ * The static-assets binding, as Cloudflare provides it to the Worker: `_redirects` first, then `/x` → x.html,
+ * with `_headers` applied,
+ * `/` → index.html, unknown paths → the 404 page with status 404.
  */
 const ASSETS = {
   async fetch(request) {
     const { pathname } = new URL(request.url);
+    const redirect = REDIRECTS.get(pathname);
+    if (redirect) {
+      return new Response(null, {
+        status: redirect.status,
+        headers: withStaticHeaders(pathname, new Headers({ Location: redirect.to })),
+      });
+    }
     const file = await locate(pathname);
     if (!file) {
       const notFound = join(root, '404.html');
       return new Response((await isFile(notFound)) ? await readFile(notFound) : 'Not found', {
         status: 404,
-        headers: { 'Content-Type': TYPES['.html'] },
+        headers: withStaticHeaders(pathname, new Headers({ 'Content-Type': TYPES['.html'] })),
       });
     }
     return new Response(await readFile(file), {
       status: 200,
-      headers: { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' },
+      headers: withStaticHeaders(
+        pathname,
+        new Headers({ 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }),
+      ),
     });
   },
 };

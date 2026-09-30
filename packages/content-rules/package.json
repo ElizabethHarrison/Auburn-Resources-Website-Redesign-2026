@@ -1,0 +1,17 @@
+{
+  "name": "@auburn/content-rules",
+  "private": true,
+  "type": "module",
+  "description": "Content rules shared by the site and the Studio: the one held-back (HOLD) and banned-wording list.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.2"
+  }
+}

@@ -13,3 +13,4 @@ apps/studio/schema.json
 apps/studio/.sanity/
 apps/studio/dist/
 apps/site/dist-sanity*/
+apps/site/reports/

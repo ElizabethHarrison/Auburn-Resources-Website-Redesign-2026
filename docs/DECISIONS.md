@@ -350,3 +350,57 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Decision:** The schemas and mapper support image and file assets, but **no real company asset is uploaded**. Before
   any import of real assets, stop and ask (Q-47). Figures render from the Sanity image CDN only when approved;
   PDFs stay unlinked (D-024 §13).
+
+## D-029 · One shared content-rules package for the held-back list
+- **Date:** 30 Sep 2026 · **Status:** Proposed (Phase 6.1)
+- **Context:** Phase 5 kept two copies of the held-back (HOLD) and banned-wording list, one in the site and one in the
+  Studio, and the Studio test imported a file from `apps/site` to compare them (a cross-package import).
+- **Decision:** The list lives once in the workspace package `packages/content-rules` (`@auburn/content-rules`, private,
+  TypeScript source, no dependencies), imported by the site (`lib/content/held-back.ts` re-exports it) and the Studio
+  (`validation/rules.ts`). `pnpm-workspace.yaml` gains `packages/*`. The Studio test asserts it uses the very same list
+  object; the package's own tests check every HOLD phrase named in CLAUDE.md §2.3–2.4 is caught. No runtime dependency
+  is added and no pattern changes; the production build is byte-identical.
+
+## D-030 · Security headers and Content Security Policy
+- **Date:** 30 Sep 2026 · **Status:** Proposed (Phase 6.3); HSTS scope open (Q-48)
+- **Context:** WEBSITE-STRATEGY §7 (hardening) requires security headers; none existed. The site is static with one
+  inline module script (the mobile menu, D-021) and scoped styles.
+- **Decision:** (1) A per-page `<meta>` CSP from Astro's built-in `security.csp` (already in the approved stack; no
+  dependency): `default-src 'self'`, script and style sources limited to `'self'` plus the build's hashes, images also
+  from the Sanity image CDN, no connections, frames, workers or plugins, forms to the site only. Preview builds alone
+  allow inline style attributes (catalogue swatches). (2) Constant HTTP headers (header-only CSP `frame-ancestors`,
+  HSTS without `includeSubDomains`/`preload`, `nosniff`, `X-Frame-Options`, referrer, permissions and opener policies;
+  `noindex` on preview; immutable caching for `/_astro/*`) defined once in `packages/security-headers`, written to
+  `_headers` by every build and set by the edge Worker on its own responses. The Worker change adds headers only; its
+  routing (D-023) is unchanged. Details: `docs/SECURITY-HEADERS.md`.
+- **Consequences:** later islands (map, forms/Turnstile, search, analytics) must extend the CSP explicitly with their
+  own approval. Nothing is deployed.
+
+## D-031 · Brand migration: keep the token architecture, change the values to the company palette
+- **Date:** 30 Sep 2026 · **Status:** **Approved** (owner, 30 Sep 2026) with the rulings below; the final token mapping
+  (`docs/BRAND-MIGRATION-PLAN.md` §4) awaits the owner's approval before any code changes
+- **Context:** the company style guide (one slide, Nov 2019) is the brand authority, but the site uses the "Survey
+  Sheet" palette and a text wordmark (`docs/STYLE-GUIDE-AUDIT.md`). The guide gives colours, the logo and Century
+  Gothic, and nothing else.
+- **Decision:** preserve the architecture, page structure, module order, content and URLs; change the colour tokens
+  to the brand palette; remove the copper wording from the design direction; document the distinction between
+  official brand colours and accessibility-derived functional colours; do not redesign components unnecessarily; do
+  not invent brand rules where the guide is silent.
+- **Rulings:**
+  - **Q-54:** the final swatch is **white**; "R0 G0 B0" is treated as a typo unless the guide or brand owner shows
+    otherwise. Black is not a brand colour.
+  - **Q-53:** **dark teal** `#275259` is the primary semantic colour (headings, rules/dividers where appropriate,
+    primary buttons, footer background where appropriate). The two logo colours are restricted to the logo/brand mark
+    unless the brand owner specifies otherwise. **Orange** `#D45A1C` replaces copper as the accent. No additional
+    colours are presented as brand colours.
+  - **Derived colours:** not approved; they remain *proposed accessibility/functional colours*. The official palette
+    is preferred wherever it meets WCAG (the proposed mapping uses none).
+  - **Q-56 / Q-12:** regular weight throughout; no Century Gothic web licence now; browser-synthesised bold is never
+    treated as a brand weight; the fallback strategy is unchanged.
+  - **Q-55:** the 2019 wave-mark lock-up is the current logo **provisionally**; it is not traced or recreated; the
+    current wordmark stays until the official vector files are supplied, which are then used as supplied. **No footer
+    logo**; footer structure unchanged.
+  - **Error/success colours:** open; not part of the migration (no existing component needs them).
+- **Consequences:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording change at implementation;
+  token and contrast tests take the new approved values; the three `--copper*` tokens are renamed `--accent*`. No
+  layout or content change.
