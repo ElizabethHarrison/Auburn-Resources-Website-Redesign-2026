@@ -233,3 +233,29 @@ Sanity publish ── webhook ──▶ repository_dispatch ──▶ same workf
 | 15 | Download all old-site files (A-7 list) | D | BLOCKED (on 6) |
 | 16 | DNS cut-over preserving email; production deploy; E-3 to E-9 on production (C-6) | C, E | BLOCKED (on 14, 15) |
 | 17 | Search Console, webhooks, monitoring (C-5, C-8, E-10) | C, E | NEEDS EXTERNAL SETUP |
+
+## 5. Updated launch blockers (30 Sep 2026, after the style-guide audit and content request pack)
+
+New since §2: the company style guide (`docs/STYLE-GUIDE-AUDIT.md`), the Content Request Pack
+(`docs/content-request/`), the minimum launch content (`docs/MINIMUM-LAUNCH-CONTENT.md`), the approval matrix
+(`docs/APPROVAL-MATRIX.md`) and the PDF/assets/forms findings (`docs/PDF-ASSETS-FORMS.md`). Q-52 is resolved by the
+merge of PR #6.
+
+| # | Blocker | Class | Owner | Unblocked by |
+| --- | --- | --- | --- | --- |
+| 1 | No approver confirmed; no competent person | D | company, owner | CS-0, Q-30 |
+| 2 | 0 approved content; minimum set not agreed | B, D | owner, CS, CP | `MINIMUM-LAUNCH-CONTENT.md`, the packs |
+| 3 | No CMS to approve in (plan, roles, Studio host) | B, C | owner | Q-10, Q-46, Q-45 |
+| 4 | Legal text not supplied | D | company | CS-4 |
+| 5 | **Brand: site does not use the style guide's palette or logo** | B, D | owner | Q-53, Q-55 (vectors) |
+| 6 | **No way to serve PDFs**; no document can launch | B, A | owner, then web team | Q-59, Q-47 |
+| 7 | **Email-alerts strip on every page leads nowhere** | B, A | owner, then web team | Q-60 (or Q-11 + forms) |
+| 8 | Old-site files not archived | C, D | owner, CS | `PDF-ASSETS-FORMS.md` §4, CS-9.3–9.4 |
+| 9 | Accounts, DNS (email records), canonical host | B, C | owner | Q-09, B-12, C-6 |
+| 10 | OG image, Lighthouse measurement | B, E | owner | Q-49, Q-50, E-2 |
+| 11 | Phase 6 not merged | B | owner | B-13 |
+| 12 | Manual verification after deployment | E | web team | E-1 to E-9 |
+
+Not blockers (unchanged): Q-54, Q-56, Q-57, Q-58, maps and GIS, photography, search, map island, lightbox, contact
+form (if inboxes are shown), HOLD wording (stays hidden).
+

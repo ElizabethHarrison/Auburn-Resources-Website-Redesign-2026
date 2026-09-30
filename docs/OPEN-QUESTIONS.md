@@ -38,7 +38,10 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-49 | Open Graph images (CLAUDE.md §7 "auto OG image"): one static branded card for every page, or per-page generated cards? Generation needs a new build dependency (e.g. satori + resvg) and depends on the logo (Q-40). | launch (SEO) | Project owner | |
 | Q-50 | Lighthouse budgets in CI (CLAUDE.md §8): approve adding `@lhci/cli` as a dev dependency, run against the local edge server in CI? | launch (CI) | Project owner | |
 | Q-51 | Monitoring: Plausible or Cloudflare Web Analytics (both cookie-free); uptime checks and Worker error alerts — which service and who receives alerts? | launch | Project owner | |
-| Q-52 | Phase 5 merge method: commit `59d29a6` alone does not pass its own studio test (the files it needs arrive in `1fe3e1d`). Squash-merge the Phase 5 PR so every commit on `main` builds, or merge as is and accept the note? History on the pushed branch is not rewritten. | none | Project owner | |
+| Q-52 | Phase 5 merge method: commit `59d29a6` alone does not pass its own studio test (the files it needs arrive in `1fe3e1d`). Squash-merge the Phase 5 PR so every commit on `main` builds, or merge as is and accept the note? History on the pushed branch is not rewritten. | none | Project owner | **Merged as is** (PR #6, merge commit `944200a`, 30 Sep 2026); owner to confirm no further action |
+| Q-58 | Page copy is approved as corporate content. Technical passages in page copy (How we explore; any geology in introductions) — approved by the company secretary alone, or also by the competent person? (`docs/APPROVAL-MATRIX.md`) | none | Project owner | |
+| Q-59 | PDF delivery at `/documents/[slug].pdf`: (A) copy approved PDFs from Sanity into the build at build time (recommended; replaces the "Worker proxy" line in CLAUDE.md §4.1), (B) Worker proxy, (C) private R2 storage, (D) PDFs in git? Nothing serves that path today, so no document can launch (`docs/PDF-ASSETS-FORMS.md` §2). | launch (documents) | Project owner | |
+| Q-60 | The footer strip "Get Auburn's announcements by email" is on every page and leads to an alerts page with no form. (A) hide it in production until alerts exist, (B) build the alerts form now (needs Q-11), (C) interim "email us to subscribe", (D) re-point it to the announcements register? (`docs/PDF-ASSETS-FORMS.md` §5) | launch | Project owner | |
 
 ## Company secretary
 
@@ -64,6 +67,7 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-33 | CP-approved replacement for the schematic cross-section (Fig. 2). | launch | |
 | Q-34 | Project dossier module headings are taken from the approved Nicholson mockup ("Where it sits", "Why this ground", "Where we will drill", …). "Where we will drill" is forward-looking; keep it (the module links to the disclaimer) or use the neutral kicker "Exploration targets"? | none | |
 | Q-35 | Two old-site claims are stored as project setting facts rather than statements: Nicholson neighbouring deposits "Walford Creek; Century" and Tanumbirini infrastructure "Sealed Carpentaria Highway; gas pipeline". Confirm, with sources, when the setting facts are reviewed. | none | |
+| Q-57 | Third-party deposit figures (McArthur River, Nova-Bollinger, Voisey's Bay) are on the site's blocked list as "unsourced". If the competent person supplies a source and date and approves them, may they be unblocked (a change to the held-back list, CLAUDE.md §9.6), or do they stay off the site? | none | |
 
 ## Brand / assets
 
@@ -72,3 +76,7 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-40 | Logo: vector originals, and is the logo being redesigned? (Header uses a text wordmark until then.) | none | |
 | Q-41 | Field photography shoot and consistent leadership portraits — timing and consent process. | none | |
 | Q-42 | Contact page office map (SITEMAP §6): static image, map island (Phase 4) or omit? | none | |
+| Q-53 | The company style guide (one slide, Nov 2019) sets a palette — logo blue `#1586E2`, logo navy `#012361`, dark teal `#275259`, teal `#81B8C2`, orange `#D45A1C`, charcoal `#3B3838`, mid teal `#4899A6`, light teal `#B1D3D9`, peach `#F0AD8C`, grey `#ADA9A9` — none of which the site uses (it uses the approved "Survey Sheet" inks). Adopt the guide's palette by re-mapping the token roles (e.g. dark teal or navy for headings, orange for Auburn ground), keep Survey Sheet, or blend? Changes tokens (CLAUDE.md §9.3). (`docs/STYLE-GUIDE-AUDIT.md`) | launch (brand) | |
+| Q-54 | The guide's last primary swatch is drawn white but labelled "RGB: R0 G0 B0" (black). Which is intended? And should the page ground be white rather than the current warm paper `#F5F2EA`? | none | |
+| Q-55 | Is the 2019 wave-mark lock-up in the style guide the current logo (Q-40 says it may be redesigned)? Please supply vector masters (SVG + EPS/AI), a reversed version for dark backgrounds and any clear-space / minimum-size rules. The site shows a text wordmark until then. | launch (brand) | |
+| Q-56 | The guide's own title is set in Century Gothic **Bold** capitals, but it states no typography rules; the approved direction uses weight 400 only and IBM Plex Mono for labels. Is bold (and uppercase) required for headings? Is the mono face acceptable? | none | |

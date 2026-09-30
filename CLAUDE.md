@@ -40,8 +40,12 @@ Read these before writing code, in this order:
   `content-integrity.spec.ts` scans the production builds; `links.spec.ts` crawls every internal link.
 - **Phase 6** (launch hardening, repository side) — plan awaiting review: `docs/PHASE-6-PLAN.md`. Steps 6.0–6.4:
   shared content-rules package, redirects, security headers (D-030, Proposed), launch-readiness report.
+- **Launch preparation** (docs only): `docs/LAUNCH-GATE.md` (blockers, checklist), `docs/STYLE-GUIDE-AUDIT.md` (the
+  company style guide vs the site: palette and logo differ, Q-53–Q-56; no design change made), `docs/content-request/`
+  (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
+  `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
-  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-52 are open and must not be decided silently.
+  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51 and Q-53–Q-60 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
