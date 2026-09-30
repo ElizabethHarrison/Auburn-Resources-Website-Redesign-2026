@@ -405,3 +405,16 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Consequences:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording change at implementation;
   token and contrast tests take the new approved values; the three `--copper*` tokens are renamed `--accent*`. No
   layout or content change.
+
+## D-032 · Section background bands (Option C)
+- **Date:** 30 Sep 2026 · **Status:** Proposed (owner chose Option C from the mockups; assignments await approval)
+- **Decision (proposed):** white stays the page ground; a light-teal band (`--brand-light-teal`) breaks up long runs
+  of white and one dark-teal band (`--brand-dark-teal`) at most per page gives a feature section weight, alongside the
+  existing dark CTA band and footer. Orange never sits directly on a band (2.17:1 on dark, 2.50:1 on light): sections
+  with maps or commodity tags are never dark, and on light bands orange appears only inside white cards. Figures keep a
+  white panel. Heroes, titles and key facts are white; legal pages and 404 are all white; dossier modules are white.
+  Section-by-section assignments and tests: `docs/SECTION-BANDS-PLAN.md`.
+- **Consequences if approved:** two tone scopes in the tokens (values from the brand palette only), a `tone` prop on
+  section wrappers, contrast tests per tone and an e2e check that every orange element has ≥ 3:1 against its actual
+  background. No layout, type, content or URL change.
+
