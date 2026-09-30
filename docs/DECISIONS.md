@@ -360,3 +360,18 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   (`validation/rules.ts`). `pnpm-workspace.yaml` gains `packages/*`. The Studio test asserts it uses the very same list
   object; the package's own tests check every HOLD phrase named in CLAUDE.md §2.3–2.4 is caught. No runtime dependency
   is added and no pattern changes; the production build is byte-identical.
+
+## D-030 · Security headers and Content Security Policy
+- **Date:** 30 Sep 2026 · **Status:** Proposed (Phase 6.3); HSTS scope open (Q-48)
+- **Context:** WEBSITE-STRATEGY §7 (hardening) requires security headers; none existed. The site is static with one
+  inline module script (the mobile menu, D-021) and scoped styles.
+- **Decision:** (1) A per-page `<meta>` CSP from Astro's built-in `security.csp` (already in the approved stack; no
+  dependency): `default-src 'self'`, script and style sources limited to `'self'` plus the build's hashes, images also
+  from the Sanity image CDN, no connections, frames, workers or plugins, forms to the site only. Preview builds alone
+  allow inline style attributes (catalogue swatches). (2) Constant HTTP headers (header-only CSP `frame-ancestors`,
+  HSTS without `includeSubDomains`/`preload`, `nosniff`, `X-Frame-Options`, referrer, permissions and opener policies;
+  `noindex` on preview; immutable caching for `/_astro/*`) defined once in `packages/security-headers`, written to
+  `_headers` by every build and set by the edge Worker on its own responses. The Worker change adds headers only; its
+  routing (D-023) is unchanged. Details: `docs/SECURITY-HEADERS.md`.
+- **Consequences:** later islands (map, forms/Turnstile, search, analytics) must extend the CSP explicitly with their
+  own approval. Nothing is deployed.

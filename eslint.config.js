@@ -54,6 +54,7 @@ export default tseslint.config(
         URL: 'readonly',
         Request: 'readonly',
         Response: 'readonly',
+        Headers: 'readonly',
       },
     },
     rules: { 'no-console': 'off' },

@@ -159,6 +159,7 @@ see D-008).
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemaTypes/{objects,documents}, structure, validation; local only)
 ├─ packages/content-rules/  shared content rules: the held-back list (D-029)
+├─ packages/security-headers/  HTTP security headers for _headers and the Worker (D-030)
 ├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots

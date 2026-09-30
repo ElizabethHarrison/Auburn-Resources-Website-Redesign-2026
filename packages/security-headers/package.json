@@ -1,0 +1,17 @@
+{
+  "name": "@auburn/security-headers",
+  "private": true,
+  "type": "module",
+  "description": "HTTP security headers for every response (D-030, Proposed): used by the site build (_headers) and the edge Worker.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.2"
+  }
+}

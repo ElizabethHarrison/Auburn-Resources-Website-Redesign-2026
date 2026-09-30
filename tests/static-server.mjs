@@ -59,6 +59,35 @@ async function loadRedirects() {
 }
 const REDIRECTS = await loadRedirects();
 
+/**
+ * Cloudflare's `_headers` (static assets), the subset the build emits: a path line (`/*` or `/prefix/*`) followed by
+ * indented `Name: value` lines, applied to every static response whose path matches (docs/SECURITY-HEADERS.md).
+ */
+async function loadHeaders() {
+  const file = join(root, '_headers');
+  if (!(await isFile(file))) return [];
+  const rules = [];
+  for (const line of (await readFile(file, 'utf8')).split('\n')) {
+    if (line.trim() === '' || line.trim().startsWith('#')) continue;
+    if (!/^\s/.test(line)) {
+      rules.push({ prefix: line.trim().replace(/\*$/, ''), headers: [] });
+      continue;
+    }
+    const colon = line.indexOf(':');
+    rules.at(-1)?.headers.push([line.slice(0, colon).trim(), line.slice(colon + 1).trim()]);
+  }
+  return rules;
+}
+const HEADER_RULES = await loadHeaders();
+
+function withStaticHeaders(pathname, headers) {
+  for (const rule of HEADER_RULES) {
+    if (pathname.startsWith(rule.prefix))
+      for (const [name, value] of rule.headers) headers.set(name, value);
+  }
+  return headers;
+}
+
 /** Cloudflare never serves its configuration files as assets. */
 const CONFIG_FILES = new Set(['/_redirects', '/_headers']);
 
@@ -76,6 +105,7 @@ async function locate(pathname) {
 
 /**
  * The static-assets binding, as Cloudflare provides it to the Worker: `_redirects` first, then `/x` → x.html,
+ * with `_headers` applied,
  * `/` → index.html, unknown paths → the 404 page with status 404.
  */
 const ASSETS = {
@@ -83,19 +113,25 @@ const ASSETS = {
     const { pathname } = new URL(request.url);
     const redirect = REDIRECTS.get(pathname);
     if (redirect) {
-      return new Response(null, { status: redirect.status, headers: { Location: redirect.to } });
+      return new Response(null, {
+        status: redirect.status,
+        headers: withStaticHeaders(pathname, new Headers({ Location: redirect.to })),
+      });
     }
     const file = await locate(pathname);
     if (!file) {
       const notFound = join(root, '404.html');
       return new Response((await isFile(notFound)) ? await readFile(notFound) : 'Not found', {
         status: 404,
-        headers: { 'Content-Type': TYPES['.html'] },
+        headers: withStaticHeaders(pathname, new Headers({ 'Content-Type': TYPES['.html'] })),
       });
     }
     return new Response(await readFile(file), {
       status: 200,
-      headers: { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' },
+      headers: withStaticHeaders(
+        pathname,
+        new Headers({ 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }),
+      ),
     });
   },
 };

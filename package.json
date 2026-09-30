@@ -29,6 +29,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm typegen:check && pnpm build && pnpm build:preview && pnpm build:sanity-export && pnpm budget && pnpm test:e2e"
   },
   "devDependencies": {
+    "@auburn/security-headers": "workspace:*",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "1.56.1",
