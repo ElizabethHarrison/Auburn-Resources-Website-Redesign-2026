@@ -1,13 +1,15 @@
 # Design direction — "Survey Sheet" (Century Gothic)
 
-Approved 29 Sep 2026. Reference mockups: Claude design canvas *Auburn Resources Homepage Directions*, artboards
+Approved 29 Sep 2026; **colours amended 30 Sep 2026 to the company brand palette (D-031,
+`docs/BRAND-MIGRATION-PLAN.md`)** — layout, type, components and module order are unchanged. Reference mockups: Claude design canvas *Auburn Resources Homepage Directions*, artboards
 **"1b · Survey Sheet — Century Gothic"** (homepage) and **"Project page template — Nicholson (CMS preview)"**.
 
 ## Concept
 
 The website is designed like a finely made geological survey sheet: contour lines, coordinate ticks, numbered
 figures, legends, margin notes. It should feel authored by geologists — precise, curious, methodical, never hyped.
-Blue is the ink of cyanotypes and survey maps. **Copper marks Auburn's own ground and nothing else.**
+Dark teal, the company's primary brand colour, is the ink of the sheet. **The orange accent marks Auburn's own
+ground and nothing else.**
 
 What makes it distinctive (keep these):
 - Every page has a **sheet number** (e.g. `SHEET 02.1 · NICHOLSON`) in the header title block and breadcrumb.
@@ -17,34 +19,54 @@ What makes it distinctive (keep these):
 
 ## Tokens
 
+Colours come only from the company style guide (Nov 2019). The guide gives the palette and nothing else; roles below
+are the owner's rulings (D-031: Q-53, Q-54). **No derived colours** are used; any future one must be approved and
+labelled as a functional (accessibility) colour, never as a brand colour.
+
 ```css
 :root {
-  /* Inks */
-  --ink-survey:     #1B3A5C; /* primary: headings, rules, buttons, footer */
-  --ink-cyanotype:  #2C5F8F; /* links, mono labels, figure lines */
-  --ink-contour:    #A9C1D9; /* contours, secondary rules, tints */
-  --ink-graphite:   #262A2E; /* body text */
-  --ink-muted:      #5A6B7C; /* source lines, meta */
+  /* Brand palette (style guide, BRAND-OFFICIAL) */
+  --brand-dark-teal:  #275259; /* primary semantic colour */
+  --brand-teal:       #81B8C2; /* no role yet */
+  --brand-orange:     #D45A1C; /* the accent */
+  --brand-charcoal:   #3B3838; /* body text */
+  --brand-white:      #FFFFFF; /* the swatch labelled "R0 G0 B0" is white (Q-54) */
+  --brand-mid-teal:   #4899A6; /* no role yet */
+  --brand-light-teal: #B1D3D9;
+  --brand-peach:      #F0AD8C;
+  --brand-grey:       #ADA9A9; /* no role yet */
+  --brand-logo-blue:  #1586E2; /* logo only */
+  --brand-logo-navy:  #012361; /* logo only */
+
+  /* Inks (roles) */
+  --ink-survey:     var(--brand-dark-teal);  /* headings, rules, primary buttons, footer ground */
+  --ink-cyanotype:  var(--brand-dark-teal);  /* links (underlined), mono labels, figure lines */
+  --ink-contour:    var(--brand-light-teal); /* decorative secondary rules, contours */
+  --ink-graphite:   var(--brand-charcoal);   /* body text */
+  --ink-muted:      var(--brand-charcoal);   /* source lines, meta — set apart by size and mono */
 
   /* Grounds */
-  --paper:          #F5F2EA; /* page background */
-  --paper-deep:     #ECE6D8; /* preview banners, subtle panels */
-  --water:          #EEF2F4; /* map sea, alternating bands */
-  --band-grey:      #E6ECF1;
+  --paper:          var(--brand-white);      /* page background */
+  --paper-deep:     var(--brand-peach);      /* preview banners, subtle panels (preview only) */
+  --water:          var(--brand-light-teal); /* map sea, alternating bands (full strength) */
+  --band-grey:      var(--brand-light-teal);
 
   /* Accent — Auburn ground only */
-  --copper:         #B8672E; /* map fills, tags, large type ONLY (3.7:1 on paper) */
-  --copper-text:    #8A4A1E; /* copper-coloured small text (passes AA on paper) */
-  --copper-tint:    #F3E5D8;
+  --accent:         var(--brand-orange);     /* map fills, tag borders, dots, large type ONLY */
+  --accent-text:    var(--brand-charcoal);   /* lettering beside the accent */
+  --accent-tint:    var(--brand-peach);
 
-  /* Footer */
-  --on-survey:      #F5F2EA;
-  --on-survey-muted:#D8E2EC;
+  /* On the dark-teal ground (footer, CTA band) */
+  --on-survey:      var(--brand-white);
+  --on-survey-muted:var(--brand-light-teal);
 }
 ```
 
-Contrast (checked): Graphite, Survey Blue and Cyanotype pass WCAG AA for body text on Paper. Copper `#B8672E` is
-3.7:1 — **never** for body text. Retest any new pairing.
+Contrast (checked; `contrast.test.ts`): charcoal (11.61:1) and dark teal (8.62:1) pass WCAG AA for body text on
+white. Orange `#D45A1C` is 3.98:1 — **never** small text and never a normal-size button fill with a white label; it is
+for fills, borders, status dots and large type. Dark teal on peach is 4.54:1 (passes, narrow margin). Orange does not
+sit on dark teal (2.17:1) or on light teal without a dark-teal outline (2.50:1). Light teal on white (1.59:1) is
+decorative only. Logo blue and logo navy are for the logo only. Retest any new pairing.
 
 ## Typography
 
@@ -67,7 +89,7 @@ fallback. Century Gothic is wide — check headline wrapping in narrow columns.
 
 - Desktop artboard width 1440; content gutters 64 px; 12-column grid, 24 px gutter.
 - Spacing on an 8 px scale. Section padding 64–80 px vertical.
-- **Rules:** 1 px Survey Blue for structure; 1 px Contour Blue for secondary divisions. No shadows, no gradients,
+- **Rules:** 1 px dark teal for structure; 1 px light teal for secondary divisions (decorative). No shadows, no gradients,
   no rounded cards (radius 0). Hover = underline/line, not colour blocks.
 - Mobile: 360 px minimum, 16–20 px gutters; everything stacks; no horizontal page scroll.
 
@@ -78,24 +100,25 @@ fallback. Century Gothic is wide — check headline wrapping in narrow columns.
 | Header / title block | 88 px, bottom rule. Wordmark "Auburn" + "RESOURCES" (mono, letter-spacing 4 px) · sheet ref after a thin rule · nav items prefixed by mono numbers (`01 Company`) · Contact · outlined "Investor updates" button |
 | Section bar | 44 px mono row of sibling pages with sheet numbers; current page underlined |
 | Breadcrumb | Mono caps: `HOME / 02 PROJECTS / 02.1 NICHOLSON` |
-| Buttons | Primary: solid Survey Blue, Paper text, 16×22 px padding, square. Secondary: 1 px Survey Blue outline. Min touch target 44 px |
-| Tag | Mono 11 px, 1 px border (copper for commodity, survey for state/stage), 3–4 × 7–8 px padding |
-| Fact cell | Mono label (Cyanotype) · value (Century Gothic, Survey Blue, 20–44 px) · source line (mono 10.5 px, muted) with status dot |
-| Status dots (CMS preview only) | ● Verified (filled Survey Blue) · ◐ To verify (half copper) · ○ Input needed (dashed copper) |
-| Placeholder (CMS preview only) | Dashed 1.5 px copper border, `#F8EFE6` fill, mono label `INPUT NEEDED · …` + one-line brief. Never shown in production |
-| Figure | 1 px Survey Blue frame; caption below in mono caps with `FIG. n —`; source + date; click → lightbox |
-| Map legend | Paper box, 1 px Survey Blue border, mono "LEGEND" header: Auburn project area (copper) · Reference deposit (outline circle) · State border (dashed) · Form lines |
+| Buttons | Primary: solid dark teal, white text, 16×22 px padding, square. Secondary: 1 px dark-teal outline. No orange or logo-blue buttons. Min touch target 44 px |
+| Tag | Mono 11 px, 1 px border (orange accent with charcoal lettering for commodity; dark teal for state/stage), 3–4 × 7–8 px padding |
+| Fact cell | Mono label (dark teal) · value (Century Gothic, dark teal, 20–44 px) · source line (mono 10.5 px, charcoal) with status dot |
+| Status dots (CMS preview only) | ● Verified (filled dark teal) · ◐ To verify (half orange) · ○ Input needed (dashed orange) |
+| Placeholder (CMS preview only) | Dashed 1.5 px orange border, white fill, charcoal mono label `INPUT NEEDED · …` + one-line brief. Never shown in production |
+| Figure | 1 px dark-teal frame; caption below in mono caps with `FIG. n —`; source + date; click → lightbox |
+| Map legend | White box, 1 px dark-teal border, mono "LEGEND" header: Auburn project area (orange) · Reference deposit (outline circle) · State border (dashed) · Form lines |
 | Project / sheet card | Ruled grid cell: mono `SHEET 02.1` + state · name 34 px · commodity tag · one line · "Read the dossier →" |
-| Document register | Mono header row `REF · DATE · TYPE · DOCUMENT · FILE`; rows ruled in Contour Blue; filter chips above |
-| Strat-column nav | Stacked bands (heights vary 44–70 px), alternating fills (paper / water / band-grey / copper-tint for Targets); current band solid Survey Blue with Paper text |
-| CTA band | Full-width Survey Blue; mono kicker; one line; light button + outlined button |
-| Footer | Survey Blue; sign-up strip; four columns with mono headings; acknowledgement of Country; mono legal row |
+| Document register | Mono header row `REF · DATE · TYPE · DOCUMENT · FILE`; rows ruled in light teal; filter chips above |
+| Strat-column nav | Stacked bands (heights vary 44–70 px), alternating fills (white / light teal / light teal / peach accent tint for Targets); current band solid dark teal with white text |
+| CTA band | Full-width dark teal; mono kicker; one line; light button + outlined button |
+| Footer | Dark teal; sign-up strip; four columns with mono headings; acknowledgement of Country; mono legal row |
 
 ## Maps and figures
 
-- One cartographic style everywhere: paper land, water sea, contour "form lines" in Contour Blue (decorative until real
-  data), graticule with mono labels, coastline in Survey Blue, dashed state borders, north arrow, scale bar.
-- **Only Auburn tenements are copper.** Reference deposits: outline circles, mono labels. Towns: small black squares.
+- One cartographic style everywhere: white land, light-teal sea, contour "form lines" in light teal (decorative until
+  real data), graticule with mono labels, coastline in dark teal, dashed state borders, north arrow, scale bar.
+- **Only Auburn tenements are orange**, always with a dark-teal outline (orange on the light-teal sea is 2.50:1).
+  Reference deposits: outline circles, mono labels. Towns: small charcoal squares.
 - Mockup map geometry and project positions are **indicative only** — replace with tenement GIS.
 - Cross-sections: redrawn vector, standard lithology hatch patterns, leader-line annotations, depth scale in mono.
   The current Fig. 2 is schematic — must be replaced by a competent-person-approved section.
@@ -104,7 +127,7 @@ fallback. Century Gothic is wide — check headline wrapping in narrow columns.
 ## Photography
 
 Documentary, natural light, specific: core trays, geologist logging core, sample bags, drill rig at a named prospect,
-landscape as full-bleed dividers only. Secondary images may take a subtle cyanotype duotone. **No stock imagery.**
+landscape as full-bleed dividers only. Secondary images may take a subtle dark-teal duotone. **No stock imagery.**
 Every photo: caption, date, place, photographer, consent. Never photograph cultural sites without permission.
 
 ## Motion

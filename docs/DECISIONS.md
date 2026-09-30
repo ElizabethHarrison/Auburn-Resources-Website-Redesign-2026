@@ -378,7 +378,8 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 
 ## D-031 · Brand migration: keep the token architecture, change the values to the company palette
 - **Date:** 30 Sep 2026 · **Status:** **Approved** (owner, 30 Sep 2026) with the rulings below; the final token mapping
-  (`docs/BRAND-MIGRATION-PLAN.md` §4) awaits the owner's approval before any code changes
+  (`docs/BRAND-MIGRATION-PLAN.md` §4, including the `--copper*` → `--accent*` rename) approved and **implemented**
+  30 Sep 2026. The official vector logo is still awaited (Q-55)
 - **Context:** the company style guide (one slide, Nov 2019) is the brand authority, but the site uses the "Survey
   Sheet" palette and a text wordmark (`docs/STYLE-GUIDE-AUDIT.md`). The guide gives colours, the logo and Century
   Gothic, and nothing else.

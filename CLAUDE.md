@@ -42,7 +42,8 @@ Read these before writing code, in this order:
   shared content-rules package, redirects, security headers (D-030, Proposed), launch-readiness report.
 - **Launch preparation** (docs only): `docs/LAUNCH-GATE.md` (blockers, checklist), `docs/STYLE-GUIDE-AUDIT.md` (the
   company style guide vs the site: palette and logo differ, Q-53–Q-56; no design change made), `docs/BRAND-MIGRATION-PLAN.md`
-  (D-031 approved with rulings on Q-53–Q-56; final token mapping awaiting approval; **not implemented**), `docs/content-request/`
+  (D-031 approved and **implemented**: colour tokens now use the brand palette, `--copper*` renamed `--accent*`; the
+  official vector logo is still awaited, Q-55), `docs/content-request/`
   (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
   `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
@@ -75,7 +76,7 @@ This is a mining company that will be judged by investors and regulators. Do **n
 - share counts, shareholdings, IPO status, dates, people's titles or bios
 
 If a value is not in `docs/CONTENT-SOURCE.md` (or later, in the CMS as an Approved fact), render a
-**placeholder** instead: `[INPUT NEEDED: short description]`. In preview mode these render as the dashed copper
+**placeholder** instead: `[INPUT NEEDED: short description]`. In preview mode these render as the dashed orange
 "INPUT NEEDED" box; in production, modules whose facts are not Approved are **hidden**, never half-shown.
 
 Items marked **TO VERIFY** in `CONTENT-SOURCE.md` may be used in fixtures and staging seed data, but must carry
@@ -123,15 +124,19 @@ geological survey sheet: precise, methodical, authored by geologists, never hype
 
 - **Sheet numbers everywhere.** Five numbered sections: 01 Company · 02 Projects · 03 Investors · 04 Sustainability ·
   05 News. Each page's sheet number (e.g. `SHEET 02.1 · NICHOLSON`) appears in the title block and breadcrumb.
-- **Copper marks Auburn's own ground and nothing else.** `--copper` (#B8672E, 3.7:1) is for map fills, tags and large
-  type only — never body text; use `--copper-text` for small copper text.
+- **Brand palette only (D-031).** Every colour comes from the company style guide via `--brand-*` tokens; no derived
+  colours without the owner's approval. Dark teal `#275259` is the primary colour; charcoal `#3B3838` is body text;
+  logo blue and logo navy are for the logo only.
+- **The orange accent marks Auburn's own ground and nothing else.** `--accent` (#D45A1C, 3.98:1 on white) is for map
+  fills, tag borders, status dots and large type only — never small text or a normal-size button fill; lettering
+  beside it uses `--accent-text` (charcoal). Orange map fills need a dark-teal outline.
 - **Hierarchy by size and ink, not weight.** Century Gothic at 400 throughout; IBM Plex Mono for labels, sheet numbers,
   captions, tables, dates, tenement IDs.
-- **Ruled, square, flat.** 1 px rules (Survey Blue for structure, Contour Blue for secondary). No shadows, no
+- **Ruled, square, flat.** 1 px rules (dark teal for structure, light teal for secondary). No shadows, no
   gradients, border-radius 0. Hover = underline or line, not colour blocks.
 - **Figures are numbered and captioned** (`FIG. 1 — …`), with source and date. Prose sits beside figures, not in walls.
 - **Data in ruled cells**, like a map-sheet margin.
-- **One cartographic style** for every map; only Auburn tenements are copper; every map has a text equivalent.
+- **One cartographic style** for every map; only Auburn tenements are orange; every map has a text equivalent.
 - **Documentary photography only**, with caption, date, place, photographer and consent.
 - **Minimal motion**; nothing moves unless the user acts; respect `prefers-reduced-motion`.
 - Mockup map geometry, project positions and the schematic cross-section are **indicative only** — never ship as fact.
@@ -249,7 +254,7 @@ The Studio runs separately (`pnpm studio`); CMS details, environments and migrat
 - Nav panels open on **click**, not hover; `Escape` closes panels, menus, bottom sheets and the lightbox, returning
   focus to the trigger; focus is trapped only in modal surfaces.
 - Touch targets ≥ 44 × 44 px. Works at 360 px with no horizontal page scroll; text resizes to 200 %.
-- Contrast: retest any new colour pairing; copper `#B8672E` never for body text.
+- Contrast: retest any new colour pairing; orange `#D45A1C` never for body or small text.
 - Every content image has meaningful alt text; decorative images have `alt=""` and are marked decorative in the CMS.
 - Maps and figures have text equivalents (project list, long description); tables are real HTML tables with headers;
   PDFs have an HTML summary page.
@@ -282,7 +287,8 @@ Ask first, and record the approved change in `docs/DECISIONS.md`:
 1. **The approved documents** in `docs/` (strategy, sitemap, design direction, content source) — except factual
    corrections the owner has approved.
 2. **The stack** (D-001) or adding a framework, CSS library, CMS plugin or runtime dependency.
-3. **Design tokens** (colour values, colour roles, type faces) and the "copper = Auburn ground only" rule.
+3. **Design tokens** (colour values, colour roles, type faces), the brand palette, and the "orange accent = Auburn
+   ground only" rule.
 4. **URLs, slugs, sheet numbers, navigation labels and order**, and the redirect map.
 5. **Homepage section order** and the **project page module order**.
 6. **Any fact's status** — never set `approved`; never un-hide a HOLD item.

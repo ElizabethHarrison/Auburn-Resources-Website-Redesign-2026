@@ -4,8 +4,8 @@
  * Renders a link when `href` is given (navigation), otherwise a real <button>. Hover shows an
  * underline, never a colour block.
  *
- * Variants: `primary` solid Survey Blue · `secondary` 1 px Survey Blue outline · `light` and
- * `outline-light` for Survey Blue grounds (CTA band, footer).
+ * Variants: `primary` solid dark teal · `secondary` 1 px dark-teal outline · `light` and
+ * `outline-light` for dark-teal grounds (CTA band, footer).
  */
 export interface Props {
   href?: string;
@@ -79,7 +79,7 @@ const classes = ['button', `button--${variant}`];
     --button-ink: var(--on-survey);
   }
 
-  /* On Survey Blue grounds the default Cyanotype ring would be invisible (1.7:1). */
+  /* On dark-teal grounds the default dark-teal ring would be invisible (1:1). */
   .button--light:focus-visible,
   .button--outline-light:focus-visible {
     outline: var(--focus-ring-on-dark);

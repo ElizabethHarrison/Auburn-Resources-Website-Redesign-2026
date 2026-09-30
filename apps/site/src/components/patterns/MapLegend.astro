@@ -1,7 +1,7 @@
 ---
 /**
- * Map legend (docs/DESIGN-DIRECTION.md): paper box, 1 px Survey Blue border, mono "LEGEND" header.
- * Only the Auburn project area is copper. Default keys are the four in the design direction; `town`
+ * Map legend (docs/DESIGN-DIRECTION.md): white box, 1 px dark-teal border, mono "LEGEND" header.
+ * Only the Auburn project area uses the orange accent. Default keys are the four in the design direction; `town`
  * is available for maps that show towns.
  */
 export type LegendKey = 'auburn' | 'deposit' | 'state-border' | 'form-lines' | 'town';
@@ -91,8 +91,8 @@ const LABELS: Record<LegendKey, string> = {
   }
 
   .swatch--auburn {
-    fill: var(--copper);
-    stroke: var(--copper);
+    fill: var(--accent);
+    stroke: var(--accent);
   }
 
   .swatch--line {

@@ -1,7 +1,7 @@
 ---
 /**
  * INPUT NEEDED placeholder — PREVIEW ONLY; renders nothing in production.
- * Dashed 1.5 px copper border, placeholder fill, mono label + one-line brief (docs/DESIGN-DIRECTION.md).
+ * Dashed 1.5 px accent (orange) border, placeholder fill, mono label + one-line brief (docs/DESIGN-DIRECTION.md).
  */
 import type { ContentMode } from '~/lib/facts';
 import { renderMode } from '~/lib/config';
@@ -55,7 +55,7 @@ const Element = variant === 'inline' ? 'span' : 'div';
   }
 
   .placeholder__label {
-    color: var(--copper-text);
+    color: var(--accent-text);
     font-family: var(--font-mono);
     font-size: var(--text-mono);
     letter-spacing: var(--tracking-mono);

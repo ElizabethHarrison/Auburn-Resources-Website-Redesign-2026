@@ -16,35 +16,46 @@ const colour = (name: string): string => {
 
 type Pairing = readonly [foreground: string, background: string, minimum: number, usage: string];
 
+// The approved brand mapping (D-031; docs/BRAND-MIGRATION-PLAN.md §5.2). Every value is a brand colour.
 const PAIRINGS: readonly Pairing[] = [
-  // Text on paper
-  ['--ink-graphite', '--paper', AA.text, 'body text'],
-  ['--ink-survey', '--paper', AA.text, 'headings, fact values, button text on light'],
-  ['--ink-cyanotype', '--paper', AA.text, 'links, mono labels'],
-  ['--ink-muted', '--paper', AA.text, 'source lines, meta'],
-  ['--copper-text', '--paper', AA.text, 'commodity tag text, copper small text'],
-  ['--copper', '--paper', AA.large, 'large copper type only'],
-  // Text on tinted grounds
-  ['--ink-cyanotype', '--water', AA.text, 'labels on water bands'],
-  ['--ink-graphite', '--water', AA.text, 'body text on water bands'],
-  ['--ink-survey', '--band-grey', AA.text, 'text on grey bands'],
+  // Text on white (--paper)
+  ['--ink-graphite', '--paper', AA.text, 'body text (charcoal)'],
+  ['--ink-muted', '--paper', AA.text, 'source lines, meta (charcoal)'],
+  ['--accent-text', '--paper', AA.text, 'commodity-tag lettering, preview notes (charcoal)'],
+  ['--ink-survey', '--paper', AA.text, 'headings, fact values, outline-button text (dark teal)'],
+  ['--ink-cyanotype', '--paper', AA.text, 'links, mono labels (dark teal)'],
+  ['--accent', '--paper', AA.large, 'large accent type only (orange)'],
+  // Text on light-teal bands (--water, --band-grey), full strength
+  ['--ink-graphite', '--water', AA.text, 'body text on bands'],
+  ['--ink-cyanotype', '--water', AA.text, 'labels on bands (strat column)'],
+  ['--ink-cyanotype', '--band-grey', AA.text, 'labels on bands (strat column)'],
+  ['--ink-graphite', '--ink-contour', AA.text, 'selected text on the light-teal selection'],
+  // Text on peach (--accent-tint, --paper-deep)
+  [
+    '--ink-survey',
+    '--accent-tint',
+    AA.text,
+    'target number, Auburn band label (4.54:1: narrow margin)',
+  ],
+  ['--ink-cyanotype', '--accent-tint', AA.text, 'Auburn strat band label'],
+  ['--accent-text', '--paper-deep', AA.text, 'preview banner'],
   ['--ink-survey', '--paper-deep', AA.text, 'catalogue and preview panels'],
-  ['--copper-text', '--paper-deep', AA.text, 'preview banner'],
-  ['--copper-text', '--placeholder-fill', AA.text, 'INPUT NEEDED label'],
+  // Placeholder (preview only)
+  ['--accent-text', '--placeholder-fill', AA.text, 'INPUT NEEDED label'],
   ['--ink-graphite', '--placeholder-fill', AA.text, 'INPUT NEEDED brief'],
-  ['--copper-text', '--copper-tint', AA.text, 'text on copper tint'],
-  // Survey Blue grounds (footer, CTA band, primary button)
-  ['--on-survey', '--ink-survey', AA.text, 'text on Survey Blue'],
+  // Dark-teal grounds (footer, CTA band, primary button)
+  ['--on-survey', '--ink-survey', AA.text, 'text on dark teal'],
   ['--on-survey-muted', '--ink-survey', AA.text, 'secondary text in the footer'],
   // Non-text: borders, dots, focus rings (WCAG 1.4.11)
-  ['--ink-survey', '--paper', AA.nonText, 'structural rules, button outlines, status dot'],
-  ['--copper', '--paper', AA.nonText, 'commodity tag border, status dots'],
-  ['--copper', '--placeholder-fill', AA.nonText, 'placeholder dashed border'],
-  ['--color-focus', '--paper', AA.nonText, 'focus ring on light grounds'],
-  ['--color-focus', '--water', AA.nonText, 'focus ring on water'],
-  ['--color-focus', '--paper-deep', AA.nonText, 'focus ring on paper-deep'],
-  ['--color-focus-on-dark', '--ink-survey', AA.nonText, 'focus ring on Survey Blue'],
-  ['--on-survey', '--ink-survey', AA.nonText, 'light button outline on Survey Blue'],
+  ['--ink-survey', '--paper', AA.nonText, 'structural rules, button outlines, approved status dot'],
+  ['--accent', '--paper', AA.nonText, 'commodity-tag border, status dots, map fill'],
+  ['--accent', '--placeholder-fill', AA.nonText, 'placeholder dashed border'],
+  ['--color-focus', '--paper', AA.nonText, 'focus ring on white'],
+  ['--color-focus', '--water', AA.nonText, 'focus ring on light-teal bands'],
+  ['--color-focus', '--paper-deep', AA.nonText, 'focus ring on peach'],
+  ['--color-focus', '--accent-tint', AA.nonText, 'focus ring on the accent tint'],
+  ['--color-focus-on-dark', '--ink-survey', AA.nonText, 'focus ring on dark teal'],
+  ['--on-survey', '--ink-survey', AA.nonText, 'light button outline on dark teal'],
 ];
 
 describe('colour contrast (WCAG 2.2 AA)', () => {
@@ -55,14 +66,22 @@ describe('colour contrast (WCAG 2.2 AA)', () => {
   });
 
   it('records the pairings that fail, so components never use them', () => {
-    // Documented in the Phase 2 design review. If a token changes and one of these starts passing, update
-    // the review rather than silently relying on it.
-    expect(contrastRatio(colour('--ink-muted'), colour('--paper-deep'))).toBeLessThan(AA.text);
-    expect(contrastRatio(colour('--ink-cyanotype'), colour('--ink-survey'))).toBeLessThan(
-      AA.nonText,
-    );
-    expect(contrastRatio(colour('--copper'), colour('--ink-survey'))).toBeLessThan(AA.nonText);
-    expect(contrastRatio(colour('--ink-contour'), colour('--paper'))).toBeLessThan(AA.nonText);
+    // docs/BRAND-MIGRATION-PLAN.md §5.2. If a token changes and one of these starts passing, update the
+    // plan rather than silently relying on it.
+    const fails = (a: string, b: string, below: number) =>
+      expect(contrastRatio(colour(a), colour(b)), `${a} on ${b}`).toBeLessThan(below);
+    fails('--accent', '--paper', AA.text); // orange is never small text (3.98:1)
+    fails('--on-survey', '--accent', AA.text); // no normal-size white label on an orange fill
+    fails('--accent', '--ink-survey', AA.nonText); // no accent on the dark-teal ground (2.17:1)
+    fails('--accent', '--water', AA.nonText); // orange map fill on the sea needs a dark-teal outline (2.50:1)
+    fails('--accent', '--accent-tint', AA.nonText); // orange on peach (2.10:1)
+    fails('--ink-contour', '--paper', AA.nonText); // light-teal rules are decorative only (1.59:1)
+    fails('--ink-survey', '--brand-grey', AA.text); // why brand grey is not a band behind labels (3.70:1)
+    fails('--brand-logo-blue', '--paper', AA.text); // logo blue is not a text colour (3.79:1)
+  });
+
+  it('keeps the approved dark-teal-on-peach pairing at 4.54:1 (do not darken the tint or lighten the text)', () => {
+    expect(contrastRatio(colour('--ink-survey'), colour('--accent-tint'))).toBeCloseTo(4.54, 2);
   });
 });
 

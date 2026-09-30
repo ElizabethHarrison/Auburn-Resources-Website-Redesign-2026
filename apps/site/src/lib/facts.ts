@@ -68,7 +68,7 @@ export interface Fact<T> {
 }
 
 /**
- * A value that is known to be needed but has not been supplied. Renders as the dashed copper
+ * A value that is known to be needed but has not been supplied. Renders as the dashed accent (orange)
  * "INPUT NEEDED" box in preview; hidden in production.
  */
 export interface InputNeeded {

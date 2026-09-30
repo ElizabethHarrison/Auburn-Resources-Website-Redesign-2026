@@ -7,51 +7,71 @@ const tokens = parseTokens(css);
 const byName = new Map(tokens.map((token) => [token.name, token]));
 
 describe('design tokens', () => {
-  it('keeps the approved colour values from docs/DESIGN-DIRECTION.md unchanged', () => {
-    const approved: Record<string, string> = {
-      '--ink-survey': '#1b3a5c',
-      '--ink-cyanotype': '#2c5f8f',
-      '--ink-contour': '#a9c1d9',
-      '--ink-graphite': '#262a2e',
-      '--ink-muted': '#5a6b7c',
-      '--paper': '#f5f2ea',
-      '--paper-deep': '#ece6d8',
-      '--water': '#eef2f4',
-      '--band-grey': '#e6ecf1',
-      '--copper': '#b8672e',
-      '--copper-text': '#8a4a1e',
-      '--copper-tint': '#f3e5d8',
-      '--on-survey': '#f5f2ea',
-      '--on-survey-muted': '#d8e2ec',
-      '--placeholder-fill': '#f8efe6',
+  it('keeps the brand palette exactly as the company style guide prints it (D-031)', () => {
+    const brand: Record<string, string> = {
+      '--brand-dark-teal': '#275259', // RGB 39 82 89
+      '--brand-teal': '#81b8c2', // RGB 129 184 194
+      '--brand-orange': '#d45a1c', // RGB 212 90 28
+      '--brand-charcoal': '#3b3838', // RGB 59 56 56
+      '--brand-white': '#ffffff', // swatch labelled "R0 G0 B0", drawn white (Q-54)
+      '--brand-mid-teal': '#4899a6', // RGB 72 153 166
+      '--brand-light-teal': '#b1d3d9', // RGB 177 211 217
+      '--brand-peach': '#f0ad8c', // RGB 240 173 140
+      '--brand-grey': '#ada9a9', // RGB 173 169 169
+      '--brand-logo-blue': '#1586e2', // RGB 21 134 226
+      '--brand-logo-navy': '#012361', // RGB 1 35 97
     };
-    for (const [name, value] of Object.entries(approved)) {
+    for (const [name, value] of Object.entries(brand)) {
       expect(resolveColour(tokens, name), name).toBe(value);
       expect(byName.get(name)?.tag, `${name} should be tagged [A]`).toBe('A');
     }
   });
 
-  it('declares no colour literals other than the approved palette', () => {
+  it('declares no colour literals other than the brand palette (no derived colours)', () => {
     const literals = tokens.filter((token) => /^#/.test(token.value)).map((token) => token.name);
     expect(literals.sort()).toEqual(
-      [
-        '--ink-survey',
-        '--ink-cyanotype',
-        '--ink-contour',
-        '--ink-graphite',
-        '--ink-muted',
-        '--paper',
-        '--paper-deep',
-        '--water',
-        '--band-grey',
-        '--copper',
-        '--copper-text',
-        '--copper-tint',
-        '--on-survey',
-        '--on-survey-muted',
-        '--placeholder-fill',
-      ].sort(),
+      tokens
+        .filter((token) => token.name.startsWith('--brand-'))
+        .map((token) => token.name)
+        .sort(),
     );
+    expect(literals).toHaveLength(11);
+  });
+
+  it('maps each colour role to the approved brand colour (BRAND-MIGRATION-PLAN §4.2)', () => {
+    const roles: Record<string, string> = {
+      '--ink-survey': '--brand-dark-teal',
+      '--ink-cyanotype': '--brand-dark-teal',
+      '--ink-contour': '--brand-light-teal',
+      '--ink-graphite': '--brand-charcoal',
+      '--ink-muted': '--brand-charcoal',
+      '--paper': '--brand-white',
+      '--paper-deep': '--brand-peach',
+      '--water': '--brand-light-teal',
+      '--band-grey': '--brand-light-teal',
+      '--accent': '--brand-orange',
+      '--accent-text': '--brand-charcoal',
+      '--accent-tint': '--brand-peach',
+      '--on-survey': '--brand-white',
+      '--on-survey-muted': '--brand-light-teal',
+      '--placeholder-fill': '--brand-white',
+    };
+    for (const [role, brand] of Object.entries(roles)) {
+      expect(byName.get(role)?.value, role).toBe(`var(${brand})`);
+    }
+    expect(byName.get('--placeholder-border')?.value).toBe('var(--accent)');
+    expect(byName.get('--status-to-verify')?.value).toBe('var(--accent)');
+    expect(byName.get('--status-input-needed')?.value).toBe('var(--accent)');
+    expect(byName.get('--status-approved')?.value).toBe('var(--ink-survey)');
+  });
+
+  it('keeps the logo colours for the logo only: no role token uses them', () => {
+    const users = tokens.filter((token) => /--brand-logo-/.test(token.value)).map((t) => t.name);
+    expect(users).toEqual([]);
+  });
+
+  it('has no copper tokens left', () => {
+    expect(tokens.filter((token) => token.name.includes('copper'))).toEqual([]);
   });
 
   it('keeps the shape rules: radius 0, 1 px rules, 400 weight', () => {

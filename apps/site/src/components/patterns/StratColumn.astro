@@ -19,7 +19,7 @@ export interface Props {
 
 const { bands } = Astro.props;
 
-// Band heights vary 44–70 px (design direction); fills alternate, with copper tint for Targets.
+// Band heights vary 44–70 px (design direction); fills alternate, with the accent tint for Targets.
 const HEIGHTS = ['h56', 'h66', 'h48', 'h44', 'h70', 'h50', 'h46', 'h54', 'h48'] as const;
 const FILLS = ['paper', 'water', 'grey'] as const;
 ---
@@ -34,7 +34,7 @@ const FILLS = ['paper', 'water', 'grey'] as const;
             class:list={[
               'strat__band',
               HEIGHTS[index % HEIGHTS.length],
-              band.id === 'targets' ? 'fill-copper' : `fill-${FILLS[index % FILLS.length]}`,
+              band.id === 'targets' ? 'fill-accent' : `fill-${FILLS[index % FILLS.length]}`,
             ]}
             href={`#${band.id}`}
           >
@@ -131,7 +131,7 @@ const FILLS = ['paper', 'water', 'grey'] as const;
   .fill-grey {
     background-color: var(--band-grey);
   }
-  .fill-copper {
-    background-color: var(--copper-tint);
+  .fill-accent {
+    background-color: var(--accent-tint);
   }
 </style>
