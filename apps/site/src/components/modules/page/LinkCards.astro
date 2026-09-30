@@ -19,7 +19,7 @@ const { id, heading, links, tone } = Astro.props;
 ---
 
 {links.length > 0 && (
-  <PageBlock id={id} heading={heading} tone={tone}>
+  <PageBlock id={id} heading={heading} tone={tone} layout="wide">
     <ul class="link-cards" role="list">
       {links.map((link) => (
         <li>

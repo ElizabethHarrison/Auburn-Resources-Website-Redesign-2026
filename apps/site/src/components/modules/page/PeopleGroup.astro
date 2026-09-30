@@ -28,7 +28,7 @@ const listed = people.filter((person) => isPersonListable(person, mode)).slice(0
 ---
 
 {listed.length > 0 && (
-  <PageBlock id={id} heading={heading} action={action} tone={tone}>
+  <PageBlock id={id} heading={heading} action={action} tone={tone} layout="wide">
     <div class="people">
       <Grid as="ul" layout="thirds">
         {listed.map((person) => (

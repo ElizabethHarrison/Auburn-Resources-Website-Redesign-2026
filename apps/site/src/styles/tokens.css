@@ -135,11 +135,12 @@
   --space-9: 4.5rem; /* [A] 72 */
   --space-10: 5rem; /* [A] 80 */
 
-  --section-padding: clamp(
-    var(--space-6),
-    2.3333rem + 2.963vw,
-    var(--space-10)
-  ); /* [A] 64–80 desktop; [D] 48 mobile */
+  /* P1 (D-033): 64 desktop (the approved 64–80 range), 40 at 360 px, linear between */
+  --section-padding: clamp(var(--space-5), 2rem + 2.2222vw, var(--space-8)); /* [A] 64; [D] 40 */
+  /* P2: stacked white modules pad half a section each, so two meet one section padding apart */
+  --stack-padding: calc(var(--section-padding) / 2); /* [D] 32 desktop, 20 mobile */
+  /* P4: content-page blocks on white (bands pad more, below) */
+  --block-padding: var(--space-3); /* [D] 24 */
 
   /* ── Layout ───────────────────────────────────────────────────────────────────────────────── */
   --page-max: 90rem; /* [A] 1440 px artboard */
@@ -285,6 +286,22 @@
   --focus-ring: var(--focus-width) solid var(--color-focus);
   --focus-ring-on-dark: var(--focus-width) solid var(--color-focus-on-dark);
   color: var(--color-text);
+}
+
+/* Bands keep more room than stacked white sections, so a coloured block never looks cramped (D-033). */
+.tone-light,
+.tone-dark {
+  --stack-padding: var(--section-padding);
+  --block-padding: min(var(--space-6), var(--section-padding));
+}
+
+/* A dark feature band keeps the full section padding, so it holds its weight on the page. */
+.tone-dark {
+  --block-padding: var(--section-padding);
+}
+
+.content-page > .tone-dark:last-child {
+  --block-padding: min(var(--space-6), var(--section-padding)); /* shown light (rule 4) */
 }
 
 .tone-light {

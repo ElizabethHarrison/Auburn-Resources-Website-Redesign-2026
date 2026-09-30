@@ -115,7 +115,12 @@ const site = Astro.site ?? Astro.url;
     </PageBlock>
   )}
   {related.length > 0 && (
-    <PageBlock id="related-announcements" heading="Related announcements" tone="light">
+    <PageBlock
+      id="related-announcements"
+      heading="Related announcements"
+      tone="light"
+      layout="wide"
+    >
       <div class="wide">
         <DocumentRegister documents={related} caption="Related announcements" mode={mode} />
       </div>

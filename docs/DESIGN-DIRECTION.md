@@ -1,8 +1,9 @@
 # Design direction — "Survey Sheet" (Century Gothic)
 
-Approved 29 Sep 2026; **colours amended 30 Sep 2026 to the company brand palette (D-031,
-`docs/BRAND-MIGRATION-PLAN.md`)** and **section bands added the same day (D-032, `docs/SECTION-BANDS-PLAN.md`)** —
-layout, type, components and module order are unchanged. Reference mockups: Claude design canvas *Auburn Resources Homepage Directions*, artboards
+Approved 29 Sep 2026. Amended 30 Sep 2026: **colours** to the company brand palette (D-031,
+`docs/BRAND-MIGRATION-PLAN.md`), **section bands** (D-032, `docs/SECTION-BANDS-PLAN.md`) and **spacing and margin
+headings** (D-033, `docs/SPACING-DENSITY-AUDIT.md`). Type, components, page structure and module order are
+unchanged. Reference mockups: Claude design canvas *Auburn Resources Homepage Directions*, artboards
 **"1b · Survey Sheet — Century Gothic"** (homepage) and **"Project page template — Nicholson (CMS preview)"**.
 
 ## Concept
@@ -89,7 +90,11 @@ fallback. Century Gothic is wide — check headline wrapping in narrow columns.
 ## Layout and grid
 
 - Desktop artboard width 1440; content gutters 64 px; 12-column grid, 24 px gutter.
-- Spacing on an 8 px scale. Section padding 64–80 px vertical.
+- Spacing on an 8 px scale. **Section padding 64 px** desktop, 40 px at 360 px — the space *between* sections
+  (D-033): stacked white sections pad half each; bands keep their full padding.
+- **Margin headings (D-033).** From 64rem a content block sets its ruled heading in the left 4/12 and its body in the
+  right 8/12, like a map-sheet margin note. Card grids, registers, fact lists, people, tables, maps and figures stay
+  full width with the heading above. Page titles put the introduction and actions beside the H1 (5/12 + 7/12).
 - **Rules:** 1 px dark teal for structure; 1 px light teal for secondary divisions (decorative). No shadows, no gradients,
   no rounded cards (radius 0). Hover = underline/line, not colour blocks.
 - Mobile: 360 px minimum, 16–20 px gutters; everything stacks; no horizontal page scroll.

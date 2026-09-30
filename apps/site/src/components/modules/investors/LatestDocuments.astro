@@ -42,7 +42,7 @@ const visible = cards.length > 0;
 ---
 
 {visible && (
-  <PageBlock id="latest" heading="Latest documents">
+  <PageBlock id="latest" heading="Latest documents" layout="wide">
     <ul class="latest" role="list">
       {cards.map((card) =>
         card.document ? (

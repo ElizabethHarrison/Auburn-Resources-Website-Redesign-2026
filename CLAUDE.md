@@ -45,7 +45,8 @@ Read these before writing code, in this order:
   (D-031 approved and **implemented**: colour tokens now use the brand palette, `--copper*` renamed `--accent*`; the
   official vector logo is still awaited, Q-55), `docs/SECTION-BANDS-PLAN.md` (D-032 approved and **implemented**: light-teal and
   dark-teal section bands via tone scopes; `tests/e2e/section-bands.spec.ts`), `docs/SPACING-DENSITY-AUDIT.md`
-  (proposal only, not implemented), `docs/content-request/`
+  (D-033 approved and **implemented**: P1–P10, margin-heading page blocks with a `wide` option, bands keep more
+  room; `tests/e2e/layout-density.spec.ts`), `docs/content-request/`
   (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
   `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,

@@ -44,6 +44,7 @@ const idOf = (year: string) => `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-'
     id={idOf(year)}
     heading={year === UNDATED ? 'Date to confirm' : year}
     tone={index % 2 === 1 ? 'light' : 'white'}
+    layout="wide"
   >
     <div class="library__register">
       <DocumentRegister

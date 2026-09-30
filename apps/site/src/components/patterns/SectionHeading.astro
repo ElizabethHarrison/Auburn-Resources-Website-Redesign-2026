@@ -12,13 +12,18 @@ export interface Props {
   kicker?: string | undefined;
   level?: 2 | 3;
   action?: { label: string; href: string } | undefined;
+  /**
+   * `bar` (default): the rule above, heading left and action right on wide screens. `margin`: no rule of
+   * its own and always stacked, for a heading set in a margin column beside its body (PageBlock, D-033).
+   */
+  layout?: 'bar' | 'margin';
 }
 
-const { id, heading, kicker, level = 2, action } = Astro.props;
+const { id, heading, kicker, level = 2, action, layout = 'bar' } = Astro.props;
 const Heading = `h${level}` as 'h2' | 'h3';
 ---
 
-<div class="section-heading">
+<div class:list={['section-heading', `section-heading--${layout}`]}>
   <div class="section-heading__text">
     {kicker && <p class="section-heading__kicker">{kicker}</p>}
     <Heading id={id} class="section-heading__title">
@@ -37,8 +42,13 @@ const Heading = `h${level}` as 'h2' | 'h3';
     border-top: var(--rule);
   }
 
+  .section-heading--margin {
+    padding-top: 0;
+    border-top: 0;
+  }
+
   @media (min-width: 64rem) {
-    .section-heading {
+    .section-heading--bar {
       flex-direction: row;
       align-items: flex-end;
       justify-content: space-between;
