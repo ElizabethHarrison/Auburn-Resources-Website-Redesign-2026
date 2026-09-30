@@ -99,7 +99,7 @@ Either way, content access is governed by Sanity project membership and roles (s
 
 ## 9. Tests
 
-- Studio: validation rules; held-back list identical to the site's.
+- Studio: validation rules; the held-back list is the shared `@auburn/content-rules` list (D-029), not a copy.
 - Site: `roundtrip.test.ts` (snapshot drift, exporter safety, exact round trip, nothing renderable in production),
   `hostile.test.ts` (forged, mis-attributed and incomplete approvals; digits; held-back wording; missing and dangling
   sources; malformed values; drafts; figures; overdue reviews; the hostile snapshot fails a production build),

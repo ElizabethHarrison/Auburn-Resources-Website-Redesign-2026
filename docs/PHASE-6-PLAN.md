@@ -81,13 +81,13 @@ no content decisions.
 **Steps** (each a separate commit, tests with each):
 
 - **6.0** This plan; CLAUDE.md status corrected; new questions Q-48–Q-52.
-- **6.1** `packages/content-rules`: the single held-back list, imported by the site and the Studio; the cross-package
+- **6.1** `packages/content-rules` (**D-029, Proposed**): the single held-back list, imported by the site and the Studio; the cross-package
   test import removed; a test proves both consumers use the same list.
 - **6.2** `redirects.csv` from the approved SITEMAP §9 table (pending rows excluded and listed), a validator
   (format, lowercase, duplicates, self-redirects, chains, loops, source shadowing a real page, target must be a real
   route), generation of Cloudflare's `_redirects` into both builds, the local server honouring it, unit and e2e tests,
   CI step.
-- **6.3** Security headers (**D-029, Proposed**): a strict Content Security Policy from Astro's built-in
+- **6.3** Security headers (**D-030, Proposed**): a strict Content Security Policy from Astro's built-in
   `security.csp` (already in the approved stack; no dependency), which hashes every inline script and style in each
   page into a `<meta>` CSP (no `unsafe-inline`/`unsafe-eval`); and the page-independent HTTP headers (HSTS,
   `nosniff`, `frame-ancestors 'none'` via `X-Frame-Options`/CSP header, referrer and permissions policies; preview
@@ -105,10 +105,10 @@ deferred Phase 4 items (Pagefind, forms, map, lightbox, navigation panels, PDF W
 Lighthouse CI (need dependencies: Q-49, Q-50); changing URLs, the redirect map, tokens, design or module order;
 weakening any safeguard or test.
 
-**Prerequisites / decisions for the owner:** none to start. To finish launch: Q-48 (review D-029 header policy, HSTS
+**Prerequisites / decisions for the owner:** none to start. To finish launch: Q-48 (review D-030 header policy, HSTS
 scope), Q-49, Q-50, Q-51, Q-52, plus the launch blockers in §2.1.
 
-**Files and systems that change:** `docs/` (this plan, DECISIONS D-029, OPEN-QUESTIONS, CMS, WORKER, new
+**Files and systems that change:** `docs/` (this plan, DECISIONS D-030, OPEN-QUESTIONS, CMS, WORKER, new
 `docs/LAUNCH.md` sections as steps land), `CLAUDE.md`; `pnpm-workspace.yaml` (+`packages/*`), `packages/content-rules`;
 `apps/site/src/lib/content/held-back.ts`, `apps/studio/validation/*`; `redirects.csv`, `scripts/*.mjs` (+ tests);
 `tests/static-server.mjs`, new e2e specs; root `package.json` scripts; `.github/workflows/ci.yml`. No external system.

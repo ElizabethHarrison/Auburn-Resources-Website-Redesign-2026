@@ -57,9 +57,9 @@ describe('studio guardrails', () => {
 });
 
 describe('held-back list', () => {
-  it('matches the site list exactly (one list, two packages)', async () => {
-    const site = await import('../../site/src/lib/content/held-back');
+  it('is the shared list the site build uses (one list, no copy)', async () => {
+    const shared = await import('@auburn/content-rules');
     const { HELD_BACK_PATTERNS } = await import('./rules');
-    expect(HELD_BACK_PATTERNS.map(String)).toEqual(site.HELD_BACK_PATTERNS.map(String));
+    expect(HELD_BACK_PATTERNS).toBe(shared.HELD_BACK_PATTERNS);
   });
 });

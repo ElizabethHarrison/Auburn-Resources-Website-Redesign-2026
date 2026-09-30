@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - workers/*
+  - packages/*
 
 # Packages allowed to run install scripts (pnpm blocks all others by default).
 onlyBuiltDependencies:

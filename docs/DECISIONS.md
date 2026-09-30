@@ -350,3 +350,13 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Decision:** The schemas and mapper support image and file assets, but **no real company asset is uploaded**. Before
   any import of real assets, stop and ask (Q-47). Figures render from the Sanity image CDN only when approved;
   PDFs stay unlinked (D-024 §13).
+
+## D-029 · One shared content-rules package for the held-back list
+- **Date:** 30 Sep 2026 · **Status:** Proposed (Phase 6.1)
+- **Context:** Phase 5 kept two copies of the held-back (HOLD) and banned-wording list, one in the site and one in the
+  Studio, and the Studio test imported a file from `apps/site` to compare them (a cross-package import).
+- **Decision:** The list lives once in the workspace package `packages/content-rules` (`@auburn/content-rules`, private,
+  TypeScript source, no dependencies), imported by the site (`lib/content/held-back.ts` re-exports it) and the Studio
+  (`validation/rules.ts`). `pnpm-workspace.yaml` gains `packages/*`. The Studio test asserts it uses the very same list
+  object; the package's own tests check every HOLD phrase named in CLAUDE.md §2.3–2.4 is caught. No runtime dependency
+  is added and no pattern changes; the production build is byte-identical.

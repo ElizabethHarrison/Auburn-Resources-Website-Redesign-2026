@@ -39,7 +39,7 @@ Read these before writing code, in this order:
   run against four builds (fixtures and Sanity snapshot, each in production and preview);
   `content-integrity.spec.ts` scans the production builds; `links.spec.ts` crawls every internal link.
 - **Phase 6** (launch hardening, repository side) — plan awaiting review: `docs/PHASE-6-PLAN.md`. Steps 6.0–6.4:
-  shared content-rules package, redirects, security headers (D-029, Proposed), launch-readiness report.
+  shared content-rules package, redirects, security headers (D-030, Proposed), launch-readiness report.
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
   Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-52 are open and must not be decided silently.
 
@@ -158,6 +158,7 @@ see D-008).
 ├─ apps/site/            Astro site (src/pages mirrors the URL structure in docs/SITEMAP.md)
 │  └─ src/{pages,layouts,components/{primitives,patterns,modules,islands},lib/{content,config.ts,facts.ts,dates.ts,seo.ts},styles}
 ├─ apps/studio/          Sanity Studio (schemaTypes/{objects,documents}, structure, validation; local only)
+├─ packages/content-rules/  shared content rules: the held-back list (D-029)
 ├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
