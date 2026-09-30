@@ -1,6 +1,8 @@
 # Style-guide audit
 
-Status: **audit only, 30 Sep 2026. No design change has been made.** The owner has named the company style guide the
+Status: **audit, 30 Sep 2026.** Findings C-1–C-4 (colours) were resolved by D-031 and implemented on 30 Sep 2026
+(`docs/BRAND-MIGRATION-PLAN.md`); L-1 (logo) waits for the official vector files (Q-55). The audit below describes the
+site as it was before the migration. The owner has named the company style guide the
 authoritative source for brand and design. Where it conflicts with the approved "Survey Sheet" direction
 (`docs/DESIGN-DIRECTION.md`, CLAUDE.md §3, §9.3), the conflict is listed here for a decision (Q-53–Q-56); tokens are
 not changed until the owner approves.

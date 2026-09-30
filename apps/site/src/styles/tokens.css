@@ -1,5 +1,7 @@
 /*
- * Design tokens — "Survey Sheet" direction (docs/DESIGN-DIRECTION.md).
+ * Design tokens — "Survey Sheet" direction (docs/DESIGN-DIRECTION.md), coloured with the company's brand
+ * palette (D-031, docs/BRAND-MIGRATION-PLAN.md): every colour token resolves to a `--brand-*` value from
+ * the style guide. There are no derived colours; the [D] tag below applies to non-colour tokens only.
  *
  * Every token is tagged:
  *   [A] approved — the value is stated in docs/DESIGN-DIRECTION.md. Do not change without approval
@@ -12,34 +14,51 @@
  */
 
 :root {
-  /* ── Inks ─────────────────────────────────────────────────────────────────────────────────── */
-  --ink-survey: #1b3a5c; /* [A] primary: headings, rules, buttons, footer */
-  --ink-cyanotype: #2c5f8f; /* [A] links, mono labels, figure lines */
-  --ink-contour: #a9c1d9; /* [A] contours, secondary rules, tints */
-  --ink-graphite: #262a2e; /* [A] body text */
-  --ink-muted: #5a6b7c; /* [A] source lines, meta */
+  /* ── Brand palette: company style guide (Nov 2019), BRAND-OFFICIAL (D-031) ─────────────────── */
+  /* Every colour on the site resolves to one of these. No derived colour is defined (D-031). */
+  --brand-dark-teal: #275259; /* [A] brand: primary semantic colour (Q-53) */
+  --brand-teal: #81b8c2; /* [A] brand: no role yet */
+  --brand-orange: #d45a1c; /* [A] brand: the accent (Q-53); fills, borders, large type ONLY */
+  --brand-charcoal: #3b3838; /* [A] brand: body text */
+  --brand-white: #ffffff; /* [A] brand: the swatch labelled "R0 G0 B0" is white (Q-54) */
+  --brand-mid-teal: #4899a6; /* [A] brand: no role yet */
+  --brand-light-teal: #b1d3d9; /* [A] brand: bands, secondary rules, text on dark teal */
+  --brand-peach: #f0ad8c; /* [A] brand: accent tint */
+  --brand-grey: #ada9a9; /* [A] brand: no role yet (dark-teal labels on it are 3.70:1) */
+  --brand-logo-blue: #1586e2; /* [A] brand: logo only — never used by a role (Q-53) */
+  --brand-logo-navy: #012361; /* [A] brand: logo only — never used by a role (Q-53) */
+
+  /* ── Inks (roles) ─────────────────────────────────────────────────────────────────────────── */
+  --ink-survey: var(--brand-dark-teal); /* [A] headings, rules, primary buttons, footer ground */
+  --ink-cyanotype: var(--brand-dark-teal); /* [A] links (underlined), mono labels, figure lines */
+  --ink-contour: var(--brand-light-teal); /* [A] decorative secondary rules, contours, selection */
+  --ink-graphite: var(--brand-charcoal); /* [A] body text */
+  --ink-muted: var(--brand-charcoal); /* [A] source lines, meta: set apart by size and mono */
 
   /* ── Grounds ──────────────────────────────────────────────────────────────────────────────── */
-  --paper: #f5f2ea; /* [A] page background */
-  --paper-deep: #ece6d8; /* [A] preview banners, subtle panels */
-  --water: #eef2f4; /* [A] map sea, alternating bands */
-  --band-grey: #e6ecf1; /* [A] */
+  --paper: var(--brand-white); /* [A] page and card background */
+  --paper-deep: var(--brand-peach); /* [A] preview banner and catalogue panels (preview only) */
+  --water: var(--brand-light-teal); /* [A] map sea, bands (full strength, D-031) */
+  --band-grey: var(--brand-light-teal); /* [A] bands (brand grey fails behind dark-teal labels) */
 
   /* ── Accent: Auburn ground only ───────────────────────────────────────────────────────────── */
-  --copper: #b8672e; /* [A] map fills, tags, large type ONLY (3.7:1 on paper) — never body text */
-  --copper-text: #8a4a1e; /* [A] copper-coloured small text (passes AA on paper) */
-  --copper-tint: #f3e5d8; /* [A] */
+  /* Orange is never small text (3.98:1): fills, borders, dots and large type only. Text beside an
+     accent border or dot uses --accent-text. Orange map fills need a dark-teal outline (2.50:1 on
+     the light-teal sea). */
+  --accent: var(--brand-orange); /* [A] map fills, tag borders, status dots, large type ONLY */
+  --accent-text: var(--brand-charcoal); /* [A] lettering beside the accent (tags, preview notes) */
+  --accent-tint: var(--brand-peach); /* [A] target numbers, Auburn band (dark teal on it: 4.54:1) */
 
-  /* ── On Survey Blue (footer, CTA band) ────────────────────────────────────────────────────── */
-  --on-survey: #f5f2ea; /* [A] */
-  --on-survey-muted: #d8e2ec; /* [A] */
+  /* ── On the dark-teal ground (footer, CTA band) ───────────────────────────────────────────── */
+  --on-survey: var(--brand-white); /* [A] */
+  --on-survey-muted: var(--brand-light-teal); /* [A] */
 
   /* ── Preview-only (never rendered in production) ──────────────────────────────────────────── */
-  --placeholder-fill: #f8efe6; /* [A] INPUT NEEDED box fill (stated in the Placeholder spec) */
-  --placeholder-border: var(--copper); /* [A] dashed copper */
-  --status-approved: var(--ink-survey); /* [A] ● filled Survey Blue */
-  --status-to-verify: var(--copper); /* [A] ◐ half copper */
-  --status-input-needed: var(--copper); /* [A] ○ dashed copper */
+  --placeholder-fill: var(--brand-white); /* [A] INPUT NEEDED fill: orange border 3.98:1 */
+  --placeholder-border: var(--accent); /* [A] dashed accent */
+  --status-approved: var(--ink-survey); /* [A] ● filled dark teal */
+  --status-to-verify: var(--accent); /* [A] ◐ half accent */
+  --status-input-needed: var(--accent); /* [A] ○ dashed accent */
   --status-dot-size: 0.5625rem; /* [D] 9 px */
 
   /* ── Semantic aliases (roles only; values come from the approved inks) ────────────────────── */
@@ -53,7 +72,7 @@
   --color-rule: var(--ink-survey);
   --color-rule-secondary: var(--ink-contour);
   --color-focus: var(--ink-cyanotype); /* [D] focus ring on light grounds */
-  --color-focus-on-dark: var(--on-survey); /* [D] focus ring on Survey Blue */
+  --color-focus-on-dark: var(--on-survey); /* [D] focus ring on the dark-teal ground */
 
   /* ── Type faces ───────────────────────────────────────────────────────────────────────────── */
   /* [A] Century Gothic is not licensed for web yet (docs/OPEN-QUESTIONS.md Q-12): never self-host it
@@ -148,8 +167,8 @@
 
   /* ── Rules and shape ──────────────────────────────────────────────────────────────────────── */
   --rule-width: 1px; /* [A] */
-  --rule: var(--rule-width) solid var(--color-rule); /* [A] structure: Survey Blue */
-  --rule-secondary: var(--rule-width) solid var(--color-rule-secondary); /* [A] Contour Blue */
+  --rule: var(--rule-width) solid var(--color-rule); /* [A] structure: dark teal */
+  --rule-secondary: var(--rule-width) solid var(--color-rule-secondary); /* [A] light teal */
   --rule-on-dark: var(--rule-width) solid var(--on-survey-muted); /* [D] rules inside the footer */
   --placeholder-border-width: 1.5px; /* [A] */
   --radius: 0; /* [A] square everywhere; no shadows, no gradients */
@@ -161,7 +180,7 @@
   --tag-padding-inline: var(--space-1); /* [A] 7–8 px → 8 px */
   --strat-band-min: 2.75rem; /* [A] strat-column bands 44–70 px */
   --strat-band-max: 4.375rem; /* [A] */
-  --figure-frame: var(--rule); /* [A] 1 px Survey Blue */
+  --figure-frame: var(--rule); /* [A] 1 px dark teal */
 
   /* ── Focus ────────────────────────────────────────────────────────────────────────────────── */
   --focus-width: 2px; /* [D] */

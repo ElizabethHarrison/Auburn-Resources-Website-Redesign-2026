@@ -1,8 +1,8 @@
 ---
 /**
- * Tag (docs/DESIGN-DIRECTION.md): mono 11 px caps with a 1 px border. `commodity` tags use copper —
- * Auburn's own ground — with copper-text lettering for contrast; `default` tags (state, stage) use
- * Survey Blue. Not interactive.
+ * Tag (docs/DESIGN-DIRECTION.md): mono 11 px caps with a 1 px border. `commodity` tags use the orange
+ * accent border — Auburn's own ground — with charcoal accent-text lettering (orange is never small text);
+ * `default` tags (state, stage) use dark teal. Not interactive.
  */
 export interface Props {
   variant?: 'default' | 'commodity';
@@ -36,7 +36,7 @@ const { variant = 'default' } = Astro.props;
   }
 
   .tag--commodity {
-    --tag-border: var(--copper);
-    --tag-ink: var(--copper-text);
+    --tag-border: var(--accent);
+    --tag-ink: var(--accent-text);
   }
 </style>

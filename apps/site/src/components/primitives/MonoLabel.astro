@@ -2,8 +2,8 @@
 /** IBM Plex Mono label in caps: sheet numbers, figure captions, field labels, table headers. */
 export interface Props {
   as?: 'span' | 'p' | 'div' | 'dt';
-  /** `label` Cyanotype (default) · `meta` muted · `ink` Survey Blue · `copper` copper-text. */
-  tone?: 'label' | 'meta' | 'ink' | 'copper' | 'inherit';
+  /** `label` dark teal (default) · `meta` charcoal · `ink` dark teal · `accent` accent-text (charcoal). */
+  tone?: 'label' | 'meta' | 'ink' | 'accent' | 'inherit';
   /** xs 10.5 px · sm 11 px · md 12 px (default) · lg 13 px. */
   size?: 'xs' | 'sm' | 'md' | 'lg';
 }
@@ -33,8 +33,8 @@ const { as: Element = 'span', tone = 'label', size = 'md' } = Astro.props;
   .mono-label--ink {
     color: var(--ink-survey);
   }
-  .mono-label--copper {
-    color: var(--copper-text);
+  .mono-label--accent {
+    color: var(--accent-text);
   }
   .mono-label--inherit {
     color: inherit;

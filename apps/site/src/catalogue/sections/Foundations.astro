@@ -12,6 +12,22 @@ const tagOf = (name: string) => tokens.find((token) => token.name === name)?.tag
 const valueOf = (name: string) => tokens.find((token) => token.name === name)?.value ?? '';
 const paper = resolveColour(tokens, '--paper') ?? '#ffffff';
 
+/** The company palette (style guide, Nov 2019; D-031): every colour role resolves to one of these. */
+const brandColours = tokens
+  .filter((token) => token.name.startsWith('--brand-'))
+  .map(({ name }) => {
+    const hex = resolveColour(tokens, name) ?? '';
+    return { name, hex, onPaper: contrastRatio(hex, paper) };
+  });
+
+/** The brand token a role token points at, e.g. `--ink-survey` → `--brand-dark-teal`. */
+const brandOf = (name: string): string => {
+  const value = valueOf(name);
+  const reference = /^var\((--[\w-]+)\)$/.exec(value)?.[1];
+  if (!reference) return '';
+  return reference.startsWith('--brand-') ? reference : brandOf(reference);
+};
+
 const colours = [
   '--ink-survey',
   '--ink-cyanotype',
@@ -22,15 +38,15 @@ const colours = [
   '--paper-deep',
   '--water',
   '--band-grey',
-  '--copper',
-  '--copper-text',
-  '--copper-tint',
+  '--accent',
+  '--accent-text',
+  '--accent-tint',
   '--on-survey',
   '--on-survey-muted',
   '--placeholder-fill',
 ].map((name) => {
   const hex = resolveColour(tokens, name) ?? '';
-  return { name, hex, tag: tagOf(name), onPaper: contrastRatio(hex, paper) };
+  return { name, hex, brand: brandOf(name), onPaper: contrastRatio(hex, paper) };
 });
 
 const typeScale = [
@@ -112,11 +128,28 @@ const ratio = (value: number) => `${value.toFixed(2)}:1`;
   id="foundations"
   number="A"
   title="Foundations"
-  intro="Values are read from src/styles/tokens.css. Approved = stated in docs/DESIGN-DIRECTION.md; Derived = chosen in Phase 1–2 for review."
+  intro="Values are read from src/styles/tokens.css. Colours come from the company brand palette (D-031). For other tokens: Approved = stated in docs/DESIGN-DIRECTION.md; Derived = chosen in Phase 1–2 for review."
 >
   <Specimen
-    name="Colour"
-    notes="Contrast is against Paper. Copper is for map fills, tags and large type only; small copper text uses Copper text."
+    name="Brand palette"
+    notes="The company style guide (Nov 2019), transcribed exactly; the swatch labelled R0 G0 B0 is white (Q-54). Logo blue and logo navy are for the logo only. Teal, mid teal and grey have no role yet. Contrast is against white."
+  >
+    <ul class="swatches" role="list">
+      {brandColours.map((colour) => (
+        <li class="swatch">
+          <span class="swatch__chip" style={`background-color: var(${colour.name})`} />
+          <span class="swatch__name">{colour.name}</span>
+          <span class="swatch__meta">
+            {colour.hex} · brand-official · {ratio(colour.onPaper)} on white
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Specimen>
+
+  <Specimen
+    name="Colour roles"
+    notes="Each role points at a brand colour (D-031); no derived colours. Orange (accent) is for fills, borders, dots and large type only; lettering beside it uses accent-text (charcoal). Dark teal on the accent tint is 4.54:1: do not darken the tint or lighten the text."
   >
     <ul class="swatches" role="list">
       {colours.map((colour) => (
@@ -124,8 +157,7 @@ const ratio = (value: number) => `${value.toFixed(2)}:1`;
           <span class="swatch__chip" style={`background-color: var(${colour.name})`} />
           <span class="swatch__name">{colour.name}</span>
           <span class="swatch__meta">
-            {colour.hex} · {colour.tag ? TAG_LABELS[colour.tag] : 'Alias'} · {ratio(colour.onPaper)}{' '}
-            on paper
+            → {colour.brand} · {colour.hex} · {ratio(colour.onPaper)} on white
           </span>
         </li>
       ))}
@@ -175,7 +207,7 @@ const ratio = (value: number) => `${value.toFixed(2)}:1`;
 
   <Specimen
     name="Rules and shape"
-    notes="1 px Survey Blue for structure; 1 px Contour Blue for secondary divisions (decorative only: 1.66:1 on paper). Radius 0; no shadows; no gradients."
+    notes="1 px dark teal for structure; 1 px light teal for secondary divisions (decorative only: 1.59:1 on white). Radius 0; no shadows; no gradients."
   >
     <div class="rules">
       <div class="rules__structure">Structure rule</div>
@@ -186,13 +218,13 @@ const ratio = (value: number) => `${value.toFixed(2)}:1`;
 
   <Specimen
     name="Focus"
-    notes="Tab to these. 2 px Cyanotype ring with 2 px offset on light grounds; 2 px Paper ring on Survey Blue (Cyanotype would be 1.74:1 there)."
+    notes="Tab to these. 2 px dark-teal ring with 2 px offset on light grounds; 2 px white ring on dark teal (a dark-teal ring would be invisible there)."
   >
     <div class="focus-demo">
-      <Button href="#foundations">Focus on paper</Button>
+      <Button href="#foundations">Focus on white</Button>
       <div class="focus-demo__dark">
         <Button href="#foundations" variant="light">
-          Focus on Survey Blue
+          Focus on dark teal
         </Button>
       </div>
     </div>

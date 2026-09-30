@@ -1,5 +1,8 @@
 # Phase 2 design review — "Survey Sheet" design system
 
+> **Historical record.** Colours named below (Survey Blue, Cyanotype, Paper, copper) were replaced on 30 Sep 2026 by
+> the company brand palette (D-031, `docs/BRAND-MIGRATION-PLAN.md`); the review is kept as written.
+
 29 Sep 2026 · Branch `claude/phase-2-design-system` · Review it in a preview build: `pnpm dev`, then open
 `/_catalogue` (preview only; it does not exist in production builds).
 

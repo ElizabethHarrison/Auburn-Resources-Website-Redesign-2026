@@ -1,8 +1,8 @@
 # Brand migration plan
 
-Status: **D-031 approved with rulings (30 Sep 2026); final token mapping (§4) awaiting the owner's approval — nothing
-implemented.** No token, component, layout, font, logo or asset has been changed. Token changes start only after the
-owner approves §4; the logo waits for the official vector files.
+Status: **implemented 30 Sep 2026** (colour tokens, `--copper*` → `--accent*` rename, tests, catalogue, docs), exactly
+as mapped in §4 — no derived colours. **Still waiting:** the official vector logo (Q-55; the header keeps the text
+wordmark and there is no favicon until it arrives). Error/success colours remain open (§7.1).
 
 Sources: the company style guide (one slide, Nov 2019; transcribed in `docs/STYLE-GUIDE-AUDIT.md` §1), the approved
 "Survey Sheet" direction (`docs/DESIGN-DIRECTION.md`), and the repository as it stands. Contrast ratios are WCAG 2.2
@@ -108,7 +108,7 @@ logo clear space, minimum size, reversed logo, UI components, imagery, tone or a
   file and will not be traced, converted or redrawn** without your explicit approval.
 - Files required and where to get them: §9.
 
-## 4. Final proposed token mapping (awaiting approval)
+## 4. Final token mapping (approved and implemented 30 Sep 2026)
 
 Approach (D-031): keep the token architecture. Add the official colours as **brand tokens**; point each existing
 **role token** at one of them. Nothing in components changes except the three `--copper*` names, which are renamed to
@@ -384,8 +384,8 @@ depends on Q-49.
 
 ## 12. Implementation order
 
-1. **Now (done):** decisions recorded (§0, D-031, OPEN-QUESTIONS).
-2. **After you approve §4:** update `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording; tokens (brand
+1. **Done:** decisions recorded (§0, D-031, OPEN-QUESTIONS).
+2. **Done (30 Sep 2026), after the owner approved §4:** update `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording; tokens (brand
    tokens + role values + `--accent*` rename); `tokens.test.ts` and `contrast.test.ts`; catalogue swatches;
    screenshots for your review. One or two commits, `pnpm check` green.
 3. **When the official vectors arrive:** header logo and favicon from the supplied files; tests. One commit.

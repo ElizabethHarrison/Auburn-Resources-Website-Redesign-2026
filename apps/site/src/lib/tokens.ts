@@ -5,7 +5,7 @@
 
 export interface Token {
   readonly name: string;
-  /** The declared value with comments removed, e.g. `#1b3a5c` or `var(--ink-survey)`. */
+  /** The declared value with comments removed, e.g. `#275259` or `var(--brand-dark-teal)`. */
   readonly value: string;
   /** `A` approved, `D` derived, or undefined when untagged (aliases inherit their target's tag). */
   readonly tag?: 'A' | 'D';
