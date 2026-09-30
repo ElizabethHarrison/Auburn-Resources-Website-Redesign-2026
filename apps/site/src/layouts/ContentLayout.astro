@@ -105,4 +105,9 @@ const hasActions = Astro.slots.has('actions');
   .content-page {
     padding-bottom: var(--section-padding);
   }
+
+  /* A band that ends the page runs straight into the footer, with no white strip between (D-032). */
+  .content-page:has(> :global(.tone-light:last-child), > :global(.tone-dark:last-child)) {
+    padding-bottom: 0;
+  }
 </style>

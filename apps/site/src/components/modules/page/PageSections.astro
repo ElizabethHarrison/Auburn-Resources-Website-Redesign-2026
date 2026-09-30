@@ -11,6 +11,7 @@ import type { SourceIndex } from '~/lib/content/sources';
 import Placeholder from '~/components/patterns/Placeholder.astro';
 import SourceLine from '~/components/patterns/SourceLine.astro';
 import StatusDot from '~/components/patterns/StatusDot.astro';
+import type { Tone } from '~/lib/tones';
 import PageBlock from './PageBlock.astro';
 
 export interface Props {
@@ -18,9 +19,11 @@ export interface Props {
   ids?: readonly string[] | undefined;
   sources: SourceIndex;
   mode: ContentMode;
+  /** Section grounds by section id (D-032); sections not listed are white. */
+  tones?: Readonly<Record<string, Tone>> | undefined;
 }
 
-const { sections, ids, sources, mode } = Astro.props;
+const { sections, ids, sources, mode, tones } = Astro.props;
 const chosen = ids
   ? ids.flatMap((id) => sections.filter((section) => section.id === id))
   : sections;
@@ -35,7 +38,7 @@ const visible = chosen
 ---
 
 {visible.map(({ section, paragraphs }) => (
-  <PageBlock id={section.id} heading={section.heading}>
+  <PageBlock id={section.id} heading={section.heading} tone={tones?.[section.id]}>
     <div class="page-copy">
       {paragraphs.map((paragraph) =>
         paragraph.kind === 'placeholder' ? (

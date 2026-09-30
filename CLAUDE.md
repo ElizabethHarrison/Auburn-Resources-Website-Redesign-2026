@@ -43,7 +43,9 @@ Read these before writing code, in this order:
 - **Launch preparation** (docs only): `docs/LAUNCH-GATE.md` (blockers, checklist), `docs/STYLE-GUIDE-AUDIT.md` (the
   company style guide vs the site: palette and logo differ, Q-53–Q-56; no design change made), `docs/BRAND-MIGRATION-PLAN.md`
   (D-031 approved and **implemented**: colour tokens now use the brand palette, `--copper*` renamed `--accent*`; the
-  official vector logo is still awaited, Q-55), `docs/content-request/`
+  official vector logo is still awaited, Q-55), `docs/SECTION-BANDS-PLAN.md` (D-032 approved and **implemented**: light-teal and
+  dark-teal section bands via tone scopes; `tests/e2e/section-bands.spec.ts`), `docs/SPACING-DENSITY-AUDIT.md`
+  (proposal only, not implemented), `docs/content-request/`
   (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
   `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
@@ -127,6 +129,10 @@ geological survey sheet: precise, methodical, authored by geologists, never hype
 - **Brand palette only (D-031).** Every colour comes from the company style guide via `--brand-*` tokens; no derived
   colours without the owner's approval. Dark teal `#275259` is the primary colour; charcoal `#3B3838` is body text;
   logo blue and logo navy are for the logo only.
+- **Section bands (D-032).** White is the page ground; light-teal bands and at most one dark-teal band per page
+  structure long pages, chosen by content, never by position (`docs/SECTION-BANDS-PLAN.md`). Apply them only
+  through the `tone` prop (`lib/tones.ts`); orange never sits directly on a band; figures and placeholders stay
+  white; legal pages and 404 stay white; a dark section never touches the footer.
 - **The orange accent marks Auburn's own ground and nothing else.** `--accent` (#D45A1C, 3.98:1 on white) is for map
   fills, tag borders, status dots and large type only — never small text or a normal-size button fill; lettering
   beside it uses `--accent-text` (charcoal). Orange map fills need a dark-teal outline.

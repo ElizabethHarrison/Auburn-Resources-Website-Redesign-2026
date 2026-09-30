@@ -181,6 +181,7 @@
   --strat-band-min: 2.75rem; /* [A] strat-column bands 44–70 px */
   --strat-band-max: 4.375rem; /* [A] */
   --figure-frame: var(--rule); /* [A] 1 px dark teal */
+  --figure-ground: var(--brand-white); /* [A] figures stay white in any tone (D-032) */
 
   /* ── Focus ────────────────────────────────────────────────────────────────────────────────── */
   --focus-width: 2px; /* [D] */
@@ -206,4 +207,94 @@
     --duration-fast: 0ms;
     --duration-base: 0ms;
   }
+}
+
+/*
+ * Section tones (D-032, docs/SECTION-BANDS-PLAN.md). A section wrapper carries `tone-light` or `tone-dark`
+ * (see lib/tones.ts); white is the default page ground. Each scope re-declares the colour roles, so every
+ * component inside picks up the right inks without its own tone logic. Values come only from --brand-*.
+ *
+ * Custom properties that reference other properties resolve where they are declared, so the aliases and
+ * composite rules below are re-declared in every tone, after the inks they depend on.
+ *
+ * `tone-white` restores the page roles inside a tone: placeholders use it; figures use --figure-ground.
+ */
+
+/* Dark teal ground: white ink, light-teal secondary ink (5.41:1). The orange accent never appears here
+   (2.17:1); preview-only status dots use peach instead (4.54:1, owner-approved). */
+.tone-dark {
+  --ink-survey: var(--brand-white);
+  --ink-cyanotype: var(--brand-white);
+  --ink-contour: var(--brand-light-teal);
+  --ink-graphite: var(--brand-white);
+  --ink-muted: var(--brand-light-teal);
+  --paper: var(--brand-dark-teal);
+  --on-survey: var(--brand-dark-teal);
+  --on-survey-muted: var(--brand-dark-teal);
+  --accent-text: var(--brand-white);
+  --status-to-verify: var(--brand-peach);
+  --status-input-needed: var(--brand-peach);
+}
+
+/* White and light-teal grounds: the page roles (as in :root). A dark section that ends a content page is
+   shown light instead, so it never meets the dark footer (rule 4). */
+.tone-white,
+.tone-light,
+.content-page > .tone-dark:last-child {
+  --ink-survey: var(--brand-dark-teal);
+  --ink-cyanotype: var(--brand-dark-teal);
+  --ink-contour: var(--brand-light-teal);
+  --ink-graphite: var(--brand-charcoal);
+  --ink-muted: var(--brand-charcoal);
+  --paper: var(--brand-white);
+  --on-survey: var(--brand-white);
+  --on-survey-muted: var(--brand-light-teal);
+  --accent-text: var(--brand-charcoal);
+  --status-to-verify: var(--accent);
+  --status-input-needed: var(--accent);
+}
+
+/* Light teal ground: secondary rules turn white (light teal would vanish); text keeps dark teal (5.41:1)
+   and charcoal (7.29:1). Orange sits only inside white cards and white panels here (2.50:1 otherwise). */
+.tone-light,
+.content-page > .tone-dark:last-child {
+  --ink-contour: var(--brand-white);
+}
+
+/* Aliases, composites and the ground itself, re-resolved in every tone. */
+.tone-white,
+.tone-light,
+.tone-dark {
+  --color-bg: var(--paper);
+  --color-text: var(--ink-graphite);
+  --color-heading: var(--ink-survey);
+  --color-link: var(--ink-cyanotype);
+  --color-link-hover: var(--ink-survey);
+  --color-label: var(--ink-cyanotype);
+  --color-meta: var(--ink-muted);
+  --color-rule: var(--ink-survey);
+  --color-rule-secondary: var(--ink-contour);
+  --color-focus: var(--ink-cyanotype);
+  --color-focus-on-dark: var(--on-survey);
+  --status-approved: var(--ink-survey);
+  --placeholder-border: var(--accent);
+  --rule: var(--rule-width) solid var(--color-rule);
+  --rule-secondary: var(--rule-width) solid var(--color-rule-secondary);
+  --rule-on-dark: var(--rule-width) solid var(--on-survey-muted);
+  --figure-frame: var(--rule);
+  --focus-ring: var(--focus-width) solid var(--color-focus);
+  --focus-ring-on-dark: var(--focus-width) solid var(--color-focus-on-dark);
+  color: var(--color-text);
+}
+
+.tone-light {
+  background-color: var(--brand-light-teal);
+}
+
+.tone-dark {
+  background-color: var(--brand-dark-teal);
+}
+
+.content-page > .tone-dark:last-child {
+  background-color: var(--brand-light-teal);
 }

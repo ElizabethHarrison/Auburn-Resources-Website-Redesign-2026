@@ -94,7 +94,7 @@ const site = Astro.site ?? Astro.url;
   </Fragment>
   <FactList id="details" heading="Details" items={details} sources={sources} mode={mode} />
   {summary.kind !== 'hidden' && (
-    <PageBlock id="summary" heading="Summary">
+    <PageBlock id="summary" heading="Summary" tone="light">
       {summary.kind === 'value' && <p class="summary">{summary.item.text}</p>}
       {summary.kind === 'placeholder' && (
         <Placeholder brief={summary.brief} field="Summary" mode={mode} />
@@ -115,7 +115,7 @@ const site = Astro.site ?? Astro.url;
     </PageBlock>
   )}
   {related.length > 0 && (
-    <PageBlock id="related-announcements" heading="Related announcements">
+    <PageBlock id="related-announcements" heading="Related announcements" tone="light">
       <div class="wide">
         <DocumentRegister documents={related} caption="Related announcements" mode={mode} />
       </div>

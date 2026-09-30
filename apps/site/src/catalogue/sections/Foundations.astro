@@ -4,6 +4,7 @@ import tokensCss from '~/styles/tokens.css?raw';
 import { parseTokens, resolveColour } from '~/lib/tokens';
 import { contrastRatio } from '~/lib/contrast';
 import Button from '~/components/primitives/Button.astro';
+import { toneClass } from '~/lib/tones';
 import CatalogueSection from '../CatalogueSection.astro';
 import Specimen from '../Specimen.astro';
 
@@ -279,9 +280,79 @@ const ratio = (value: number) => `${value.toFixed(2)}:1`;
       </tbody>
     </table>
   </Specimen>
+  <Specimen
+    name="Grounds (section bands)"
+    notes="D-032: white is the page ground; light teal and dark teal are section bands, applied with a tone prop (tone-light, tone-dark). Each tone re-declares the ink roles, so text, rules, links, buttons and focus rings adapt. Orange never sits directly on a band: it stays inside white cards, white placeholders and white figure panels."
+  >
+    <div class="grounds">
+      {(['white', 'light', 'dark'] as const).map((tone) => (
+        <div class:list={['grounds__band', toneClass(tone) ?? 'tone-white']}>
+          <p class="grounds__label">
+            {tone === 'white' ? 'White' : tone === 'light' ? 'Light teal' : 'Dark teal'}
+          </p>
+          <p class="grounds__heading">Section heading</p>
+          <p>
+            Body text with <a href="#foundations">a link</a>.
+          </p>
+          <div class="grounds__rule" />
+          <div class="grounds__row">
+            <Button href="#foundations">Primary</Button>
+            <Button href="#foundations" variant="secondary">
+              Secondary
+            </Button>
+          </div>
+          <div class="grounds__card">
+            <p>White card: orange accents sit here.</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Specimen>
 </CatalogueSection>
 
 <style>
+  .grounds {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .grounds__band {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .grounds__label {
+    color: var(--color-label);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .grounds__heading {
+    color: var(--color-heading);
+    font-size: var(--text-h3);
+  }
+
+  .grounds__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .grounds__rule {
+    border-top: var(--rule);
+  }
+
+  .grounds__card {
+    padding: var(--space-2);
+    border: var(--placeholder-border-width) dashed var(--accent);
+    background-color: var(--brand-white);
+    color: var(--brand-charcoal);
+  }
+
   .swatches {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));

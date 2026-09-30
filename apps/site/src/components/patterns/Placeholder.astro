@@ -22,7 +22,7 @@ const Element = variant === 'inline' ? 'span' : 'div';
 ---
 
 {mode === 'preview' && (
-  <Element class:list={['placeholder', `placeholder--${variant}`]} data-preview-only>
+  <Element class:list={['placeholder', `placeholder--${variant}`, 'tone-white']} data-preview-only>
     <span class="placeholder__label">Input needed{field && ` · ${field}`}</span>
     <span class="placeholder__brief">{brief}</span>
   </Element>

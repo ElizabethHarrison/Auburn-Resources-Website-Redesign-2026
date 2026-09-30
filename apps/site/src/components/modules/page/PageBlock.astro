@@ -5,19 +5,22 @@
  */
 import Container from '~/components/primitives/Container.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import { toneClass, type Tone } from '~/lib/tones';
 
 export interface Props {
   id: string;
   heading: string;
   kicker?: string | undefined;
   action?: { label: string; href: string } | undefined;
+  /** Section ground (D-032): white by default; the page assigns light or dark bands. */
+  tone?: Tone | undefined;
 }
 
-const { id, heading, kicker, action } = Astro.props;
+const { id, heading, kicker, action, tone } = Astro.props;
 const headingId = `${id}-heading`;
 ---
 
-<section id={id} class="page-block" aria-labelledby={headingId}>
+<section id={id} class:list={['page-block', toneClass(tone)]} aria-labelledby={headingId}>
   <Container>
     <SectionHeading id={headingId} heading={heading} kicker={kicker} action={action} />
     <div class="page-block__body">

@@ -12,18 +12,22 @@ import FactValue from '~/components/patterns/FactValue.astro';
 import Placeholder from '~/components/patterns/Placeholder.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
 
+import { toneClass, type Tone } from '~/lib/tones';
+
 export interface Props {
   articles: readonly Article[];
   mode: ContentMode;
+  /** Section ground (D-032): white by default; the page assigns bands. */
+  tone?: Tone | undefined;
 }
 
-const { articles, mode } = Astro.props;
+const { articles, mode, tone } = Astro.props;
 const latest = latestArticles(articles, mode, 2);
 const visible = latest.length > 0 || mode === 'preview';
 ---
 
 {visible && (
-  <section class="news-module" aria-labelledby="home-news">
+  <section class:list={['news-module', toneClass(tone)]} aria-labelledby="home-news">
     <Container>
       <SectionHeading
         id="home-news"

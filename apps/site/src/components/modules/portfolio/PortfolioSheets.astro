@@ -10,16 +10,20 @@ import Grid from '~/components/primitives/Grid.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
 import SheetCard from '~/components/patterns/SheetCard.astro';
 
+import { toneClass, type Tone } from '~/lib/tones';
+
 export interface Props {
   projects: readonly Project[];
   mode: ContentMode;
+  /** Section ground (D-032): white by default; the page assigns bands. */
+  tone?: Tone | undefined;
 }
 
-const { projects, mode } = Astro.props;
+const { projects, mode, tone } = Astro.props;
 ---
 
 {projects.length > 0 && (
-  <section class="portfolio-section" aria-labelledby="portfolio-sheets">
+  <section class:list={['portfolio-section', toneClass(tone)]} aria-labelledby="portfolio-sheets">
     <Container>
       <SectionHeading id="portfolio-sheets" heading="Project sheets" />
       <div class="portfolio-section__body">

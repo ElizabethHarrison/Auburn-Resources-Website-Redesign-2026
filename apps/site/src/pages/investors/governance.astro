@@ -44,6 +44,7 @@ const policies = documents.filter(
   <PageSections
     sections={page.sections}
     ids={['approach', 'board-committees']}
+    tones={{ 'board-committees': 'light' }}
     sources={sources}
     mode={mode}
   />
@@ -58,7 +59,13 @@ const policies = documents.filter(
       </div>
     </PageBlock>
   )}
-  <PageSections sections={page.sections} ids={['whistleblower']} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    ids={['whistleblower']}
+    sources={sources}
+    mode={mode}
+    tones={{ whistleblower: 'light' }}
+  />
 </ContentLayout>
 
 <style>

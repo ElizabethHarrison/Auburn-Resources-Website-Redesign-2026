@@ -55,7 +55,12 @@ const details = [
       <ArrowLink href={`mailto:${email.item.value}`}>Email the company</ArrowLink>
     )}
   </FactList>
-  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    sources={sources}
+    mode={mode}
+    tones={{ enquiries: 'light' }}
+  />
   {mode === 'preview' && (
     <Container>
       <div class="form-slot">

@@ -15,12 +15,16 @@ import Placeholder from '~/components/patterns/Placeholder.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
 import StatusDot from '~/components/patterns/StatusDot.astro';
 
+import { toneClass, type Tone } from '~/lib/tones';
+
 export interface Props {
   projects: readonly Project[];
   mode: ContentMode;
+  /** Section ground (D-032): white by default; the page assigns bands. */
+  tone?: Tone | undefined;
 }
 
-const { projects, mode } = Astro.props;
+const { projects, mode, tone } = Astro.props;
 const resolved = projects.map((project) => ({ project, stage: resolve(project.stage, mode) }));
 const stages = STAGE_ORDER.map((stage) => ({
   stage,
@@ -35,7 +39,7 @@ const visible = stages.length > 0 || (mode === 'preview' && missing.length > 0);
 ---
 
 {visible && (
-  <section class="portfolio-section" aria-labelledby="portfolio-pipeline">
+  <section class:list={['portfolio-section', toneClass(tone)]} aria-labelledby="portfolio-pipeline">
     <Container>
       <SectionHeading id="portfolio-pipeline" heading="Exploration pipeline" />
       <div class="pipeline">

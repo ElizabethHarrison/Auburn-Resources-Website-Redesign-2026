@@ -79,6 +79,7 @@ const contact = [factDisplay('Email', settings.email), factDisplay('Phone', sett
   {register.length > 0 && (
     <PageBlock
       id="register"
+      tone="light"
       heading="Register"
       action={{ label: 'All announcements', href: '/investors/announcements' }}
     >
@@ -88,7 +89,7 @@ const contact = [factDisplay('Email', settings.email), factDisplay('Phone', sett
     </PageBlock>
   )}
   <PageSections sections={page.sections} sources={sources} mode={mode} />
-  <LinkCards id="investor-pages" heading="Investor pages" links={quickLinks} />
+  <LinkCards id="investor-pages" heading="Investor pages" links={quickLinks} tone="dark" />
   <FactList
     id="investor-contact"
     heading="Investor contact"

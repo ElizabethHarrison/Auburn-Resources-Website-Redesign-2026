@@ -407,14 +407,24 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   layout or content change.
 
 ## D-032 · Section background bands (Option C)
-- **Date:** 30 Sep 2026 · **Status:** Proposed (owner chose Option C from the mockups; assignments await approval)
-- **Decision (proposed):** white stays the page ground; a light-teal band (`--brand-light-teal`) breaks up long runs
-  of white and one dark-teal band (`--brand-dark-teal`) at most per page gives a feature section weight, alongside the
-  existing dark CTA band and footer. Orange never sits directly on a band (2.17:1 on dark, 2.50:1 on light): sections
-  with maps or commodity tags are never dark, and on light bands orange appears only inside white cards. Figures keep a
-  white panel. Heroes, titles and key facts are white; legal pages and 404 are all white; dossier modules are white.
-  Section-by-section assignments and tests: `docs/SECTION-BANDS-PLAN.md`.
-- **Consequences if approved:** two tone scopes in the tokens (values from the brand palette only), a `tone` prop on
-  section wrappers, contrast tests per tone and an e2e check that every orange element has ≥ 3:1 against its actual
-  background. No layout, type, content or URL change.
-
+- **Date:** 30 Sep 2026 · **Status:** **Approved** by the owner (Option C, 30 Sep 2026) and implemented
+- **Decision:** white stays the page ground; a light-teal band (`--brand-light-teal`) breaks up long runs of white
+  and at most one dark-teal band (`--brand-dark-teal`) per page gives a feature section weight, alongside the existing
+  dark CTA band and footer. Bands are assigned by what a section holds, not by position (hierarchy over
+  alternation). Orange never sits directly on a band (2.17:1 on dark, 2.50:1 on light): on light bands it stays inside
+  white cards, white placeholders, white figure panels and a white disc behind preview status dots; on dark bands
+  preview status dots are peach (4.54:1, owner-approved). Figures always sit on a white panel. Heroes, titles and
+  key facts are white; legal pages and 404 are all white; dossier modules are white. A dark section never ends a
+  content page (it is shown light), and a band that ends a page meets the footer directly.
+- **Implementation:** tone scopes in `tokens.css` (brand values only), `lib/tones.ts`, a `tone` prop on section
+  wrappers, per-page assignments; `docs/SECTION-BANDS-PLAN.md` §3 is the final assignment.
+- **Exceptions to the proposal** (after screenshot review; plan §3.1): the Projects exploration pipeline is light,
+  not dark (it sat too close to the dark footer); document-library year registers alternate white/light and are
+  never dark (their status dots and file placeholders are orange); positional alternation of content-page blocks
+  was replaced by fixed, content-led assignments; the missing-portrait frame and figure placeholders gained a white
+  fill.
+- **Tests:** per-tone contrast pairings (`contrast.test.ts`, via `parseScope()`); `tests/e2e/section-bands.spec.ts`
+  checks on every page of all four builds that each orange element reaches 3:1 on its actual ground, that no dark
+  area ends `main`, and that legal pages and 404 have no bands. The catalogue shows a "Grounds" specimen.
+- **Unchanged:** colours (brand palette only), typography, spacing and density, layout, module order, content,
+  breakpoints, logo, navigation, fact status and CMS behaviour.

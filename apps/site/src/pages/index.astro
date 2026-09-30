@@ -49,9 +49,9 @@ const description =
 >
   <HomeHero home={home} keyFacts={settings.keyFacts} mode={mode} />
   <HomeKeyFacts keyFacts={settings.keyFacts} sources={sources} mode={mode} />
-  <HomePortfolio projects={frame.projects} mode={mode} />
-  <HomeWhyThisGround home={home} sources={sources} mode={mode} />
+  <HomePortfolio projects={frame.projects} mode={mode} tone="light" />
+  <HomeWhyThisGround home={home} sources={sources} mode={mode} tone="dark" />
   <HomeRegister keyFacts={settings.keyFacts} documents={documents} sources={sources} mode={mode} />
-  <HomeNews articles={articles} mode={mode} />
+  <HomeNews articles={articles} mode={mode} tone="light" />
   <HomeSustainability home={home} mode={mode} />
 </SiteLayout>

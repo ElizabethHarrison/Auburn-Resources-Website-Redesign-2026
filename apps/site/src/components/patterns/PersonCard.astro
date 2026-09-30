@@ -106,6 +106,9 @@ const bio = resolve(person.bio, mode);
     align-items: flex-end;
     border-style: dashed;
     border-color: var(--placeholder-border);
+    background-color: var(
+      --placeholder-fill
+    ); /* white, so the orange edge reads on any band (D-032) */
   }
 
   .person-card__portrait--missing :global(.placeholder) {
