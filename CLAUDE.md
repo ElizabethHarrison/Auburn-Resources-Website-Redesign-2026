@@ -28,18 +28,20 @@ Read these before writing code, in this order:
   live in `components/modules/<page>/` (shared page modules in `modules/page/`). Page copy comes from `page`
   records (`getPage`, `getLegalPage`). Dossier module rules are in `lib/content/dossier.ts`.
 - **Phase 4** (islands) — incremental, each item reviewed before the next: **1. Mobile menu** approved
-  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** built, awaiting
-  review: native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
+  (`components/islands/MobileMenu.astro`, native dialog, D-021). **2. Document filters** approved (D-023):
+  native GET form + edge Worker routing query strings to prebuilt `noindex` pages, zero client JS (D-023;
   `workers/edge`, `docs/WORKER.md`; not deployed). Order: mobile menu → document filters → Pagefind → forms → map → lightbox → remaining navigation → edge Worker. Client scripts live only in
   `components/islands/`. Items 3–8 are intentionally deferred.
-- **Phase 5** (CMS) — checkpoint awaiting review (D-024–D-028; `docs/CMS.md`): Sanity schemas and Studio in
+- **Phase 5** (CMS) — done, pushed on `claude/phase-5-cms`, not yet merged (D-024–D-028; `docs/CMS.md`): Sanity schemas and Studio in
   `apps/studio` (local only, nothing created or deployed), Sanity adapter behind `ContentAdapter` in
   `apps/site/src/lib/content/sanity/` (fail-closed approval/provenance checks), `sanity-export` NDJSON snapshot source,
   fixture exporter, round-trip and hostile-content tests, typegen drift check. Playwright + axe tests in `tests/e2e`
   run against four builds (fixtures and Sanity snapshot, each in production and preview);
   `content-integrity.spec.ts` scans the production builds; `links.spec.ts` crawls every internal link.
+- **Phase 6** (launch hardening, repository side) — plan awaiting review: `docs/PHASE-6-PLAN.md`. Steps 6.0–6.4:
+  shared content-rules package, redirects, security headers (D-029, Proposed), launch-readiness report.
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
-  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-47 are open and must not be decided silently.
+  Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-52 are open and must not be decided silently.
 
 Update this section as each phase lands. Build phases are in `docs/WEBSITE-STRATEGY.md` §7.
 
