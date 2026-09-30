@@ -106,6 +106,8 @@ Requires owner approval of the Cloudflare account (Q-09) and a deploy runbook. W
    `assets.binding` = `ASSETS`, `assets.not_found_handling` = `404-page`, `assets.html_handling` =
    `drop-trailing-slash`, and `assets.run_worker_first` = the three listing paths and `/filtered/*`, so only
    those requests run the Worker (everything else is served from static assets without invoking it).
+   The build output also contains `_redirects` (old-site redirects, docs/REDIRECTS.md), which static assets apply
+   without invoking the Worker.
 3. Environments: `production` (auburnresources.com.au) and `preview` (behind Cloudflare Access; `noindex` already
    built in). Custom domain / routes and the account ID are set at deploy time, not committed (no secrets needed
    for this Worker).

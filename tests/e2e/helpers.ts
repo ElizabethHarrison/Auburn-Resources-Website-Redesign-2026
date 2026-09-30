@@ -19,6 +19,15 @@ export const productionDist = (testInfo: TestInfo) =>
     import.meta.url,
   ).pathname;
 
+/** The build directory this project serves (any of the four builds). */
+export const buildDist = (testInfo: TestInfo) =>
+  new URL(
+    `../../apps/site/dist${isSanity(testInfo) ? '-sanity' : ''}${
+      isPreview(testInfo) ? '-preview' : ''
+    }/`,
+    import.meta.url,
+  ).pathname;
+
 /** WCAG 2.2 A/AA rules only; best-practice findings are reviewed by hand. */
 export async function expectNoAxeViolations(page: Page) {
   const results = await new AxeBuilder({ page })

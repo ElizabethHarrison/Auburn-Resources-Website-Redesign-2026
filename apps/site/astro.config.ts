@@ -1,6 +1,7 @@
 import { defineConfig, envField } from 'astro/config';
 import type { AstroIntegration } from 'astro';
 import sitemap from '@astrojs/sitemap';
+import { redirects } from './integrations/redirects';
 
 /**
  * Astro configuration for auburnresources.com.au.
@@ -50,9 +51,11 @@ export default defineConfig({
     define: { __PREVIEW_BUILD__: JSON.stringify(isPreview) },
   },
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
+  // Every build emits `_redirects` from redirects.csv (docs/REDIRECTS.md).
   integrations: isPreview
-    ? [catalogue]
+    ? [catalogue, redirects({ preview: true })]
     : [
+        redirects({ preview: false }),
         sitemap({
           filter: (page) => {
             const { pathname } = new URL(page);
