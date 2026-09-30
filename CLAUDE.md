@@ -186,6 +186,7 @@ pnpm lint           # ESLint + Prettier check
 pnpm format         # Prettier write
 pnpm typecheck      # astro check
 pnpm budget         # JS-on-page-load budget (30 KB compressed) against both production builds
+pnpm readiness      # launch-readiness report from the last production + preview builds → apps/site/reports/
 pnpm test:e2e       # Playwright + axe against all four builds (build them first; `pnpm check` does)
 pnpm check          # all of the above plus both builds and e2e — run before pushing
 ```

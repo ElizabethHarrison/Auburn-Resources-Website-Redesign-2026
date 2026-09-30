@@ -2,6 +2,7 @@ import { defineConfig, envField } from 'astro/config';
 import type { AstroIntegration } from 'astro';
 import sitemap from '@astrojs/sitemap';
 import { headers } from './integrations/headers';
+import { readiness } from './integrations/readiness';
 import { redirects } from './integrations/redirects';
 
 /**
@@ -84,12 +85,14 @@ export default defineConfig({
     define: { __PREVIEW_BUILD__: JSON.stringify(isPreview) },
   },
   // Preview builds are noindex and disallowed in robots.txt, so they get no sitemap.
-  // Every build emits `_redirects` from redirects.csv (docs/REDIRECTS.md) and `_headers` (docs/SECURITY-HEADERS.md).
+  // Every build emits `_redirects` from redirects.csv (docs/REDIRECTS.md) and `_headers` (docs/SECURITY-HEADERS.md), and
+  // moves the launch-readiness data out of the output (docs/LAUNCH-READINESS.md).
   integrations: isPreview
-    ? [catalogue, redirects({ preview: true }), headers({ preview: true })]
+    ? [catalogue, redirects({ preview: true }), headers({ preview: true }), readiness()]
     : [
         redirects({ preview: false }),
         headers({ preview: false }),
+        readiness(),
         sitemap({
           filter: (page) => {
             const { pathname } = new URL(page);

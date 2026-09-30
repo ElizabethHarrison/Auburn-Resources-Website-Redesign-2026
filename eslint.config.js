@@ -9,6 +9,7 @@ export default tseslint.config(
       '**/dist/',
       '**/dist-preview/',
       '**/dist-sanity*/',
+      'apps/site/reports/',
       '**/.astro/',
       '**/.sanity/',
       '**/node_modules/',

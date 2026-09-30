@@ -44,7 +44,7 @@ meta); `interpretation`; `narrative`; `figureSlot`; `photoSlot`; `keyFacts`; `pr
 | `approved` but approver missing, unknown, wrong kind, or no date | **build fails**; content downgraded | downgraded to to verify, reported |
 | Approved narrative containing digits | **build fails**; downgraded | downgraded, reported |
 | Held-back wording anywhere (even a draft) | **build fails** | **build fails** |
-| Review-by date passed (D-026) | still rendered; warning in the build log | same |
+| Review-by date passed (D-026) | still rendered; warning in the build log and the launch-readiness report | same |
 
 Approver kinds: `corporate` (company secretary: company facts, documents, pages, most project facts) and `technical`
 (competent person: geology, statements, targets, resources, results, work, maps, sections, neighbouring deposits). A

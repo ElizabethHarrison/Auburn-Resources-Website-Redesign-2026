@@ -1,6 +1,6 @@
 # Phase 6 — launch hardening (repository side)
 
-Status: **plan and first steps, awaiting review** (30 Sep 2026). Based on an inspection of the repository at
+Status: **steps 6.0–6.4 implemented, awaiting review** (30 Sep 2026); see §5. Based on an inspection of the repository at
 `8dcfdf6` (tip of `claude/phase-5-cms`), the decision log, open questions, CLAUDE.md and git history, plus a full
 `pnpm check` baseline: all green (unit tests: site 180, studio 5, edge 21; e2e: 794 passed, 122 skipped by design).
 
@@ -108,7 +108,7 @@ weakening any safeguard or test.
 **Prerequisites / decisions for the owner:** none to start. To finish launch: Q-48 (review D-030 header policy, HSTS
 scope), Q-49, Q-50, Q-51, Q-52, plus the launch blockers in §2.1.
 
-**Files and systems that change:** `docs/` (this plan, DECISIONS D-030, OPEN-QUESTIONS, CMS, WORKER, new
+**Files and systems that change:** `docs/` (this plan, DECISIONS D-029/D-030, OPEN-QUESTIONS, CMS, WORKER, new
 `docs/LAUNCH.md` sections as steps land), `CLAUDE.md`; `pnpm-workspace.yaml` (+`packages/*`), `packages/content-rules`;
 `apps/site/src/lib/content/held-back.ts`, `apps/studio/validation/*`; `redirects.csv`, `scripts/*.mjs` (+ tests);
 `tests/static-server.mjs`, new e2e specs; root `package.json` scripts; `.github/workflows/ci.yml`. No external system.
@@ -137,3 +137,18 @@ scope), Q-49, Q-50, Q-51, Q-52, plus the launch blockers in §2.1.
   not hidden.
 - HSTS is sent without `includeSubDomains`/`preload` until the domain's subdomains are known (Q-48).
 - Stacking on the unmerged Phase 5 branch: if Phase 5 changes in review, Phase 6 needs a merge from it.
+
+## 5. Delivered (branch `claude/gifted-clarke-758lqy`, stacked on `claude/phase-5-cms`)
+
+| Step | Commit subject | Docs |
+| --- | --- | --- |
+| 6.0 | Phase 6 plan, Q-48–Q-52, CLAUDE.md status | this file |
+| 6.1 | `@auburn/content-rules`: one held-back list (D-029, Proposed) | `docs/CMS.md` §9 |
+| 6.2 | `redirects.csv`, build-time validation, `_redirects`, e2e | `docs/REDIRECTS.md` |
+| 6.3 | Strict CSP + security headers (D-030, Proposed) | `docs/SECURITY-HEADERS.md` |
+| 6.4 | Launch-readiness report, CI artifact | `docs/LAUNCH-READINESS.md` |
+
+Unchanged: the fixture adapter and fixtures, `isRenderable` and every fail-closed check, the redirect map, URLs,
+tokens, design and module order. The production build's pages are byte-identical to before apart from the CSP
+`<meta>` tag; `dist` and `dist-sanity` remain byte-identical. Nothing was created, uploaded or deployed.
+
