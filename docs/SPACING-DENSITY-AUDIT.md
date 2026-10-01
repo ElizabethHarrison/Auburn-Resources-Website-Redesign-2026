@@ -156,7 +156,7 @@ No other token changes; no new tokens are required (P4's `wide` is a component p
 | --- | --- | --- |
 | P1 | `--section-padding: clamp(40 px, 2rem + 2.2222vw, 64 px)`: 64 at 1440, 40 at 360, linear between (the prototype reached 64 at about 1170 px) | `styles/tokens.css` |
 | P2 | `--stack-padding` = half the section padding (32 / 20 px) on stacked white modules: home (portfolio, why this ground, register, news, sustainability), portfolio (map, sheets, register, pipeline, links), related sheets, and the dossier compliance block | the modules' own CSS |
-| P3 | Home heading → body 40 → 24 px (portfolio, register, news) | home modules |
+| P3 | Heading → body 40 → 24 px on the home portfolio, register and news, and (follow-up, 1 Oct 2026) on the other two sheet-card grids, "Project sheets" (`/projects`) and "Related sheets" (dossiers) | home modules, `PortfolioSheets`, `ProjectRelated` |
 | P4 | `PageBlock` `layout="margin"` (default): from 64rem one rule across, heading and kicker in the left 4/12, body in the right 8/12; `layout="wide"` keeps the heading above a full-width body. Block padding `--block-padding` 24 px on white. `SectionHeading` gains a `margin` variant (no rule of its own, always stacked) | `PageBlock.astro`, `SectionHeading.astro`, `tokens.css` |
 | P5 | Page title padding 24 px (phones) / 32 px (from 64rem); from 64rem, when there is an introduction or actions, they sit beside the H1 (5/12 + 7/12) with the breadcrumb across the top | `PageTitle.astro` |
 | P6 | Dossier top 48 → 32 px; modules 48/48 → 32/32; heading → body 32 → 24 px | `pages/projects/[slug].astro`, `DossierSection.astro` |
@@ -175,7 +175,7 @@ are unchanged; every two-column arrangement is CSS grid from 64rem only.
 | Modules and blocks **inside a band** (light or dark) | P2 half padding; P4 24 px | **bands keep more room**: stacked modules in a band keep the full section padding (64 / 40 px); light-teal page blocks 48 px (40 at 360); dark-teal page blocks the full section padding | Half padding inside a coloured band put content close to the band edge and read as cramped; a dark feature band at 48 px looked like a stripe rather than a feature (Company, "Relationship with DGR Global"). The saving comes from the white sections between bands. Set once in `tokens.css` via the tone scopes (`--stack-padding`, `--block-padding`), not per page |
 | **Fact lists** (`FactList`: At a glance, Contact details, Major shareholders, IPO status, Fact sheet, Investor contact) | margin layout | **wide** | In the 8/12 column the two-column ruled list squeezed each cell to about 420 px, so values wrapped and source lines broke mid-URL ("…COM / .AU WEBSITE"): an unexpected reflow of fact cells. Same kind as other grid-based content |
 | People cards, link cards, document registers (libraries, investor register, governance policies, related announcements), latest-document cards, news list | wide | wide | As proposed (§8.3) |
-| P3 on other modules | home only | home only | The portfolio "Project sheets" and "Related sheets" heading → body stays 40 px (not part of P3); a candidate for a later, separately approved change |
+| P3 on other modules | home only | home, then **all three sheet-card grids** (follow-up, 1 Oct 2026) | "Project sheets" and "Related sheets" were the only 40 px heading → body gaps left. They use the same heading, card grid and light band as the home portfolio, so they now take the same 24 px. Band padding is unchanged. Other portfolio modules (map, register, pipeline) keep 32 px |
 | Tablet footer (48–64rem) | — | unchanged | P9 is phones only |
 
 No proposal was visually worse than the prototype once these band rules were applied, so none was withdrawn.
@@ -204,6 +204,7 @@ No proposal was visually worse than the prototype once these band rules were app
 | Company (production) | 1,112 → 954 (−14 %) | 28 → 24 % | 160 → 104 | 1,807 → 1,540 (−15 %) |
 
 "Before" is the site with the section bands (commit `cf66bef`); the §2 numbers came from the pre-band site.
+The follow-up P3 change removes a further 16 px from Projects and from each project dossier (preview, both widths).
 \* the empty preview-only portrait frame; not present in production.
 
 ### 9.4 Largest remaining gaps (left on purpose)
