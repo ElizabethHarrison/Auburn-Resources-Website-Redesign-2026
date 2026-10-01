@@ -6,18 +6,20 @@
 import type { NavLink } from '~/lib/navigation';
 import Icon from '~/components/primitives/Icon.astro';
 import PageBlock from './PageBlock.astro';
+import type { Tone } from '~/lib/tones';
 
 export interface Props {
   id: string;
   heading: string;
   links: readonly NavLink[];
+  tone?: Tone | undefined;
 }
 
-const { id, heading, links } = Astro.props;
+const { id, heading, links, tone } = Astro.props;
 ---
 
 {links.length > 0 && (
-  <PageBlock id={id} heading={heading}>
+  <PageBlock id={id} heading={heading} tone={tone} layout="wide">
     <ul class="link-cards" role="list">
       {links.map((link) => (
         <li>

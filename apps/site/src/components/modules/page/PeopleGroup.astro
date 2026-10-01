@@ -10,6 +10,7 @@ import { isPersonListable } from '~/lib/content/visibility';
 import Grid from '~/components/primitives/Grid.astro';
 import PersonCard from '~/components/patterns/PersonCard.astro';
 import PageBlock from './PageBlock.astro';
+import type { Tone } from '~/lib/tones';
 
 export interface Props {
   id: string;
@@ -19,14 +20,15 @@ export interface Props {
   action?: { label: string; href: string } | undefined;
   sources: SourceIndex;
   mode: ContentMode;
+  tone?: Tone | undefined;
 }
 
-const { id, heading, people, limit, action, sources, mode } = Astro.props;
+const { id, heading, people, limit, action, sources, mode, tone } = Astro.props;
 const listed = people.filter((person) => isPersonListable(person, mode)).slice(0, limit);
 ---
 
 {listed.length > 0 && (
-  <PageBlock id={id} heading={heading} action={action}>
+  <PageBlock id={id} heading={heading} action={action} tone={tone} layout="wide">
     <div class="people">
       <Grid as="ul" layout="thirds">
         {listed.map((person) => (

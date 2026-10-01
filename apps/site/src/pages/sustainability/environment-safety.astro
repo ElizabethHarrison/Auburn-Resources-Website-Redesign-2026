@@ -34,5 +34,10 @@ const sources = createSourceIndex(documents);
       Contact the company
     </Button>
   </Fragment>
-  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    sources={sources}
+    mode={mode}
+    tones={{ safety: 'light' }}
+  />
 </ContentLayout>

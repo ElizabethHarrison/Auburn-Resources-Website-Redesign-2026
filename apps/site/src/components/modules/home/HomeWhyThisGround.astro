@@ -18,13 +18,17 @@ import Placeholder from '~/components/patterns/Placeholder.astro';
 import SourceLine from '~/components/patterns/SourceLine.astro';
 import StatusDot from '~/components/patterns/StatusDot.astro';
 
+import { toneClass, type Tone } from '~/lib/tones';
+
 export interface Props {
   home: HomePageContent;
   sources: SourceIndex;
   mode: ContentMode;
+  /** Section ground (D-032): white by default; the page assigns bands. */
+  tone?: Tone | undefined;
 }
 
-const { home, sources, mode } = Astro.props;
+const { home, sources, mode, tone } = Astro.props;
 const visible = isModuleVisible([home.whyHeading, home.whyText], mode);
 const heading = resolve(home.whyHeading, mode);
 const text = resolve(home.whyText, mode);
@@ -32,7 +36,7 @@ const section = resolveFigure(home.crossSection, mode);
 ---
 
 {visible && (
-  <section class="why" aria-labelledby="home-why">
+  <section class:list={['why', toneClass(tone)]} aria-labelledby="home-why">
     <Container>
       <div class="why__rule">
         <p class="why__kicker">Why this ground</p>
@@ -97,7 +101,7 @@ const section = resolveFigure(home.crossSection, mode);
 
 <style>
   .why {
-    padding-block: var(--section-padding);
+    padding-block: var(--stack-padding); /* P2 (D-033): half above, half below; full in a band */
   }
 
   .why__rule {

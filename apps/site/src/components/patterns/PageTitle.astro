@@ -22,7 +22,7 @@ const Heading = `h${level}` as 'h1' | 'h2';
 const hasIntro = Astro.slots.has('default');
 ---
 
-<header class="page-title l-container">
+<header class:list={['page-title', 'l-container', { 'page-title--intro': hasIntro }]}>
   <Breadcrumb items={breadcrumbs} sheet={sheet} sheetLabel={sheetLabel} />
   <Heading class="page-title__heading">{heading}</Heading>
   {hasIntro && (
@@ -37,7 +37,29 @@ const hasIntro = Astro.slots.has('default');
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    padding-block: var(--space-4) var(--space-6);
+    padding-block: var(--space-3); /* P5 (D-033): 24 px on phones */
+  }
+
+  @media (min-width: 64rem) {
+    .page-title {
+      padding-block: var(--space-4); /* 32 px */
+    }
+
+    /* P5: the introduction and actions sit beside the H1 (5/12 + 7/12), the breadcrumb across the top. */
+    .page-title--intro {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--grid-gap);
+      align-items: start;
+    }
+
+    .page-title--intro > :global(:first-child) {
+      grid-column: 1 / -1;
+    }
+
+    .page-title--intro .page-title__intro {
+      padding-top: var(--space-1);
+    }
   }
 
   .page-title__heading {

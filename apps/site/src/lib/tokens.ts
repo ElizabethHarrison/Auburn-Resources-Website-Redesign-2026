@@ -38,3 +38,20 @@ export function resolveColour(
   if (reference?.[1]) return resolveColour(tokens, reference[1], depth + 1);
   return /^#[0-9a-f]{6}$/i.test(token.value) ? token.value.toLowerCase() : undefined;
 }
+
+/**
+ * The tokens in effect inside a tone scope (D-032): the `:root` tokens, overridden in source order by every
+ * rule whose selector list contains `selector` exactly (e.g. `.tone-dark`).
+ */
+export function parseScope(css: string, selector: string): Token[] {
+  const scoped = new Map(parseTokens(css).map((token) => [token.name, token]));
+  const rootEnd = css.indexOf('\n}', css.indexOf(':root'));
+  const rules = css.slice(rootEnd).replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const [, selectors = '', body = ''] of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    if (!selectors.split(',').some((item) => item.trim() === selector)) continue;
+    for (const [, name = '', value = ''] of body.matchAll(DECLARATION)) {
+      scoped.set(name, { name, value: value.replace(/\s+/g, ' ').trim() });
+    }
+  }
+  return [...scoped.values()];
+}

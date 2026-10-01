@@ -13,17 +13,21 @@ import Icon from '~/components/primitives/Icon.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
 import SheetCard from '~/components/patterns/SheetCard.astro';
 
+import { toneClass, type Tone } from '~/lib/tones';
+
 export interface Props {
   related: readonly Project[];
   adjacent?: { previous: Project; next: Project } | undefined;
   mode: ContentMode;
+  /** Section ground (D-032): white by default; the page assigns bands. */
+  tone?: Tone | undefined;
 }
 
-const { related, adjacent, mode } = Astro.props;
+const { related, adjacent, mode, tone } = Astro.props;
 ---
 
 {(related.length > 0 || adjacent) && (
-  <section class="related" aria-labelledby="related-sheets">
+  <section class:list={['related', toneClass(tone)]} aria-labelledby="related-sheets">
     <Container>
       <SectionHeading
         id="related-sheets"
@@ -65,11 +69,11 @@ const { related, adjacent, mode } = Astro.props;
 
 <style>
   .related {
-    padding-block: var(--section-padding);
+    padding-block: var(--stack-padding); /* P2 (D-033): half above, half below; full in a band */
   }
 
   .related__cards {
-    margin-top: var(--space-5);
+    margin-top: var(--space-3); /* P3: heading → body 24 px, as on the home sheet cards */
   }
 
   .related__adjacent {

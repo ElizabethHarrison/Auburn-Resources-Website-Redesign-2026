@@ -405,3 +405,47 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Consequences:** `DESIGN-DIRECTION.md` colour section and CLAUDE.md copper wording change at implementation;
   token and contrast tests take the new approved values; the three `--copper*` tokens are renamed `--accent*`. No
   layout or content change.
+
+## D-032 · Section background bands (Option C)
+- **Date:** 30 Sep 2026 · **Status:** **Approved** by the owner (Option C, 30 Sep 2026) and implemented
+- **Decision:** white stays the page ground; a light-teal band (`--brand-light-teal`) breaks up long runs of white
+  and at most one dark-teal band (`--brand-dark-teal`) per page gives a feature section weight, alongside the existing
+  dark CTA band and footer. Bands are assigned by what a section holds, not by position (hierarchy over
+  alternation). Orange never sits directly on a band (2.17:1 on dark, 2.50:1 on light): on light bands it stays inside
+  white cards, white placeholders, white figure panels and a white disc behind preview status dots; on dark bands
+  preview status dots are peach (4.54:1, owner-approved). Figures always sit on a white panel. Heroes, titles and
+  key facts are white; legal pages and 404 are all white; dossier modules are white. A dark section never ends a
+  content page (it is shown light), and a band that ends a page meets the footer directly.
+- **Implementation:** tone scopes in `tokens.css` (brand values only), `lib/tones.ts`, a `tone` prop on section
+  wrappers, per-page assignments; `docs/SECTION-BANDS-PLAN.md` §3 is the final assignment.
+- **Exceptions to the proposal** (after screenshot review; plan §3.1): the Projects exploration pipeline is light,
+  not dark (it sat too close to the dark footer); document-library year registers alternate white/light and are
+  never dark (their status dots and file placeholders are orange); positional alternation of content-page blocks
+  was replaced by fixed, content-led assignments; the missing-portrait frame and figure placeholders gained a white
+  fill.
+- **Tests:** per-tone contrast pairings (`contrast.test.ts`, via `parseScope()`); `tests/e2e/section-bands.spec.ts`
+  checks on every page of all four builds that each orange element reaches 3:1 on its actual ground, that no dark
+  area ends `main`, and that legal pages and 404 have no bands. The catalogue shows a "Grounds" specimen.
+- **Unchanged:** colours (brand palette only), typography, spacing and density, layout, module order, content,
+  breakpoints, logo, navigation, fact status and CMS behaviour.
+
+## D-033 · Spacing and density (P1–P10)
+- **Date:** 30 Sep 2026 · **Status:** **Approved** by the owner (P1–P10) and implemented
+- **Decision:** reduce unused whitespace without changing type, colour, structure or content. Section padding
+  64 px desktop / 40 px at 360 (P1); stacked white modules share one section padding between them (P2); heading → body
+  24 px on the home modules and on every sheet-card grid — the home portfolio, "Project sheets" on `/projects` and
+  "Related sheets" on project pages (P3; the last two added 1 Oct 2026) — using the existing `--space-3` step, with no
+  new token or page-specific rule; content-page blocks set the heading in a 4/12 margin column beside an 8/12 body
+  from 64rem (P4); compact page titles with the introduction beside the H1 from 64rem (P5); tighter dossier modules
+  (P6), CTA band and compliance (P7), footer (P8), a two-up phone footer (P9), and a tighter hero stack and page
+  bottom (P10).
+  "Section padding 64–80 px" in the design direction is read as the space between sections.
+- **Band interaction (with D-032):** bands keep more room than white sections: stacked modules in a band keep the
+  full section padding; light-teal page blocks 48 px; dark-teal page blocks the full section padding, so a feature band
+  keeps its weight. Implemented in the tone scopes (`--stack-padding`, `--block-padding`), not per page.
+- **Exceptions:** people cards, link cards, document registers, latest-document cards, the news list and **fact
+  lists** stay full width (`layout="wide"`); fact lists were added after review because their cells and source lines
+  reflowed badly in the 8/12 column. Details and measurements: `docs/SPACING-DENSITY-AUDIT.md` §9.
+- **Unchanged:** font sizes and weights, colours, band assignments, breakpoints, page structure, module order,
+  content, navigation, header height, touch targets, figure and caption spacing, fact-cell and table padding,
+  accessibility and focus behaviour. DOM order is unchanged.

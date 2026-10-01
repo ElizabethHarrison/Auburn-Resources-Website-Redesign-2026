@@ -46,6 +46,7 @@ const sources = createSourceIndex(documents);
   />
   <FactList
     id="major-shareholders"
+    tone="light"
     heading="Major shareholders"
     items={[
       factDisplay('Shares on issue', settings.keyFacts.sharesOnIssue),
@@ -68,6 +69,7 @@ const sources = createSourceIndex(documents);
   <PageSections
     sections={page.sections}
     ids={['how-to-invest', 'registry', 'faqs']}
+    tones={{ 'how-to-invest': 'dark', faqs: 'light' }}
     sources={sources}
     mode={mode}
   />

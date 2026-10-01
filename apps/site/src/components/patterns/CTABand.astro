@@ -46,7 +46,8 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 
 <style>
   .cta-band {
-    padding-block: var(--section-padding);
+    /* P7 (D-033): 32 px at 360, 48 px at 1440 */
+    padding-block: clamp(var(--space-4), 1.6667rem + 1.4815vw, var(--space-6));
     background-color: var(--ink-survey);
     color: var(--on-survey);
   }

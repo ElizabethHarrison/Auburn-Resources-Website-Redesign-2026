@@ -60,8 +60,14 @@ const board = people.filter((person) => person.group === 'board');
       </p>
     )}
   </FactList>
-  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    sources={sources}
+    mode={mode}
+    tones={{ 'who-we-are': 'light', 'dgr-global': 'dark' }}
+  />
   <PeopleGroup
+    tone="light"
     id="leadership"
     heading="Leadership"
     people={board}

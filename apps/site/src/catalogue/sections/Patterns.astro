@@ -125,6 +125,19 @@ const acn = settings.acn.kind === 'inputNeeded' ? settings.acn : inputNeeded('AC
   </Specimen>
 
   <Specimen
+    name="SectionHeading (margin)"
+    notes="D-033, P4: the variant a page block uses when its heading sits in the left 4/12 margin column beside the body. It has no rule of its own (the block draws one rule across both columns) and always stacks the link under the heading."
+  >
+    <SectionHeading
+      id="specimen-section-heading-margin"
+      kicker="01 Company"
+      heading="Specimen margin heading"
+      action={{ label: 'Specimen link', href: '#patterns' }}
+      layout="margin"
+    />
+  </Specimen>
+
+  <Specimen
     name="MapLegend"
     notes="White box, dark-teal border, mono header. Only the Auburn project area uses the orange accent."
   >

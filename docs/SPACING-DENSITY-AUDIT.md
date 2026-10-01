@@ -1,8 +1,11 @@
 # Spacing and density audit
 
-Status: **proposal, 30 Sep 2026 — nothing implemented.** Awaiting the owner's approval. No token, component or layout
-has changed. Brand colours, typography (faces, sizes, weight 400), information architecture, page structure, module
-order, content hierarchy, URLs and accessibility requirements are all preserved by every proposal below.
+Status: **approved and implemented, 30 Sep 2026 (D-033).** The owner approved P1–P10. They were implemented together
+with the section bands (D-032) and judged against them. §9 is the final implementation, with its exceptions and
+measured results. §0–§8 are kept as the proposal was written; the prototype numbers in §2 predate the bands.
+Brand colours, typography (faces, sizes, weight 400), information architecture, page structure, module order,
+content, band assignments, breakpoints, header height, touch targets, figure and caption spacing, fact-cell and
+table padding, and accessibility behaviour are unchanged.
 
 Goal: **structured editorial density** — tighter section rhythm, stronger grouping, better use of width — without a
 redesign and without shrinking everything uniformly.
@@ -137,8 +140,89 @@ No other token changes; no new tokens are required (P4's `wide` is a component p
 - Screenshots before/after for review, as for the brand migration.
 - Estimated scope: one reviewed commit for P1–P3 + P6–P10 (spacing values), one for P4–P5 (layout pattern).
 
-## 8. Decisions needed
+## 8. Decisions (resolved 30 Sep 2026)
 
-1. Approve P1–P10 (or a subset). P4 and P5 are the only layout-pattern changes; the rest are spacing values.
-2. Confirm the reading of the design direction's "section padding 64–80 px" as the space **between** sections (P2).
-3. For P4: confirm which blocks stay full width (proposed: people cards, document registers, link cards).
+1. P1–P10 approved, as the goal of "less unused whitespace, stronger rhythm, clear hierarchy, comfortable reading",
+   not "as short as possible".
+2. Section padding is read as the space **between** sections (P2).
+3. P4 full-width blocks: people and leadership cards, document registers, link and card grids, tables, maps, figures
+   and other grid-based or dense content (§9.2 lists what was marked).
+
+## 9. Implementation (final)
+
+### 9.1 What was built
+
+| # | Implemented | Where |
+| --- | --- | --- |
+| P1 | `--section-padding: clamp(40 px, 2rem + 2.2222vw, 64 px)`: 64 at 1440, 40 at 360, linear between (the prototype reached 64 at about 1170 px) | `styles/tokens.css` |
+| P2 | `--stack-padding` = half the section padding (32 / 20 px) on stacked white modules: home (portfolio, why this ground, register, news, sustainability), portfolio (map, sheets, register, pipeline, links), related sheets, and the dossier compliance block | the modules' own CSS |
+| P3 | Heading → body 40 → 24 px on the home portfolio, register and news, and (follow-up, 1 Oct 2026) on the other two sheet-card grids, "Project sheets" (`/projects`) and "Related sheets" (dossiers) | home modules, `PortfolioSheets`, `ProjectRelated` |
+| P4 | `PageBlock` `layout="margin"` (default): from 64rem one rule across, heading and kicker in the left 4/12, body in the right 8/12; `layout="wide"` keeps the heading above a full-width body. Block padding `--block-padding` 24 px on white. `SectionHeading` gains a `margin` variant (no rule of its own, always stacked) | `PageBlock.astro`, `SectionHeading.astro`, `tokens.css` |
+| P5 | Page title padding 24 px (phones) / 32 px (from 64rem); from 64rem, when there is an introduction or actions, they sit beside the H1 (5/12 + 7/12) with the breadcrumb across the top | `PageTitle.astro` |
+| P6 | Dossier top 48 → 32 px; modules 48/48 → 32/32; heading → body 32 → 24 px | `pages/projects/[slug].astro`, `DossierSection.astro` |
+| P7 | CTA band padding: 32 px at 360 → 48 px at 1440 (`clamp`); compliance block after it: `--stack-padding` | `CTABand.astro`, dossier page |
+| P8 | Footer nav 48/48 → 32/32, row gap 40 → 24, acknowledgement 32 → 24 | `Footer.astro` |
+| P9 | Below 48rem the footer link groups sit two-up and the contact column spans full width; 44 px targets unchanged | `Footer.astro` |
+| P10 | Home hero text → figure gap when stacked 48 → 32 px; content-page bottom padding 64–80 → 40 px (a band that ends the page still meets the footer directly, D-032) | `HomeHero.astro`, `ContentLayout.astro` |
+
+DOM order is unchanged everywhere (breadcrumb, H1, introduction; heading before body), so reading and focus order
+are unchanged; every two-column arrangement is CSS grid from 64rem only.
+
+### 9.2 Exceptions (after before/after review with the bands)
+
+| Where | Proposed | Implemented | Why |
+| --- | --- | --- | --- |
+| Modules and blocks **inside a band** (light or dark) | P2 half padding; P4 24 px | **bands keep more room**: stacked modules in a band keep the full section padding (64 / 40 px); light-teal page blocks 48 px (40 at 360); dark-teal page blocks the full section padding | Half padding inside a coloured band put content close to the band edge and read as cramped; a dark feature band at 48 px looked like a stripe rather than a feature (Company, "Relationship with DGR Global"). The saving comes from the white sections between bands. Set once in `tokens.css` via the tone scopes (`--stack-padding`, `--block-padding`), not per page |
+| **Fact lists** (`FactList`: At a glance, Contact details, Major shareholders, IPO status, Fact sheet, Investor contact) | margin layout | **wide** | In the 8/12 column the two-column ruled list squeezed each cell to about 420 px, so values wrapped and source lines broke mid-URL ("…COM / .AU WEBSITE"): an unexpected reflow of fact cells. Same kind as other grid-based content |
+| People cards, link cards, document registers (libraries, investor register, governance policies, related announcements), latest-document cards, news list | wide | wide | As proposed (§8.3) |
+| P3 on other modules | home only | home, then **all three sheet-card grids** (follow-up, 1 Oct 2026) | "Project sheets" and "Related sheets" were the only 40 px heading → body gaps left. They use the same heading, card grid and light band as the home portfolio, so they now take the same 24 px. Band padding is unchanged. Other portfolio modules (map, register, pipeline) keep 32 px |
+| Tablet footer (48–64rem) | — | unchanged | P9 is phones only |
+
+No proposal was visually worse than the prototype once these band rules were applied, so none was withdrawn.
+
+### 9.3 Measured results (preview build unless marked; page height in px)
+
+| Page | 1440 before → after | empty-gap share | largest gap | 360 before → after |
+| --- | --- | --- | --- | --- |
+| Home | 5,464 → 5,048 (−8 %) | 29 → 24 % | 202 → 170 | 8,962 → 8,348 (−7 %) |
+| Projects | 5,058 → 4,572 (−10 %) | 27 → 22 % | 202 → 138 | 7,102 → 6,495 (−9 %) |
+| Nicholson | 8,390 → 7,774 (−7 %) | 32 → 27 % | 185 → 130 | 13,411 → 12,556 (−6 %) |
+| Company | 4,094 → 3,492 (−15 %) | 40 → 36 % | 249* → 241* | 7,308 → 6,661 (−9 %) |
+| Leadership | 3,001 → 2,803 (−7 %) | 38 → 35 % | 249* → 241* | 6,145 → 5,658 (−8 %) |
+| Investors | 4,051 → 3,644 (−10 %) | 37 → 32 % | 191 → 130 | 6,863 → 6,232 (−9 %) |
+| Reports | 2,253 → 2,056 (−9 %) | 31 → 27 % | 114 → 90 | 3,632 → 3,145 (−13 %) |
+| Announcement | 2,176 → 1,874 (−14 %) | 37 → 32 % | 130 → 106 | 3,439 → 2,944 (−14 %) |
+| Community and Country | 2,504 → 1,955 (−22 %) | 45 → 37 % | 130 → 106 | 3,967 → 3,401 (−14 %) |
+| Governance | 3,375 → 2,947 (−13 %) | 32 → 23 % | 130 → 106 | 5,973 → 5,407 (−9 %) |
+| Shareholders | 3,256 → 2,715 (−17 %) | 47 → 39 % | 144 → 120 | 4,747 → 4,100 (−14 %) |
+| Media | 2,906 → 2,399 (−17 %) | 39 → 32 % | 130 → 106 | 4,594 → 4,027 (−12 %) |
+| Sustainability | 2,479 → 2,022 (−18 %) | 46 → 40 % | 177 → 114 | 3,812 → 3,262 (−14 %) |
+| News | 1,610 → 1,437 (−11 %) | 37 → 31 % | 161 → 121 | 2,897 → 2,483 (−14 %) |
+| Contact | 2,292 → 1,973 (−14 %) | 46 → 41 % | 161 → 121 | 3,852 → 3,357 (−13 %) |
+| Disclaimer | 1,436 → 1,332 (−7 %) | 37 → 29 % | 129 → 89 | 2,681 → 2,266 (−15 %) |
+| Home (production) | 991 → 927 (−6 %) | 41 → 37 % | 112 → 96 | 1,547 → 1,305 (−16 %) |
+| Company (production) | 1,112 → 954 (−14 %) | 28 → 24 % | 160 → 104 | 1,807 → 1,540 (−15 %) |
+
+"Before" is the site with the section bands (commit `cf66bef`); the §2 numbers came from the pre-band site.
+The follow-up P3 change removes a further 16 px from Projects and from each project dossier (preview, both widths).
+\* the empty preview-only portrait frame; not present in production.
+
+### 9.4 Largest remaining gaps (left on purpose)
+
+- **Band to band** (Home: light portfolio band → dark "why this ground", 170 px; Projects: sheet cards → register,
+  138 px): each band keeps its own full padding, so the change of ground is a deliberate section break.
+- **Before a CTA or the footer** (Nicholson related sheets → CTA band, 129 px; Contact, News, Sustainability → the
+  footer sign-up strip, 113–121 px): the close of the page.
+- **Preview-only** empty portrait frames (Company, Leadership, 241 px): not present in production.
+- **Community and Country** alternates short white and light-teal blocks; with placeholders the light bands are
+  low (about 110 px) and the page reads a little striped. The assignments are D-032's and were not changed; real
+  copy will make the blocks taller. Worth a second look once content is approved.
+
+### 9.5 Tests
+
+- `tests/e2e/layout-density.spec.ts` (all four builds): margin blocks put the heading beside the body at 1280 px
+  and above it at 768 px, wide blocks always above, heading always before body in the DOM; the page-title
+  introduction sits beside the H1 at 1280 px and below it at 768 px; the phone footer is two-up with contact full
+  width and 44 px link targets.
+- Unchanged and passing: axe (WCAG 2.2 AA), 360 px no horizontal scroll, heading outline, section-band contrast and
+  footer checks, catalogue.

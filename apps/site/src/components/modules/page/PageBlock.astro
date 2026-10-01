@@ -5,30 +5,51 @@
  */
 import Container from '~/components/primitives/Container.astro';
 import SectionHeading from '~/components/patterns/SectionHeading.astro';
+import { toneClass, type Tone } from '~/lib/tones';
 
 export interface Props {
   id: string;
   heading: string;
   kicker?: string | undefined;
   action?: { label: string; href: string } | undefined;
+  /** Section ground (D-032): white by default; the page assigns light or dark bands. */
+  tone?: Tone | undefined;
+  /**
+   * `margin` (default): from 64rem the heading sits in the left 4/12 and the body in the right 8/12, on one
+   * ruled line, like a map-sheet margin note. `wide`: heading above a full-width body, for grids,
+   * registers, tables, maps and figures that need the whole width (D-033, P4).
+   */
+  layout?: 'margin' | 'wide';
 }
 
-const { id, heading, kicker, action } = Astro.props;
+const { id, heading, kicker, action, tone, layout = 'margin' } = Astro.props;
 const headingId = `${id}-heading`;
 ---
 
-<section id={id} class="page-block" aria-labelledby={headingId}>
+<section
+  id={id}
+  class:list={['page-block', `page-block--${layout}`, toneClass(tone)]}
+  aria-labelledby={headingId}
+>
   <Container>
-    <SectionHeading id={headingId} heading={heading} kicker={kicker} action={action} />
-    <div class="page-block__body">
-      <slot />
+    <div class="page-block__inner">
+      <SectionHeading
+        id={headingId}
+        heading={heading}
+        kicker={kicker}
+        action={action}
+        layout={layout === 'margin' ? 'margin' : 'bar'}
+      />
+      <div class="page-block__body">
+        <slot />
+      </div>
     </div>
   </Container>
 </section>
 
 <style>
   .page-block {
-    padding-block: var(--space-6);
+    padding-block: var(--block-padding); /* P4 (D-033): 24 px on white, more in a band */
     scroll-margin-top: var(--space-4);
   }
 
@@ -38,6 +59,25 @@ const headingId = `${id}-heading`;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-3);
-    margin-top: var(--space-4);
+    margin-top: var(--space-3);
+  }
+
+  /* The margin layout owns the rule, so it runs across both columns. */
+  .page-block--margin .page-block__inner {
+    padding-top: var(--space-2);
+    border-top: var(--rule);
+  }
+
+  @media (min-width: 64rem) {
+    .page-block--margin .page-block__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: var(--grid-gap);
+      align-items: start;
+    }
+
+    .page-block--margin .page-block__body {
+      margin-top: 0;
+    }
   }
 </style>

@@ -47,10 +47,18 @@ const factSheet = [
     <Button href="/contact">Contact the company</Button>
   </Fragment>
   <PageSections sections={page.sections} ids={['media-contact']} sources={sources} mode={mode} />
-  <FactList id="fact-sheet" heading="Fact sheet" items={factSheet} sources={sources} mode={mode} />
+  <FactList
+    id="fact-sheet"
+    heading="Fact sheet"
+    items={factSheet}
+    sources={sources}
+    mode={mode}
+    tone="light"
+  />
   <PageSections
     sections={page.sections}
     ids={['downloads', 'coverage']}
+    tones={{ coverage: 'light' }}
     sources={sources}
     mode={mode}
   />

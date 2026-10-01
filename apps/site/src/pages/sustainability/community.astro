@@ -36,5 +36,10 @@ const sources = createSourceIndex(documents);
       See where we work
     </Button>
   </Fragment>
-  <PageSections sections={page.sections} sources={sources} mode={mode} />
+  <PageSections
+    sections={page.sections}
+    sources={sources}
+    mode={mode}
+    tones={{ 'land-access': 'light', 'community-contact': 'light' }}
+  />
 </ContentLayout>

@@ -43,7 +43,7 @@ const listed = latestArticles(articles, mode).map((article) => ({
     <ArrowLink href="/news/media">Media</ArrowLink>
   </Fragment>
   {listed.length > 0 && (
-    <PageBlock id="articles" heading="Latest news">
+    <PageBlock id="articles" heading="Latest news" layout="wide">
       <ol class="articles" role="list">
         {listed.map(({ article, lead }) => (
           <li class="articles__item">

@@ -253,7 +253,7 @@ const description = `The ${project.name} project sheet: setting, geology, explor
     </Container>
   )}
 
-  <ProjectRelated related={related} adjacent={adjacent} mode={mode} />
+  <ProjectRelated related={related} adjacent={adjacent} mode={mode} tone="light" />
 
   <CTABand
     kicker={`Follow ${project.name}`}
@@ -280,7 +280,7 @@ const description = `The ${project.name} project sheet: setting, geology, explor
   .dossier {
     display: grid;
     gap: var(--grid-gap);
-    padding-top: var(--space-6);
+    padding-top: var(--space-4); /* P6 (D-033) */
   }
 
   .dossier__index {
@@ -305,6 +305,6 @@ const description = `The ${project.name} project sheet: setting, geology, explor
   }
 
   .dossier__compliance {
-    padding-block: var(--section-padding);
+    padding-block: var(--stack-padding); /* P7 (D-033) */
   }
 </style>
