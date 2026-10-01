@@ -432,10 +432,13 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 ## D-033 · Spacing and density (P1–P10)
 - **Date:** 30 Sep 2026 · **Status:** **Approved** by the owner (P1–P10) and implemented
 - **Decision:** reduce unused whitespace without changing type, colour, structure or content. Section padding
-  64 px desktop / 40 px at 360 (P1); stacked white modules share one section padding between them (P2); home heading →
-  body 24 px (P3); content-page blocks set the heading in a 4/12 margin column beside an 8/12 body from 64rem (P4);
-  compact page titles with the introduction beside the H1 from 64rem (P5); tighter dossier modules (P6), CTA band and
-  compliance (P7), footer (P8), a two-up phone footer (P9), and a tighter hero stack and page bottom (P10).
+  64 px desktop / 40 px at 360 (P1); stacked white modules share one section padding between them (P2); heading → body
+  24 px on the home modules and on every sheet-card grid — the home portfolio, "Project sheets" on `/projects` and
+  "Related sheets" on project pages (P3; the last two added 1 Oct 2026) — using the existing `--space-3` step, with no
+  new token or page-specific rule; content-page blocks set the heading in a 4/12 margin column beside an 8/12 body
+  from 64rem (P4); compact page titles with the introduction beside the H1 from 64rem (P5); tighter dossier modules
+  (P6), CTA band and compliance (P7), footer (P8), a two-up phone footer (P9), and a tighter hero stack and page
+  bottom (P10).
   "Section padding 64–80 px" in the design direction is read as the space between sections.
 - **Band interaction (with D-032):** bands keep more room than white sections: stacked modules in a band keep the
   full section padding; light-teal page blocks 48 px; dark-teal page blocks the full section padding, so a feature band
