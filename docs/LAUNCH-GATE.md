@@ -1,7 +1,7 @@
 # Launch Gate assessment
 
 Status: **audit, 30 Sep 2026**; updated 2 Oct 2026: A-2 and A-5 done (deployment runbook `docs/DEPLOYMENT.md`, D-034);
-Phase 6 and the design follow-ups are in PR #9, not yet merged. No implementation, accounts, deployment, uploads or approvals were made for this
+Phase 6 and the design follow-ups (brand palette, section bands, spacing) are merged to `main` (PR #9, `87b6a95`). No implementation, accounts, deployment, uploads or approvals were made for this
 document. It is based on the repository, the decision log, open questions, the launch-readiness report
 (`pnpm readiness`), the sitemap, CLAUDE.md, ENV.md and git history, plus official Cloudflare and Sanity documentation
 (read through search summaries: direct access to developers.cloudflare.com and sanity.io is blocked by this
@@ -221,7 +221,7 @@ Sanity publish ── webhook ──▶ repository_dispatch ──▶ same workf
 
 | # | Step | Class | Status |
 | --- | --- | --- | --- |
-| 1 | Merge Phase 6 (B-13); record Q-52 (A-1) | B, A | NEEDS MY DECISION |
+| 1 | Merge Phase 6 (B-13, **done**: PR #9, 1 Oct 2026); record Q-52 (A-1) | B, A | DONE (A-1 docs follow-up remains) |
 | 2 | Name approvers: company secretary + competent person (D-1, Q-30) | D | BLOCKED (on you / company) |
 | 3 | Decide minimum launch set (B-1) | B | NEEDS MY DECISION |
 | 4 | Decide Sanity plan, roles, Studio hosting, assets (B-2, B-3, B-5, B-4) | B | NEEDS MY DECISION |
