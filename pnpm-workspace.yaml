@@ -6,3 +6,8 @@ packages:
 # Packages allowed to run install scripts (pnpm blocks all others by default).
 onlyBuiltDependencies:
   - esbuild
+
+# Not run: workerd's install script prepares the local runtime for `wrangler dev`, which this repository does not
+# use (local and e2e serving use tests/static-server.mjs). `wrangler deploy` only bundles, with esbuild.
+ignoredBuiltDependencies:
+  - workerd

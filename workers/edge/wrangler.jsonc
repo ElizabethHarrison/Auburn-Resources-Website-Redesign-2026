@@ -1,11 +1,18 @@
-// Cloudflare Worker configuration — NOT DEPLOYED (D-023; docs/WORKER.md §8).
-// Deployment needs the owner's approval of the Cloudflare account (Q-09) and `wrangler` as a dev dependency.
-// No account ID, routes or secrets are committed; they are supplied at deploy time.
+// Cloudflare Worker configuration (D-023). Deployed only by .github/workflows/deploy.yml — docs/DEPLOYMENT.md.
+// No account ID, routes, custom domains or secrets are committed: the account comes from the CLOUDFLARE_ACCOUNT_ID
+// secret, and custom domains are attached in the Cloudflare dashboard (preview: before review; production: at DNS
+// cutover). Nothing here can take over auburnresources.com.au on its own.
 {
   "$schema": "https://unpkg.com/wrangler/config-schema.json",
   "name": "auburn-edge",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-29",
+  // Production: the only indexable environment (src/index.ts adds noindex unless SITE_INDEXABLE is "true").
+  "vars": { "SITE_INDEXABLE": "true" },
+  // No *.workers.dev address and no preview URLs: production is reachable only through the custom domain attached
+  // at cutover, so no second, indexable copy of the site exists on a Cloudflare hostname.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "../../apps/site/dist",
     "binding": "ASSETS",
@@ -25,6 +32,12 @@
   "env": {
     "preview": {
       "name": "auburn-edge-preview",
+      // Never indexable. Wrangler does not inherit `vars` into named environments; set explicitly anyway.
+      "vars": { "SITE_INDEXABLE": "false" },
+      // Reachable at auburn-edge-preview.<subdomain>.workers.dev, which MUST be behind Cloudflare Access before the
+      // first deploy (docs/DEPLOYMENT.md §3). Per-version preview URLs stay off: fewer hostnames to protect.
+      "workers_dev": true,
+      "preview_urls": false,
       "assets": {
         "directory": "../../apps/site/dist-preview",
         "binding": "ASSETS",
