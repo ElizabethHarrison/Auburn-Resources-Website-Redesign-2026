@@ -15,7 +15,7 @@ document where marked; nothing about the content rules or the safety checks chan
 | Cloudflare administrators | **at least two** (§3) | Elizabeth Harrison only — **departs** |
 | workers.dev subdomain | the account's choice (§3.1) | `auburnresources` (if available) → preview `https://auburn-edge-preview.auburnresources.workers.dev` |
 | Zero Trust team | — | `auburnresources` (→ `auburnresources.cloudflareaccess.com`) |
-| Preview Access allow-list | named reviewers (§3.3) | `info@auburnresources.com.au` only (used by Elizabeth Harrison) |
+| Preview Access allow-list | named reviewers (§3.3) | `eharrison@dgrglobal.com.au` only (Elizabeth Harrison) |
 | Sanity plan / Studio | Growth; Q-45 | Growth; Sanity-hosted (`*.sanity.studio`) |
 | Sanity members | owner/developer Administrator; company secretary and competent person Editor (§4.1) | Elizabeth Harrison only, Administrator (also edits content) — **departs** |
 | Approver person records | company secretary: corporate; competent person: technical | one record, Elizabeth Harrison, `approverFor: corporate, technical` — **departs** |

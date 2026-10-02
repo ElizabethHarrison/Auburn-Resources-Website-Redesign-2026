@@ -472,8 +472,8 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   infrastructure running. It is not the final governance arrangement and must be replaced before the public launch.
 - **Decision:** Elizabeth Harrison is, for now, the only operator: Cloudflare administrator (account owner address
   `info@auburnresources.com.au`), Sanity project administrator and content editor, the only person allowed through
-  Cloudflare Access to the preview (allow-list: `info@auburnresources.com.au` only), and the person record holding **both** approver kinds (`approverFor: corporate,
-  technical`). Plan: Sanity Growth; Studio: Sanity-hosted; preview reads the `staging` dataset; proposed workers.dev
+  Cloudflare Access to the preview (allow-list: `eharrison@dgrglobal.com.au` only), and the person record holding
+  **both** approver kinds (`approverFor: corporate, technical`). Plan: Sanity Growth; Studio: Sanity-hosted; preview reads the `staging` dataset; proposed workers.dev
   subdomain `auburnresources` (subject to availability in the Cloudflare dashboard).
 - **Where it departs from the documents:** `docs/DEPLOYMENT.md` §3 (two Cloudflare administrators), §4.1 (approvers
   are the company secretary and the competent person, as Editors; owner/developer as Administrator), D-027 and
