@@ -49,6 +49,9 @@ Read these before writing code, in this order:
   room; `tests/e2e/layout-density.spec.ts`), `docs/content-request/`
   (what the company secretary, competent person and owner must supply), `docs/MINIMUM-LAUNCH-CONTENT.md`,
   `docs/APPROVAL-MATRIX.md`, `docs/PDF-ASSETS-FORMS.md` (Q-59 PDFs, Q-60 alerts strip).
+- **Deployment** (repository side, D-034; `docs/DEPLOYMENT.md`): manual `.github/workflows/deploy.yml` (preview or
+  production, from Sanity only, fail-closed pre-flight), `wrangler` dev dependency in `workers/edge`, opt-in indexing
+  in the Worker (`SITE_INDEXABLE`), preview Access check. **Nothing deployed**; no Cloudflare, Sanity or DNS change.
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
   Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51, Q-55 (provisional) and Q-57–Q-60 are open and must not be decided silently.
 
@@ -177,7 +180,8 @@ see D-008).
 ├─ apps/studio/          Sanity Studio (schemaTypes/{objects,documents}, structure, validation; local only)
 ├─ packages/content-rules/  shared content rules: the held-back list (D-029)
 ├─ packages/security-headers/  HTTP security headers for _headers and the Worker (D-030)
-├─ workers/edge/         document-filter routing now (D-023); later /documents proxy, /api/contact, /api/alerts
+├─ workers/edge/         document-filter routing now (D-023), deployed by .github/workflows/deploy.yml (D-034);
+│                        later /documents proxy, /api/contact, /api/alerts
 ├─ docs/                 strategy, design, sitemap, content source, decisions, open questions, env, runbooks
 ├─ tests/                Playwright, axe, visual snapshots
 ├─ redirects.csv         old Squarespace URLs → new URLs

@@ -1,7 +1,7 @@
 # Continuous integration: lint, typecheck, unit tests, schema/typegen drift, fixture and Sanity-snapshot builds,
 # leak guards, redirects and security headers, launch-readiness report, JS budget, Playwright + axe.
 # Lighthouse budgets are added later (CLAUDE.md §8; Q-50).
-# No deployment happens here; hosting accounts are not configured yet (docs/OPEN-QUESTIONS.md Q-09).
+# No deployment happens here: deploys are the separate, manual deploy.yml (docs/DEPLOYMENT.md, D-034).
 name: CI
 
 on:
@@ -64,6 +64,15 @@ jobs:
       # The same site built through the Sanity adapter from the NDJSON snapshot, in both modes.
       - name: Build from the Sanity snapshot (production and preview)
         run: pnpm build:sanity-export
+
+      # The Cloudflare configuration bundles for both Workers against the builds just made. No credentials, no upload.
+      - name: Validate Cloudflare Worker configuration (dry run, both environments)
+        working-directory: workers/edge
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          pnpm exec wrangler deploy --dry-run --env="" --outdir "$RUNNER_TEMP/wrangler-production"
+          pnpm exec wrangler deploy --dry-run --env=preview --outdir "$RUNNER_TEMP/wrangler-preview"
 
       # What production hides and why, overdue reviews and the approval audit (D-019, D-026, D-027). Reports only;
       # never fails the build for missing content. Kept as an artifact, never deployed (docs/LAUNCH-READINESS.md).

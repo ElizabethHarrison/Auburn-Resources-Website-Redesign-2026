@@ -92,25 +92,22 @@ build's assets.
 ## 7. Local development and tests
 
 - `tests/static-server.mjs` runs the real Worker (`workers/edge/src/index.ts`, loaded by Node 24's built-in type
-  stripping) with a local `ASSETS` stand-in that serves the build directory the way Cloudflare static assets do.
-  `pnpm serve:production`, `pnpm serve:preview` and Playwright therefore exercise the same routing code as the edge.
+  stripping) the way Cloudflare does, reading `wrangler.jsonc` (`tests/wrangler-config.mjs`): only
+  `run_worker_first` paths reach the Worker, with the environment's `vars`; every other path is a static asset with
+  `_redirects` and `_headers` applied; responses the Worker builds get neither file (launch audit, A-2). The
+  environment is `preview` for a `*-preview` build directory, else `production`.
 - `workers/edge` has its own unit tests (`pnpm --filter @auburn/edge test`), run by `pnpm test`.
-- No `wrangler` is installed; the Worker has no dependencies.
+- `wrangler` is a dev dependency of `workers/edge` (deploy only; `workerd`, the local runtime, is not built).
 
-## 8. Deployment (later — not done)
+## 8. Deployment
 
-Requires owner approval of the Cloudflare account (Q-09) and a deploy runbook. When approved:
+Runbook, settings and safety checks: `docs/DEPLOYMENT.md` (D-034). In short:
 
-1. Add `wrangler` as a dev dependency of `workers/edge` (build-time only; ask first per CLAUDE.md §4.5).
-2. `workers/edge/wrangler.jsonc` (committed, not used yet) declares the Worker with static assets:
-   `assets.directory` = the site build (`../../apps/site/dist`, or `dist-preview` for the preview environment),
-   `assets.binding` = `ASSETS`, `assets.not_found_handling` = `404-page`, `assets.html_handling` =
-   `drop-trailing-slash`, and `assets.run_worker_first` = the three listing paths and `/filtered/*`, so only
-   those requests run the Worker (everything else is served from static assets without invoking it).
-   The build output also contains `_redirects` (old-site redirects, docs/REDIRECTS.md) and `_headers` (security
-   headers, docs/SECURITY-HEADERS.md), which static assets apply without invoking the Worker.
-3. Environments: `production` (auburnresources.com.au) and `preview` (behind Cloudflare Access; `noindex` already
-   built in). Custom domain / routes and the account ID are set at deploy time, not committed (no secrets needed
-   for this Worker).
-4. CI: build both sites, then `wrangler deploy --env <name>` from `workers/edge` on the protected branch only.
-5. After deploy, re-run the filter e2e suite against the deployed preview URL.
+- `.github/workflows/deploy.yml` (manual only) builds from Sanity and runs `wrangler deploy` from `workers/edge`:
+  top level = `auburn-edge` (production, `dist`), `--env=preview` = `auburn-edge-preview` (`dist-preview`).
+- **Indexing is opt-in.** The Worker adds `X-Robots-Tag: noindex` to every response it returns unless its
+  environment sets `SITE_INDEXABLE = "true"`, which only the production (top-level) `vars` do. This closes the launch
+  audit's A-2 gap: preview canonical listing pages are Worker responses, which Cloudflare's `_headers` does not reach.
+- Production has `workers_dev: false` and `preview_urls: false`: no Cloudflare hostname until its custom domain is
+  attached at cutover. Preview has a workers.dev address only, behind Cloudflare Access.
+- No account ID, routes, custom domains or secrets are committed.

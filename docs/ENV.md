@@ -30,6 +30,10 @@ Only `apps/site/src/lib/config.ts` reads them.
 | `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET` | Studio only | `placeholder`, `staging` | Local Studio (`pnpm studio`); the placeholder lets schema work, typegen and `sanity build` run offline. |
 | `SITE_URL` | absolute URL | `https://auburnresources.com.au` | Origin for canonical URLs, sitemap and Open Graph. Read from the process environment only (not `.env`), because Astro needs it before loading env files. |
 
+Deployments set these from GitHub Environments, with `CONTENT_SOURCE=sanity` forced by the workflow; the full list of
+deployment secrets and variables (`SANITY_READ_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`,
+`SANITY_PROJECT_ID`, `SANITY_DATASET`, `SITE_URL`, `PREVIEW_URL`) is in `docs/DEPLOYMENT.md` §2.
+
 The package scripts set `CONTENT_MODE` for you: `pnpm dev` and `pnpm build:preview` use `preview`;
 `pnpm dev:production` (in `apps/site`) and `pnpm build` use `production`. For other local overrides, copy
 `apps/site/.env.example` to `apps/site/.env` (git-ignored).
@@ -53,23 +57,21 @@ that are committed.
 | `ESP_LIST_ID` | no | 4 | worker | Alerts list |
 | `PLAUSIBLE_DOMAIN` or `CF_ANALYTICS_TOKEN` | no | 6 | site | Cookie-free analytics (provider undecided) |
 
-## 4. Environments (planned — not configured)
+## 4. Environments
 
 | Environment | Build | Content | Access | Hosting |
 | --- | --- | --- | --- | --- |
-| Local | `pnpm dev` | fixtures (later: staging dataset) | developer | — |
-| PR preview | `pnpm build:preview` | fixtures / staging dataset | Cloudflare Access | `[INPUT NEEDED: Cloudflare account — Q-09]` |
-| Staging | `pnpm build` + `pnpm build:preview` | staging dataset | Cloudflare Access | `[INPUT NEEDED: Cloudflare account — Q-09]` |
-| Production | `pnpm build` | production dataset, Approved only | public | `[INPUT NEEDED: Cloudflare account and DNS — Q-09]` |
+| Local | `pnpm dev`, `pnpm build`, `pnpm build:preview` | fixtures (or `sanity-export`) | developer | `tests/static-server.mjs` |
+| Preview | Deploy workflow, target `preview` | Sanity `staging` or `production`, drafts | **Cloudflare Access** + noindex | Worker `auburn-edge-preview` (not created yet) |
+| Production | Deploy workflow, target `production`, from `main` | Sanity `production`, published + approved only | public after DNS cutover | Worker `auburn-edge` (not created yet) |
 
-Still to decide or supply (Q-09): the Cloudflare account and project names, the GitHub organisation
-that owns the repository and its Actions secrets, who holds admin access, and the DNS cut-over plan.
-Nothing in this repository deploys yet: CI only lints, typechecks, tests and builds.
+Runbook: `docs/DEPLOYMENT.md`. Still to supply (Q-09): the Cloudflare account, the GitHub Environments' secrets and
+variables, admins, and the registrar login for the DNS cutover. Nothing has been deployed.
 
-The edge Worker (`workers/edge`, D-023) needs **no variables or secrets** for document-filter routing. Its
-deployment configuration (`workers/edge/wrangler.jsonc`) commits no account ID or routes; see `docs/WORKER.md` §8.
+The edge Worker's only variable is `SITE_INDEXABLE`, committed in `workers/edge/wrangler.jsonc` (`"true"` for
+production only; anything else means noindex). It needs no secrets; its account comes from `CLOUDFLARE_ACCOUNT_ID`.
 
 ## 5. CI (GitHub Actions)
 
-`.github/workflows/ci.yml` runs on pull requests and on pushes to `main`. It needs **no secrets** at this
-stage. It sets `ASTRO_TELEMETRY_DISABLED=1`.
+`.github/workflows/ci.yml` runs on pull requests and on pushes to `main`. It needs **no secrets** and never
+deploys. Deployment is the separate, manual `.github/workflows/deploy.yml` (`docs/DEPLOYMENT.md`). Both set `ASTRO_TELEMETRY_DISABLED=1`.
