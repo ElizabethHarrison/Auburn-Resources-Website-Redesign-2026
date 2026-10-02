@@ -252,13 +252,13 @@ merge of PR #6.
 | 2 | 0 approved content; minimum set not agreed | B, D | owner, CS, CP | `MINIMUM-LAUNCH-CONTENT.md`, the packs |
 | 3 | No CMS to approve in (plan, roles, Studio host) | B, C | owner | Q-10, Q-46, Q-45 |
 | 4 | Legal text not supplied | D | company | CS-4 |
-| 5 | **Brand: site does not use the style guide's palette or logo** | B, D | owner | Q-53, Q-55 (vectors) |
+| 5 | **Brand: official logo vectors awaited** (~~palette~~: done, D-031) | D | owner | Q-55 (vectors) |
 | 6 | **No way to serve PDFs**; no document can launch | B, A | owner, then web team | Q-59, Q-47 |
 | 7 | **Email-alerts strip on every page leads nowhere** | B, A | owner, then web team | Q-60 (or Q-11 + forms) |
 | 8 | Old-site files not archived | C, D | owner, CS | `PDF-ASSETS-FORMS.md` §4, CS-9.3–9.4 |
 | 9 | Accounts, DNS (email records), canonical host | B, C | owner | Q-09, B-12, C-6 |
 | 10 | OG image, Lighthouse measurement | B, E | owner | Q-49, Q-50, E-2 |
-| 11 | Phase 6 not merged | B | owner | B-13 |
+| 11 | ~~Phase 6 not merged~~ — merged 1 Oct 2026 (PR #9) | — | — | B-13 |
 | 12 | Manual verification after deployment | E | web team | E-1 to E-9 |
 
 Not blockers (unchanged): Q-54, Q-56, Q-57, Q-58, maps and GIS, photography, search, map island, lightbox, contact
