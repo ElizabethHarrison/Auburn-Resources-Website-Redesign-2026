@@ -1,6 +1,7 @@
 # Launch Gate assessment
 
-Status: **audit, 30 Sep 2026**. No implementation, accounts, deployment, uploads or approvals were made for this
+Status: **audit, 30 Sep 2026**; updated 2 Oct 2026: A-2 and A-5 done (deployment runbook `docs/DEPLOYMENT.md`, D-034);
+Phase 6 and the design follow-ups (brand palette, section bands, spacing) are merged to `main` (PR #9, `87b6a95`). No implementation, accounts, deployment, uploads or approvals were made for this
 document. It is based on the repository, the decision log, open questions, the launch-readiness report
 (`pnpm readiness`), the sitemap, CLAUDE.md, ENV.md and git history, plus official Cloudflare and Sanity documentation
 (read through search summaries: direct access to developers.cloudflare.com and sanity.io is blocked by this
@@ -58,10 +59,10 @@ so the CMS (Q-10, Q-45) is on the critical path, not a later nice-to-have.
 | ID | Item | Why it matters | If deferred | Blocks launch |
 | --- | --- | --- | --- | --- |
 | A-1 | Record the de-facto answer to Q-52 (Phase 5 merged with a merge commit) and update CLAUDE.md/PHASE-6-PLAN status after Phase 6 merges | docs must match history | stale docs only | no |
-| A-2 | Worker adds `X-Robots-Tag: noindex` on the preview deployment (non-secret `vars` flag); local server routes only `run_worker_first` paths through the Worker and stops applying `_headers`/`_redirects` to Worker responses, so tests match documented Cloudflare behaviour | tests currently pass for a reason that won't hold on Cloudflare | a header-only gap on 3 preview pages; tests over-trust the emulator | no (preview is noindex by meta + robots + Access) |
+| A-2 | **Done (2 Oct 2026, D-034).** Worker adds `X-Robots-Tag: noindex` on the preview deployment (non-secret `vars` flag); local server routes only `run_worker_first` paths through the Worker and stops applying `_headers`/`_redirects` to Worker responses, so tests match documented Cloudflare behaviour | tests currently pass for a reason that won't hold on Cloudflare | a header-only gap on 3 preview pages; tests over-trust the emulator | no (preview is noindex by meta + robots + Access) |
 | A-3 | Redirect validator: fail if a redirect source matches a `run_worker_first` path | `_redirects` silently won't apply there | future redirects could silently not work | no |
 | A-4 | Playwright WebKit + Firefox smoke project (menu, CSP violations, headers) in CI | CSP/menu verified in Chromium only | Safari/Firefox issues found by users | no, but reduces E-6 |
-| A-5 | `docs/DEPLOYMENT.md`: runbook for §4 below (deploy, rollback, secrets, Access, DNS cut-over, verification) | a launch needs a written, rehearsable procedure | ad-hoc launch | yes (needed before C items execute) |
+| A-5 | **Done (2 Oct 2026, D-034).** `docs/DEPLOYMENT.md`: runbook for §4 below (deploy, rollback, secrets, Access, DNS cut-over, verification) | a launch needs a written, rehearsable procedure | ad-hoc launch | yes (needed before C items execute) |
 | A-6 | Content request pack generated from the readiness data: one checklist per person (company secretary, CP, owner) listing every INPUT NEEDED and every `toVerify` value with its current wording and source | turns 319 slots into answerable questions | content collection stalls | no, but it is the fastest way to unblock D |
 | A-7 | Old-site capture list: every Squarespace URL, PDF (`/s/*.pdf`), image and the presentation on the staging domain, to download before Squarespace is cancelled | once cancelled, those files and URLs are gone | permanent loss of documents; broken inbound links | yes (must happen before cut-over) |
 | A-8 | Staging build job (CI) that runs only when `SANITY_READ_TOKEN` exists; webhook → `repository_dispatch` workflow | lets content edits rebuild preview/production | manual rebuilds after every approval | no (manual deploys work) |
@@ -183,6 +184,10 @@ follow launch: its modules stay hidden until approved.
 
 ### 3.4 Hosting and deployment (proposed architecture for A-5)
 
+Implemented on the repository side in `docs/DEPLOYMENT.md` (D-034), with two refinements: the deploy workflow is
+manual only (no webhook yet), and the production Worker has no workers.dev address or committed route, so it serves
+nothing until its custom domain is attached at cutover. The sketch below is kept as written.
+
 ```
 GitHub (main) ── Actions ──▶ build (CONTENT_SOURCE=sanity, dataset production, published perspective, SANITY_READ_TOKEN)
                              ├─ guards, e2e, budget, readiness artifact
@@ -216,19 +221,19 @@ Sanity publish ── webhook ──▶ repository_dispatch ──▶ same workf
 
 | # | Step | Class | Status |
 | --- | --- | --- | --- |
-| 1 | Merge Phase 6 (B-13); record Q-52 (A-1) | B, A | NEEDS MY DECISION |
+| 1 | Merge Phase 6 (B-13, **done**: PR #9, 1 Oct 2026); record Q-52 (A-1) | B, A | DONE (A-1 docs follow-up remains) |
 | 2 | Name approvers: company secretary + competent person (D-1, Q-30) | D | BLOCKED (on you / company) |
 | 3 | Decide minimum launch set (B-1) | B | NEEDS MY DECISION |
 | 4 | Decide Sanity plan, roles, Studio hosting, assets (B-2, B-3, B-5, B-4) | B | NEEDS MY DECISION |
 | 5 | Decide accounts and host (B-6, B-12) | B | NEEDS MY DECISION |
-| 6 | Content request pack (A-6); old-site capture list (A-7); runbook (A-5); emulator fix (A-2, A-3) | A | READY |
+| 6 | Content request pack (A-6); old-site capture list (A-7); runbook (A-5, **done**); emulator fix (A-2 **done**, A-3) | A | READY (A-3, A-6, A-7 remain) |
 | 7 | Collect content: project list, company details, legal text, people, documents (D-2 to D-8, D-14, D-15) | D | BLOCKED (on 2) |
 | 8 | Collect technical content and CP statements (D-10 to D-12) | D | BLOCKED (on 2) |
 | 9 | Create Sanity project, private datasets, seats, token (C-1, C-2) | C | NEEDS EXTERNAL SETUP (after 4) |
 | 10 | Import `fixtures.ndjson` into staging; enter content; approvers approve in Studio | C, D | BLOCKED (on 7–9) |
 | 11 | Decide/build PDF route and alerts (B-7, B-8); forms if chosen (C-7) | B, A, C | NEEDS MY DECISION |
 | 12 | OG image, Lighthouse CI, analytics (B-11) | B | NEEDS MY DECISION |
-| 13 | Cloudflare Workers, Access on every preview hostname, deploy secrets (C-3, C-4) | C | NEEDS EXTERNAL SETUP (after 5) |
+| 13 | Cloudflare Workers, Access on every preview hostname, deploy secrets (C-3, C-4) — exact steps in `docs/DEPLOYMENT.md` §2–§3 | C | NEEDS EXTERNAL SETUP (after 5) |
 | 14 | Deploy preview with production content; run E-1 to E-8 | E | BLOCKED (on 10, 13) |
 | 15 | Download all old-site files (A-7 list) | D | BLOCKED (on 6) |
 | 16 | DNS cut-over preserving email; production deploy; E-3 to E-9 on production (C-6) | C, E | BLOCKED (on 14, 15) |
@@ -247,13 +252,13 @@ merge of PR #6.
 | 2 | 0 approved content; minimum set not agreed | B, D | owner, CS, CP | `MINIMUM-LAUNCH-CONTENT.md`, the packs |
 | 3 | No CMS to approve in (plan, roles, Studio host) | B, C | owner | Q-10, Q-46, Q-45 |
 | 4 | Legal text not supplied | D | company | CS-4 |
-| 5 | **Brand: site does not use the style guide's palette or logo** | B, D | owner | Q-53, Q-55 (vectors) |
+| 5 | **Brand: official logo vectors awaited** (~~palette~~: done, D-031) | D | owner | Q-55 (vectors) |
 | 6 | **No way to serve PDFs**; no document can launch | B, A | owner, then web team | Q-59, Q-47 |
 | 7 | **Email-alerts strip on every page leads nowhere** | B, A | owner, then web team | Q-60 (or Q-11 + forms) |
 | 8 | Old-site files not archived | C, D | owner, CS | `PDF-ASSETS-FORMS.md` §4, CS-9.3–9.4 |
 | 9 | Accounts, DNS (email records), canonical host | B, C | owner | Q-09, B-12, C-6 |
 | 10 | OG image, Lighthouse measurement | B, E | owner | Q-49, Q-50, E-2 |
-| 11 | Phase 6 not merged | B | owner | B-13 |
+| 11 | ~~Phase 6 not merged~~ — merged 1 Oct 2026 (PR #9) | — | — | B-13 |
 | 12 | Manual verification after deployment | E | web team | E-1 to E-9 |
 
 Not blockers (unchanged): Q-54, Q-56, Q-57, Q-58, maps and GIS, photography, search, map island, lightbox, contact

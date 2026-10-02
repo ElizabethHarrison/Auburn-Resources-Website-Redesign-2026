@@ -1,20 +1,29 @@
 #!/usr/bin/env node
 /**
- * Minimal static server for end-to-end tests: serves a build directory the way Cloudflare static assets
- * will (`/company` → company.html, `/` → index.html, unknown paths → 404), behind the real edge Worker
- * (workers/edge, D-023). No dependencies.
+ * Minimal static server for end-to-end tests: serves a build directory the way Cloudflare Workers static assets
+ * does (`/company` → company.html, `/` → index.html, unknown paths → 404), with the real edge Worker
+ * (workers/edge, D-023) in front of the `run_worker_first` paths only. No dependencies.
  *
- * Usage: node tests/static-server.mjs <dir> <port>
+ * Follows workers/edge/wrangler.jsonc (read, not restated) and the documented Cloudflare behaviour
+ * (docs/LAUNCH-GATE.md §1): `_redirects` and `_headers` apply to static-asset responses only, never to responses the
+ * Worker builds; the Worker gets the environment's `vars`.
+ *
+ * Usage: node tests/static-server.mjs <dir> <port> [production|preview]
+ * The environment defaults to `preview` for a directory whose name ends in `-preview`, else `production`.
  */
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
 // Node 24 runs the Worker's TypeScript directly (type stripping); no build step, no dependencies.
 import worker from '../workers/edge/src/index.ts';
+import { runsWorkerFirst, wranglerEnvironment } from './wrangler-config.mjs';
 
-const [dirArg, portArg] = process.argv.slice(2);
+const [dirArg, portArg, envArg] = process.argv.slice(2);
 const root = resolve(dirArg ?? 'dist');
 const port = Number(portArg ?? 4600);
+const environment = wranglerEnvironment(
+  envArg ?? (/-preview$/.test(root) ? 'preview' : 'production'),
+);
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -104,45 +113,57 @@ async function locate(pathname) {
 }
 
 /**
- * The static-assets binding, as Cloudflare provides it to the Worker: `_redirects` first, then `/x` → x.html,
- * with `_headers` applied,
- * `/` → index.html, unknown paths → the 404 page with status 404.
+ * Static-asset serving: `/x` → x.html, `/` → index.html, unknown paths → the 404 page with status 404. For a request
+ * that does not run the Worker, `_redirects` and `_headers` apply (`configured`); the binding the Worker receives
+ * gets plain assets, because Cloudflare does not apply either file to responses the Worker produces.
  */
-const ASSETS = {
-  async fetch(request) {
-    const { pathname } = new URL(request.url);
-    const redirect = REDIRECTS.get(pathname);
-    if (redirect) {
-      return new Response(null, {
-        status: redirect.status,
-        headers: withStaticHeaders(pathname, new Headers({ Location: redirect.to })),
-      });
-    }
-    const file = await locate(pathname);
-    if (!file) {
-      const notFound = join(root, '404.html');
-      return new Response((await isFile(notFound)) ? await readFile(notFound) : 'Not found', {
-        status: 404,
-        headers: withStaticHeaders(pathname, new Headers({ 'Content-Type': TYPES['.html'] })),
-      });
-    }
-    return new Response(await readFile(file), {
-      status: 200,
-      headers: withStaticHeaders(
-        pathname,
-        new Headers({ 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }),
-      ),
+async function serveAsset(request, configured) {
+  const { pathname } = new URL(request.url);
+  const redirect = configured ? REDIRECTS.get(pathname) : undefined;
+  if (redirect) {
+    return new Response(null, {
+      status: redirect.status,
+      headers: staticHeaders(configured, pathname, new Headers({ Location: redirect.to })),
     });
-  },
+  }
+  const file = await locate(pathname);
+  if (!file) {
+    const notFound = join(root, '404.html');
+    return new Response((await isFile(notFound)) ? await readFile(notFound) : 'Not found', {
+      status: 404,
+      headers: staticHeaders(configured, pathname, new Headers({ 'Content-Type': TYPES['.html'] })),
+    });
+  }
+  return new Response(await readFile(file), {
+    status: 200,
+    headers: staticHeaders(
+      configured,
+      pathname,
+      new Headers({ 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }),
+    ),
+  });
+}
+
+function staticHeaders(configured, pathname, headers) {
+  return configured ? withStaticHeaders(pathname, headers) : headers;
+}
+
+/** What the Worker receives: its environment's `vars` and the plain static-assets binding. */
+const WORKER_ENV = {
+  ...environment.vars,
+  ASSETS: { fetch: (request) => serveAsset(request, false) },
 };
 
-// Every request goes through the real edge Worker (D-023), exactly as `run_worker_first` routes would;
-// requests it does not handle fall through to ASSETS unchanged.
 createServer(async (request, response) => {
   const url = new URL(request.url ?? '/', `http://localhost:${port}`);
-  const result = await worker.fetch(new Request(url, { method: request.method }), { ASSETS });
+  const incoming = new Request(url, { method: request.method });
+  const result = runsWorkerFirst(environment.runWorkerFirst, url.pathname)
+    ? await worker.fetch(incoming, WORKER_ENV)
+    : await serveAsset(incoming, true);
   response.writeHead(result.status, Object.fromEntries(result.headers));
   response.end(request.method === 'HEAD' ? undefined : Buffer.from(await result.arrayBuffer()));
 }).listen(port, () =>
-  console.log(`Serving ${root} on http://localhost:${port} (via the edge Worker)`),
+  console.log(
+    `Serving ${root} on http://localhost:${port} as Cloudflare would (${environment.name}; Worker on ${environment.runWorkerFirst.length} run_worker_first patterns)`,
+  ),
 );

@@ -10,7 +10,9 @@ const FILES: Record<string, string> = {
   '/404': 'not found page',
 };
 const requested: string[] = [];
+// The production Worker: the only environment that opts in to indexing (wrangler.jsonc top-level vars).
 const env: Env = {
+  SITE_INDEXABLE: 'true',
   ASSETS: {
     async fetch(request) {
       const { pathname } = new URL(request.url);
@@ -22,8 +24,8 @@ const env: Env = {
     },
   },
 };
-const get = (path: string, method = 'GET') =>
-  handle(new Request(new URL(path, 'https://auburnresources.com.au'), { method }), env);
+const get = (path: string, method = 'GET', on: Env = env) =>
+  handle(new Request(new URL(path, 'https://auburnresources.com.au'), { method }), on);
 
 describe('Worker responses', () => {
   it('serves a valid filter with 200 and noindex', async () => {
@@ -108,5 +110,38 @@ describe('Worker responses', () => {
     expect(response.status).toBe(200);
     expect(await response.text()).toBe('reports');
     expect(response.headers.get('Content-Type')).toBe('text/html');
+  });
+});
+
+// Preview, and any Worker deployed without its variables, must never be indexable (docs/DEPLOYMENT.md).
+describe('indexing is opt-in', () => {
+  const PATHS = [
+    '/investors/reports',
+    '/investors/reports?year=2022',
+    '/investors/reports?utm_source=x',
+    '/filtered/reports/year-2022',
+    '/company',
+  ];
+
+  for (const [label, variables] of [
+    ['preview (SITE_INDEXABLE "false")', { SITE_INDEXABLE: 'false' }],
+    ['variables missing', {}],
+    ['unexpected value', { SITE_INDEXABLE: 'TRUE' }],
+  ] as const) {
+    it(`adds noindex to every Worker response: ${label}`, async () => {
+      const on: Env = { ASSETS: env.ASSETS, ...variables };
+      for (const path of PATHS) {
+        const response = await get(path, 'GET', on);
+        expect(response.headers.get('X-Robots-Tag'), path).toBe('noindex');
+        for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+          expect(response.headers.get(name), `${path} ${name}`).toBe(value);
+        }
+      }
+    });
+  }
+
+  it('production leaves the canonical listing page indexable', async () => {
+    const response = await get('/investors/reports');
+    expect(response.headers.get('X-Robots-Tag')).toBeNull();
   });
 });

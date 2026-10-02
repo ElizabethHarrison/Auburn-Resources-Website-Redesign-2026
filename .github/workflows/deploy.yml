@@ -1,0 +1,146 @@
+# Build the site from Sanity and deploy it to Cloudflare (Workers + static assets). docs/DEPLOYMENT.md.
+#
+# Manual only: nothing deploys on push, merge or schedule. Each run targets one GitHub Environment, `preview` or
+# `production`, whose secrets and variables are configured outside the repository (docs/DEPLOYMENT.md §2). The run
+# fails closed before building if any setting is missing — it never falls back to fixtures — and, for preview,
+# before deploying unless the preview hostname is already behind Cloudflare Access.
+#
+# Production deploys only from `main`, and only to the production Worker, which has no workers.dev address and no
+# routes (workers/edge/wrangler.jsonc): it serves nothing until a custom domain is attached at DNS cutover.
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment to build and deploy'
+        type: choice
+        options: [preview, production]
+        default: preview
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build from Sanity and deploy (${{ inputs.target }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Secrets and variables live on the GitHub Environment; production should require a reviewer (DEPLOYMENT.md §2).
+    environment: ${{ inputs.target }}
+    env:
+      DEPLOY_TARGET: ${{ inputs.target }}
+      ASTRO_TELEMETRY_DISABLED: '1'
+      DO_NOT_TRACK: '1'
+      WRANGLER_SEND_METRICS: 'false'
+      # Live content only. CONTENT_MODE comes from the build script (production → published, preview → drafts).
+      CONTENT_SOURCE: sanity
+      SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+      SANITY_DATASET: ${{ vars.SANITY_DATASET }}
+      SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      PREVIEW_URL: ${{ vars.PREVIEW_URL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Before anything is installed or built: every setting present, production only from main.
+      - name: Pre-flight (fails closed on any missing secret or variable)
+        run: node scripts/check-deploy-env.mjs
+
+      - name: Preview must already be behind Cloudflare Access
+        if: inputs.target == 'preview'
+        run: node scripts/check-preview-access.mjs
+
+      - uses: pnpm/action-setup@v6 # version from "packageManager" in package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build (production, published content)
+        if: inputs.target == 'production'
+        run: pnpm build
+
+      - name: Build (preview, drafts and placeholders)
+        if: inputs.target == 'preview'
+        run: pnpm build:preview
+
+      # The build must have read Sanity: the launch-readiness data records which adapter produced it.
+      - name: 'Assert the build came from Sanity (content source: sanity)'
+        run: |
+          out=${{ inputs.target == 'production' && 'dist' || 'dist-preview' }}
+          node -e "
+            const report = JSON.parse(require('fs').readFileSync('apps/site/reports/$out.readiness.json', 'utf8'));
+            if (report.contentSource !== 'sanity') {
+              console.error('::error::Build content source is ' + report.contentSource + ', not sanity. Not deploying.');
+              process.exit(1);
+            }
+            console.log('Built from Sanity: ' + report.groups.length + ' content groups.');
+          "
+
+      # Same leak guards as CI (CLAUDE.md §2.1, D-005): production never ships preview-only output.
+      - name: Guard production output
+        if: inputs.target == 'production'
+        run: |
+          dist=apps/site/dist
+          if grep -rIl -e 'INPUT NEEDED' -e 'data-preview-only' -e 'data-content-mode="preview"' -e 'Preview build' -e 'Specimen' "$dist"; then
+            echo "::error::Preview-only content found in $dist (files listed above)."; exit 1
+          fi
+          if find "$dist" -iname '*indicative*' | grep .; then echo "::error::Indicative artwork in $dist."; exit 1; fi
+          if find "$dist" -path '*_catalogue*' | grep .; then echo "::error::Catalogue in $dist."; exit 1; fi
+          if grep -qx 'Disallow: /' "$dist/robots.txt"; then echo "::error::Production robots.txt disallows all."; exit 1; fi
+          node scripts/check-js-budget.mjs "$dist"
+
+      # Preview is never indexable: robots, meta and (from the Worker) X-Robots-Tag on every response.
+      - name: Guard preview output
+        if: inputs.target == 'preview'
+        run: |
+          dist=apps/site/dist-preview
+          grep -qx 'Disallow: /' "$dist/robots.txt" || { echo "::error::Preview robots.txt must disallow all."; exit 1; }
+          if grep -rIL 'noindex' --include='*.html' "$dist" | grep .; then
+            echo "::error::Preview pages without noindex (listed above)."; exit 1
+          fi
+          grep -q 'X-Robots-Tag: noindex' "$dist/_headers" || { echo "::error::Preview _headers lacks noindex."; exit 1; }
+
+      - name: Guard both outputs (redirects, headers, no readiness data)
+        run: |
+          dist=apps/site/${{ inputs.target == 'production' && 'dist' || 'dist-preview' }}
+          test -s "$dist/_redirects" || { echo "::error::$dist/_redirects missing."; exit 1; }
+          test -s "$dist/_headers" || { echo "::error::$dist/_headers missing."; exit 1; }
+          if find "$dist" -name '*readiness*' | grep .; then echo "::error::Readiness data in $dist."; exit 1; fi
+
+      - name: Keep the launch-readiness report (never deployed)
+        uses: actions/upload-artifact@v5
+        with:
+          name: launch-readiness-${{ inputs.target }}
+          path: apps/site/reports/
+          retention-days: 30
+
+      # `--env=""` is the top-level (production) Worker; `--env=preview` the preview Worker.
+      - name: Deploy to Cloudflare
+        working-directory: workers/edge
+        # Written so the falsy '' cannot fall through: preview → "preview", anything else → "" (top level).
+        run: pnpm exec wrangler deploy --env="${{ inputs.target == 'preview' && 'preview' || '' }}"
+
+      - name: Preview is still behind Cloudflare Access
+        if: inputs.target == 'preview'
+        run: node scripts/check-preview-access.mjs
+
+      - name: Production routing reminder
+        if: inputs.target == 'production'
+        run: |
+          echo "::notice::The production Worker is deployed but has no route or workers.dev address. It serves" \
+            "nothing until the custom domain is attached at DNS cutover (docs/DEPLOYMENT.md §6)."

@@ -88,8 +88,8 @@ the PDF Worker is approved. Indicative mockup graphics never enter Sanity.
 | Preview (behind Access) | `sanity` | `production` (or `staging`) | drafts | `SANITY_READ_TOKEN` (viewer) |
 | Production | `sanity` | `production` | published | `SANITY_READ_TOKEN` (viewer) |
 
-Datasets are private, so both builds need the viewer token (a build-time secret in CI/Cloudflare, never in the repo or
-the browser). Webhook-triggered rebuilds (`SANITY_WEBHOOK_SECRET`) are deployment work and not built.
+Datasets are private, so both builds need the viewer token (a build-time secret in GitHub Environments, never in the
+repo or the browser; `docs/DEPLOYMENT.md` §2, §4). Webhook-triggered rebuilds (`SANITY_WEBHOOK_SECRET`) are deployment work and not built.
 
 ## 8. Studio hosting (Q-45, undecided)
 

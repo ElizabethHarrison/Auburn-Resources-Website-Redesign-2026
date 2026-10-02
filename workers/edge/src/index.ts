@@ -2,9 +2,13 @@
  * Edge Worker entry (D-023). Scope: document-filter routing only — the PDF proxy, contact and alerts
  * APIs are later Phase 4 work. Every other request is served by static assets unchanged, apart from the
  * security headers (D-030), which the Worker sets on every response it returns because Cloudflare's
- * `_headers` file is not guaranteed to reach Worker responses.
+ * `_headers` file is not applied to Worker responses.
  *
- * Deployment is documented in docs/WORKER.md §8 and is not done yet.
+ * Indexing is opt-in: unless the environment sets `SITE_INDEXABLE = "true"` (production only, in wrangler.jsonc),
+ * every response the Worker returns carries `X-Robots-Tag: noindex`. Preview — and any environment whose
+ * variables are missing — therefore fails closed (docs/DEPLOYMENT.md).
+ *
+ * Deployment: docs/DEPLOYMENT.md.
  */
 import { SECURITY_HEADERS } from '@auburn/security-headers';
 import { decide } from './document-filters.ts';
@@ -16,6 +20,8 @@ export interface AssetsBinding {
 
 export interface Env {
   readonly ASSETS: AssetsBinding;
+  /** `"true"` only on the production Worker; anything else (or absent) means noindex on every response. */
+  readonly SITE_INDEXABLE?: string | undefined;
 }
 
 const NOINDEX = 'noindex';
@@ -31,15 +37,19 @@ function withNoindex(response: Response, status = response.status): Response {
   return new Response(response.body, { status, headers });
 }
 
-/** Every response leaves with the constant security headers (never derived from the request). */
-function secured(response: Response): Response {
+/**
+ * Every response leaves with the constant security headers (never derived from the request), and with noindex
+ * unless this environment is explicitly the indexable production site.
+ */
+function secured(response: Response, env: Env): Response {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+  if (env.SITE_INDEXABLE !== 'true') headers.set('X-Robots-Tag', NOINDEX);
   return new Response(response.body, { status: response.status, headers });
 }
 
 export async function handle(request: Request, env: Env): Promise<Response> {
-  return secured(await route(request, env));
+  return secured(await route(request, env), env);
 }
 
 async function route(request: Request, env: Env): Promise<Response> {

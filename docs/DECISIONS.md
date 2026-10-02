@@ -449,3 +449,20 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Unchanged:** font sizes and weights, colours, band assignments, breakpoints, page structure, module order,
   content, navigation, header height, touch targets, figure and caption spacing, fact-cell and table padding,
   accessibility and focus behaviour. DOM order is unchanged.
+
+## D-034 · Deployment: manual workflow, fail-closed settings, opt-in indexing
+- **Date:** 2 Oct 2026 · **Status:** **Approved** by the owner for the repository side (request of 2 Oct 2026).
+  Nothing is deployed; Cloudflare, Sanity, GitHub Environments and DNS are configured outside the repository.
+- **Decision:** deploy with `.github/workflows/deploy.yml`, run manually per target (`preview`, `production`), never on
+  push, merge or schedule. Settings live on GitHub Environments; a pre-flight (`scripts/check-deploy-env.mjs`) stops
+  the run if any is missing or inconsistent, `CONTENT_SOURCE` is always `sanity`, and the build must report that it
+  read Sanity before anything is deployed. Production deploys only from `main` and only from the `production` dataset.
+- **Indexing is opt-in in the Worker:** every Worker response is `noindex` unless `SITE_INDEXABLE` is exactly `"true"`,
+  set only in the production (top-level) `vars` of `wrangler.jsonc`. Fixes the launch audit's A-2 (preview listing
+  pages are Worker responses, which `_headers` does not reach) and makes a misconfigured Worker fail closed.
+- **No public hostname by accident:** production has `workers_dev: false`, `preview_urls: false` and no committed routes,
+  so it serves nothing until its custom domain is attached at cutover; preview has only its workers.dev address, which
+  must already answer with Cloudflare Access before and after each deploy (`scripts/check-preview-access.mjs`).
+- **Tooling:** `wrangler` is a dev dependency of `workers/edge` (deploy only; `workerd` not built). The local server
+  follows `wrangler.jsonc` and documented Cloudflare behaviour (`_headers`/`_redirects` never on Worker responses).
+- **Unchanged:** content rules, fact statuses, fail-closed approval checks, CI. Runbook: `docs/DEPLOYMENT.md`.
