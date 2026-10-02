@@ -4,6 +4,34 @@ Status: **repository side ready, 2 Oct 2026 (D-034). Nothing has been deployed.*
 project, secret or DNS record exists yet; the current auburnresources.com.au (Squarespace) is untouched. Do not publish
 the production build until content is approved (D-019; `docs/LAUNCH-GATE.md`): today it is title-only by design.
 
+## 0. Temporary launch configuration (D-035)
+
+The owner has approved a **temporary single-operator setup** to get the infrastructure running. It departs from this
+document where marked; nothing about the content rules or the safety checks changes.
+
+| Setting | This document | Temporary value |
+| --- | --- | --- |
+| Cloudflare account owner (login email) | a company-controlled address | `eharrison@dgrglobal.com.au` — **departs** (a DGR Global mailbox, not an Auburn one; move to an Auburn-controlled address before launch) |
+| Cloudflare administrators | **at least two** (§3) | Elizabeth Harrison only — **departs** |
+| workers.dev subdomain | the account's choice (§3.1) | `auburnresources` (if available) → preview `https://auburn-edge-preview.auburnresources.workers.dev` |
+| Zero Trust team | — | `auburnresources` (→ `auburnresources.cloudflareaccess.com`) |
+| Preview Access allow-list | named reviewers (§3.3) | `eharrison@dgrglobal.com.au` only (Elizabeth Harrison) |
+| Sanity plan / Studio | Growth; Q-45 | Growth; Sanity-hosted (`*.sanity.studio`) |
+| Sanity members | owner/developer Administrator; company secretary and competent person Editor (§4.1) | Elizabeth Harrison only, Administrator (also edits content) — **departs** |
+| Approver person records | company secretary: corporate; competent person: technical | one record, Elizabeth Harrison, `approverFor: corporate, technical` — **departs** |
+| Preview dataset | `staging` or `production` | `staging` |
+
+Safeguards that still hold: approvals need a source, as-at date, approver of the right kind and date (fail-closed);
+publishing is not approval; nothing is approved in code; nothing is backdated; the production dataset stays separate
+from staging; the preview is behind Access before any site content reaches it; production is not deployed or routed.
+The approver's person record has no approved *role*, so it never appears on the public Leadership page (it does in
+the Access-protected preview).
+
+**Before the public launch, end this configuration:** move the Cloudflare account login to an Auburn-controlled address and add a second administrator; give the company
+secretary and the competent person their own Sanity seats and person records; reduce the temporary record's
+`approverFor` to what its holder actually holds; have the proper approvers re-confirm every approval recorded under
+this arrangement (the launch-readiness report's approval audit lists them); update this section and D-035.
+
 ## 1. The five stages
 
 They are separate steps with separate owners; none happens as a side effect of another.
