@@ -466,3 +466,24 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Tooling:** `wrangler` is a dev dependency of `workers/edge` (deploy only; `workerd` not built). The local server
   follows `wrangler.jsonc` and documented Cloudflare behaviour (`_headers`/`_redirects` never on Worker responses).
 - **Unchanged:** content rules, fact statuses, fail-closed approval checks, CI. Runbook: `docs/DEPLOYMENT.md`.
+
+## D-035 · Temporary single-operator launch configuration
+- **Date:** 2 Oct 2026 · **Status:** **Approved** by the owner, as a **temporary** configuration for getting the
+  infrastructure running. It is not the final governance arrangement and must be replaced before the public launch.
+- **Decision:** Elizabeth Harrison is, for now, the only operator: Cloudflare administrator (account owner address
+  `info@auburnresources.com.au`), Sanity project administrator and content editor, the only person allowed through
+  Cloudflare Access to the preview, and the person record holding **both** approver kinds (`approverFor: corporate,
+  technical`). Plan: Sanity Growth; Studio: Sanity-hosted; preview reads the `staging` dataset; proposed workers.dev
+  subdomain `auburnresources` (subject to availability in the Cloudflare dashboard).
+- **Where it departs from the documents:** `docs/DEPLOYMENT.md` §3 (two Cloudflare administrators), §4.1 (approvers
+  are the company secretary and the competent person, as Editors; owner/developer as Administrator), D-027 and
+  `docs/APPROVAL-MATRIX.md` (corporate facts approved by the company secretary, technical facts by the competent
+  person). Recorded in `docs/DEPLOYMENT.md` §0 with the steps that end it.
+- **What does not change:** the approval rules and fail-closed checks (an approval still needs a source, as-at date,
+  an approver of the right kind and an approval date; publishing is not approval); production safety checks; nothing
+  is approved in code. No approval is recorded, invented or backdated by this decision: approvals entered under this
+  arrangement carry the real person and real date, and are re-reviewed under the final arrangement before launch.
+- **Ends when:** a second Cloudflare administrator exists; the company secretary and competent person have their own
+  Sanity seats and person records; the temporary dual-approver record is reduced to the role(s) its holder actually
+  holds; and every approval recorded under this arrangement has been re-confirmed by the proper approver.
+
