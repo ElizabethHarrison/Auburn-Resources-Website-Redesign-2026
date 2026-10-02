@@ -471,11 +471,12 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
 - **Date:** 2 Oct 2026 · **Status:** **Approved** by the owner, as a **temporary** configuration for getting the
   infrastructure running. It is not the final governance arrangement and must be replaced before the public launch.
 - **Decision:** Elizabeth Harrison is, for now, the only operator: Cloudflare administrator (account owner address
-  `info@auburnresources.com.au`), Sanity project administrator and content editor, the only person allowed through
+  `eharrison@dgrglobal.com.au`), Sanity project administrator and content editor, the only person allowed through
   Cloudflare Access to the preview (allow-list: `eharrison@dgrglobal.com.au` only), and the person record holding
   **both** approver kinds (`approverFor: corporate, technical`). Plan: Sanity Growth; Studio: Sanity-hosted; preview reads the `staging` dataset; proposed workers.dev
   subdomain `auburnresources` (subject to availability in the Cloudflare dashboard).
-- **Where it departs from the documents:** `docs/DEPLOYMENT.md` §3 (two Cloudflare administrators), §4.1 (approvers
+- **Where it departs from the documents:** `docs/DEPLOYMENT.md` §3 (two Cloudflare administrators; an account the
+  company controls — the login is a DGR Global mailbox), §4.1 (approvers
   are the company secretary and the competent person, as Editors; owner/developer as Administrator), D-027 and
   `docs/APPROVAL-MATRIX.md` (corporate facts approved by the company secretary, technical facts by the competent
   person). Recorded in `docs/DEPLOYMENT.md` §0 with the steps that end it.
@@ -483,7 +484,7 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   an approver of the right kind and an approval date; publishing is not approval); production safety checks; nothing
   is approved in code. No approval is recorded, invented or backdated by this decision: approvals entered under this
   arrangement carry the real person and real date, and are re-reviewed under the final arrangement before launch.
-- **Ends when:** a second Cloudflare administrator exists; the company secretary and competent person have their own
+- **Ends when:** the Cloudflare account login is an Auburn-controlled address and a second administrator exists; the company secretary and competent person have their own
   Sanity seats and person records; the temporary dual-approver record is reduced to the role(s) its holder actually
   holds; and every approval recorded under this arrangement has been re-confirmed by the proper approver.
 

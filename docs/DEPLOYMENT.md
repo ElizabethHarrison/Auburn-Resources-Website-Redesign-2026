@@ -11,7 +11,7 @@ document where marked; nothing about the content rules or the safety checks chan
 
 | Setting | This document | Temporary value |
 | --- | --- | --- |
-| Cloudflare account owner (login email) | a company-controlled address | `info@auburnresources.com.au` |
+| Cloudflare account owner (login email) | a company-controlled address | `eharrison@dgrglobal.com.au` — **departs** (a DGR Global mailbox, not an Auburn one; move to an Auburn-controlled address before launch) |
 | Cloudflare administrators | **at least two** (§3) | Elizabeth Harrison only — **departs** |
 | workers.dev subdomain | the account's choice (§3.1) | `auburnresources` (if available) → preview `https://auburn-edge-preview.auburnresources.workers.dev` |
 | Zero Trust team | — | `auburnresources` (→ `auburnresources.cloudflareaccess.com`) |
@@ -27,7 +27,7 @@ from staging; the preview is behind Access before any site content reaches it; p
 The approver's person record has no approved *role*, so it never appears on the public Leadership page (it does in
 the Access-protected preview).
 
-**Before the public launch, end this configuration:** add a second Cloudflare administrator; give the company
+**Before the public launch, end this configuration:** move the Cloudflare account login to an Auburn-controlled address and add a second administrator; give the company
 secretary and the competent person their own Sanity seats and person records; reduce the temporary record's
 `approverFor` to what its holder actually holds; have the proper approvers re-confirm every approval recorded under
 this arrangement (the launch-readiness report's approval audit lists them); update this section and D-035.
