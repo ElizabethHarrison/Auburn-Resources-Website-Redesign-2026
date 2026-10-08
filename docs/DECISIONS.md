@@ -488,3 +488,34 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   Sanity seats and person records; the temporary dual-approver record is reduced to the role(s) its holder actually
   holds; and every approval recorded under this arrangement has been re-confirmed by the proper approver.
 
+## D-036 · Interim: restyle the current Squarespace site with the new design
+- **Date:** 8 Oct 2026 · **Status:** **Approved** by the owner (request of 8 Oct 2026). Interim; prepared, not applied.
+- **Decision:** while the new site waits on content approval and infrastructure, the current Squarespace (7.1) site may
+  be restyled with the "Survey Sheet" look using `squarespace/auburn-restyle.css` and `docs/SQUARESPACE-RESTYLE.md`:
+  brand palette only (D-031), square and flat, weight 400, section bands by section colour theme (D-032 rules: at most
+  one dark band, none before the footer, legal pages white, no orange on bands), visible focus, reduced motion.
+- **Limits:** appearance only. The restyled site has none of the new site's content safeguards, structure or
+  accessibility and performance work; its content stays the company's responsibility in Squarespace. The guide lists
+  old-site content the new site's rules hold back (HOLD wording, outdated offers, broken contact link) for the owner to
+  review.
+- **Unchanged:** the new site, its content rules, D-034 deployment and D-035.
+
+
+## D-037 · Launch on a new Squarespace 7.1 site with the Survey Sheet design
+- **Date:** 8 Oct 2026 · **Status:** **Approved** by the owner (request of 8 Oct 2026: "rebuild … same design and
+  layout … just new website, and I'll transfer the domain over"). Prepared, not built.
+- **Decision:** the launch site is a new Squarespace 7.1 site built to the approved page structure, URLs, section
+  order and band assignments (`docs/SITEMAP.md`, `docs/WEBSITE-STRATEGY.md` §5, D-032), styled by
+  `squarespace/auburn-restyle.css`, with Code-block snippets in `squarespace/snippets.html` (key facts, register,
+  figure, compliance note, placeholder). Build steps, redirects and the domain move: `docs/SQUARESPACE-BUILD.md`.
+  Supersedes D-036 (restyle the old site) as the interim route.
+- **Paused, not removed:** the Astro site, Sanity, the edge Worker and the D-034 deploy workflow stay in the
+  repository; nothing is deleted. D-035 setup is paused where it stopped.
+- **What still applies:** the content rules (CLAUDE.md §2) are kept by hand: only facts approved in writing by the
+  company secretary or competent person, with source and as-at date; no `INPUT NEEDED` on a public page; HOLD items
+  never published; legal and CP text supplied by the company; indicative artwork not used; Traditional Owner names
+  only with consent. The site stays private until the guide's §11 checks pass.
+- **What is lost (accepted):** automated approval and fail-closed builds, document filters and Pagefind, JSON-LD,
+  `/documents/` PDF addresses, CI budgets and axe checks (guide, last section).
+- **Owner actions:** subscribe the new site, move the domain inside Squarespace, keep email DNS records, keep the old
+  site until its PDFs are saved (all marked ⚠️ in the guide; none done here).

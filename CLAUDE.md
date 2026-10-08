@@ -52,6 +52,11 @@ Read these before writing code, in this order:
 - **Deployment** (repository side, D-034; `docs/DEPLOYMENT.md`): manual `.github/workflows/deploy.yml` (preview or
   production, from Sanity only, fail-closed pre-flight), `wrangler` dev dependency in `workers/edge`, opt-in indexing
   in the Worker (`SITE_INDEXABLE`), preview Access check. **Nothing deployed**; no Cloudflare, Sanity or DNS change.
+- **Interim (D-036):** `squarespace/auburn-restyle.css` + `docs/SQUARESPACE-RESTYLE.md` restyle the current Squarespace
+  site with the new look (appearance only; prepared, not applied). It is not part of the new site.
+- **Launch route (D-037):** a **new** Squarespace 7.1 site in the same design and layout, built by hand from
+  `docs/SQUARESPACE-BUILD.md` (`squarespace/auburn-restyle.css` + `squarespace/snippets.html`); domain moved by the
+  owner. Prepared, not built. The Astro/Cloudflare/Sanity route is paused, not removed.
 - **Not yet built:** Phase 4 items 3–8 (deferred), live Sanity project/dataset/import, Studio hosting, webhooks,
   Lighthouse budgets in CI. Q-05, Q-08, Q-10, Q-45–Q-51, Q-55 (provisional) and Q-57–Q-60 are open and must not be decided silently.
 
