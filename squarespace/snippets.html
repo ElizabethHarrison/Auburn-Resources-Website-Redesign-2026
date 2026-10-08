@@ -1,0 +1,114 @@
+<!--
+  Auburn Resources — Squarespace Code-block snippets (docs/SQUARESPACE-BUILD.md, D-037).
+
+  How to use: in the page editor, add a block → Code → set the mode to HTML → paste ONE snippet (from its opening
+  comment to the next) → Apply. The styling comes from squarespace/auburn-restyle.css (Custom CSS), so paste that first.
+  Code blocks need the Squarespace Core plan or higher.
+
+  Every value below is a placeholder. Replace each [INPUT NEEDED: …] only with a value the company has approved in
+  writing (company secretary for corporate facts, competent person for technical facts), with its source and as-at
+  date. Never publish a page that still shows "INPUT NEEDED". Never type in a resource, target, grade, tonnage or
+  drilling figure that the competent person has not signed off, and never the HOLD wording listed in the guide.
+-->
+
+<!-- ===== 1. Key facts strip (Home: 5 cells; Project: 6 cells; Investor centre) ===== -->
+<!-- Delete a whole <li> rather than leave it empty. Keep the as-at line. -->
+<ul class="auburn-facts" aria-label="Key facts">
+  <li>
+    <span class="auburn-label">Projects</span>
+    <span class="auburn-value"
+      ><span class="auburn-input-needed">INPUT NEEDED: number of projects</span></span
+    >
+  </li>
+  <li>
+    <span class="auburn-label">Ground held</span>
+    <span class="auburn-value"
+      ><span class="auburn-input-needed">INPUT NEEDED: total area, km²</span></span
+    >
+  </li>
+  <li>
+    <span class="auburn-label">Commodities</span>
+    <span class="auburn-value"
+      ><span class="auburn-input-needed">INPUT NEEDED: commodities</span></span
+    >
+  </li>
+  <li>
+    <span class="auburn-label">Jurisdictions</span>
+    <span class="auburn-value"
+      ><span class="auburn-input-needed">INPUT NEEDED: states and territories</span></span
+    >
+  </li>
+  <li>
+    <span class="auburn-label">Status</span>
+    <span class="auburn-value"
+      ><span class="auburn-input-needed">INPUT NEEDED: company status</span></span
+    >
+  </li>
+</ul>
+<p class="auburn-source">
+  As at <span class="auburn-input-needed">INPUT NEEDED: DD MMM YYYY</span> · Source:
+  <span class="auburn-input-needed">INPUT NEEDED: source document</span>
+</p>
+
+<!-- ===== 2. Document register (Home "The register", Investor centre, Announcements, Reports) ===== -->
+<!-- One <tr> per document, newest first. Dates as DD MMM YYYY. Link to the PDF uploaded to Squarespace. -->
+<div class="auburn-table-wrap">
+  <table class="auburn-register">
+    <caption>
+      Latest documents
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Type</th>
+        <th scope="col">Document</th>
+        <th scope="col">File</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="auburn-date"><span class="auburn-input-needed">INPUT NEEDED: date</span></td>
+        <td><span class="auburn-input-needed">INPUT NEEDED: type</span></td>
+        <td><span class="auburn-input-needed">INPUT NEEDED: document title</span></td>
+        <td>
+          <a href="#">PDF<span class="sr-only"> — document title</span></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== 3. Numbered figure with caption, source and date ===== -->
+<!-- Use only real, approved maps or documentary photos. The mockup map and the schematic cross-section are
+     indicative only and must not be used. Write meaningful alt text. -->
+<figure class="auburn-figure">
+  <img src="IMAGE-URL" alt="INPUT NEEDED: describe what the figure shows" />
+  <figcaption>
+    <span class="auburn-label"
+      >Fig. 1 — <span class="auburn-input-needed">INPUT NEEDED: caption</span></span
+    ><br />
+    <span class="auburn-source"
+      >Source: <span class="auburn-input-needed">INPUT NEEDED: source</span> ·
+      <span class="auburn-input-needed">INPUT NEEDED: DD MMM YYYY</span></span
+    >
+  </figcaption>
+</figure>
+
+<!-- ===== 4. Compliance note (any page showing exploration results, targets or resources; planned milestones) ===== -->
+<!-- The competent person statement is supplied by the company. Do not write it yourself. -->
+<div class="auburn-compliance">
+  <p class="auburn-label">Competent person statement</p>
+  <p>
+    <span class="auburn-input-needed"
+      >INPUT NEEDED: competent person statement, supplied by the company</span
+    >
+  </p>
+  <p>
+    Forward-looking statements and the basis of reporting:
+    <a href="/disclaimer">read the disclaimer</a>.
+  </p>
+</div>
+
+<!-- ===== 5. Placeholder (inline) ===== -->
+<!-- For any missing value while the site is private. Search every page for "INPUT NEEDED" before going live. -->
+<span class="auburn-input-needed">INPUT NEEDED: short description</span>

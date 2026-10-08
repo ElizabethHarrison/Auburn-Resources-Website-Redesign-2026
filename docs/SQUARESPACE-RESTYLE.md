@@ -4,6 +4,9 @@ Status: **prepared 8 Oct 2026 (D-036). Not applied.** The owner chose to restyle
 the new "Survey Sheet" look as a stopgap, while the new site (Cloudflare + Sanity, `docs/DEPLOYMENT.md`) continues.
 Nothing here changes the new site, its content rules or its deployment.
 
+> **Superseded by D-037:** the owner is building a new Squarespace site instead — see `docs/SQUARESPACE-BUILD.md`.
+> The CSS file is shared by both routes.
+
 File: `squarespace/auburn-restyle.css` — paste into Squarespace's Custom CSS. Appearance only: no content, page,
 navigation or URL changes. Brand palette only (D-031); square, flat, 1 px rules, weight 400; no orange (D-032).
 

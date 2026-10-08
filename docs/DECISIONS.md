@@ -500,3 +500,22 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   review.
 - **Unchanged:** the new site, its content rules, D-034 deployment and D-035.
 
+
+## D-037 · Launch on a new Squarespace 7.1 site with the Survey Sheet design
+- **Date:** 8 Oct 2026 · **Status:** **Approved** by the owner (request of 8 Oct 2026: "rebuild … same design and
+  layout … just new website, and I'll transfer the domain over"). Prepared, not built.
+- **Decision:** the launch site is a new Squarespace 7.1 site built to the approved page structure, URLs, section
+  order and band assignments (`docs/SITEMAP.md`, `docs/WEBSITE-STRATEGY.md` §5, D-032), styled by
+  `squarespace/auburn-restyle.css`, with Code-block snippets in `squarespace/snippets.html` (key facts, register,
+  figure, compliance note, placeholder). Build steps, redirects and the domain move: `docs/SQUARESPACE-BUILD.md`.
+  Supersedes D-036 (restyle the old site) as the interim route.
+- **Paused, not removed:** the Astro site, Sanity, the edge Worker and the D-034 deploy workflow stay in the
+  repository; nothing is deleted. D-035 setup is paused where it stopped.
+- **What still applies:** the content rules (CLAUDE.md §2) are kept by hand: only facts approved in writing by the
+  company secretary or competent person, with source and as-at date; no `INPUT NEEDED` on a public page; HOLD items
+  never published; legal and CP text supplied by the company; indicative artwork not used; Traditional Owner names
+  only with consent. The site stays private until the guide's §11 checks pass.
+- **What is lost (accepted):** automated approval and fail-closed builds, document filters and Pagefind, JSON-LD,
+  `/documents/` PDF addresses, CI budgets and axe checks (guide, last section).
+- **Owner actions:** subscribe the new site, move the domain inside Squarespace, keep email DNS records, keep the old
+  site until its PDFs are saved (all marked ⚠️ in the guide; none done here).
