@@ -626,6 +626,71 @@ figcaption,
   margin-top: 0.5rem;
 }
 
+/* Project sheet cards ("The portfolio, sheet by sheet"): white sheets with a dark-teal rule, also on light bands. */
+.auburn-sheets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auburn-sheets li {
+  max-width: none !important;
+  margin: 0;
+}
+
+.auburn-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  padding: 1.25rem;
+  border: var(--auburn-rule);
+  background-color: var(--auburn-white);
+  color: var(--auburn-charcoal);
+}
+
+.auburn-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--auburn-light-teal);
+}
+
+.auburn-sheet h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--auburn-dark-teal) !important;
+}
+
+.auburn-tag {
+  align-self: flex-start;
+  padding: 0.25rem 0.5rem;
+  border: var(--auburn-rule);
+  font-family: var(--auburn-mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--auburn-dark-teal);
+}
+
+.auburn-sheet p {
+  margin: 0;
+  color: var(--auburn-charcoal) !important;
+}
+
+.auburn-sheet a {
+  margin-top: auto;
+  padding: 0.75rem 0 0.25rem;
+  color: var(--auburn-dark-teal) !important;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 /* Compliance note (competent person statement + disclaimer link). */
 .auburn-compliance {
   padding: 1rem 0;
