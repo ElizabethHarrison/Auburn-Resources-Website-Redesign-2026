@@ -1,0 +1,435 @@
+/*
+ * Auburn Resources: "Survey Sheet" restyle for the current Squarespace 7.1 site (interim, D-036).
+ * Paste into Squarespace → Website → Website Tools → Custom CSS. Instructions: docs/SQUARESPACE-RESTYLE.md.
+ *
+ * Appearance only. It changes no content, page, navigation or URL. Values come from the new site's design tokens
+ * (apps/site/src/styles/tokens.css, D-031): brand palette only, square, flat, 1 px rules, weight 400.
+ * Orange is not used: it marks Auburn's ground on maps only and never sits on a band (D-032).
+ *
+ * Section bands follow each section's colour theme, chosen per section in the Squarespace editor:
+ *   White → white page ground · Light → light-teal band · Dark → dark-teal feature band (at most one per page).
+ *
+ * Squarespace's own stylesheet is loaded first and is very specific, so some rules need !important. That is
+ * normal for Squarespace custom CSS; it is not allowed in the new site's own code.
+ */
+
+/* ── Palette and type (company style guide, Nov 2019) ─────────────────────────────────────────── */
+:root {
+  --auburn-dark-teal: #275259; /* primary: headings, rules, buttons, links, footer */
+  --auburn-light-teal: #b1d3d9; /* light bands; secondary text on dark teal (5.41:1) */
+  --auburn-charcoal: #3b3838; /* body text (11.61:1 on white, 7.29:1 on light teal) */
+  --auburn-white: #ffffff;
+  --auburn-sans: 'Century Gothic', CenturyGothic, 'Didact Gothic', AppleGothic, sans-serif;
+  --auburn-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --auburn-rule: 1px solid var(--auburn-dark-teal);
+}
+
+/* ── Base text ────────────────────────────────────────────────────────────────────────────────── */
+body,
+p,
+li,
+blockquote,
+.sqs-block-html,
+.header-nav-item a,
+.header-menu-nav-item a {
+  font-family: var(--auburn-sans) !important;
+  font-weight: 400 !important;
+}
+
+body {
+  color: var(--auburn-charcoal);
+  -webkit-font-smoothing: antialiased;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* Hierarchy by size and ink, not weight. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--auburn-sans) !important;
+  font-weight: 400 !important;
+  color: var(--auburn-dark-teal) !important;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+h4 {
+  letter-spacing: 0;
+}
+
+strong,
+b {
+  font-weight: 400; /* the brand face has no licensed bold on the web; emphasis by size and ink */
+}
+
+/* A section heading carries a ruled line above it, like a map-sheet margin. */
+.sqs-block-html h2 {
+  padding-top: 1rem;
+  border-top: var(--auburn-rule);
+}
+
+/* Small paragraph style (Text → Paragraph 3) becomes the mono label / kicker. */
+p.sqsrte-small,
+.sqsrte-small {
+  font-family: var(--auburn-mono) !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 1.5px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--auburn-dark-teal);
+}
+
+/* Large paragraph style (Text → Paragraph 1) becomes the lead paragraph. */
+p.sqsrte-large {
+  line-height: 1.5;
+}
+
+/* Prose stays readable on wide screens. */
+.sqs-block-html p,
+.sqs-block-html li {
+  max-width: 68ch;
+}
+
+/* …and centred or right-aligned text keeps its alignment as a block. */
+.sqs-block-html p[style*='center'],
+.sqs-block-html :is(h1, h2, h3, h4)[style*='center'] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sqs-block-html p[style*='right'] {
+  margin-left: auto;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────────────────────────── */
+.sqs-block-html a:not(.sqs-block-button-element, .btn),
+.sqs-block-markdown a:not(.sqs-block-button-element, .btn),
+.blog-item-content a:not(.sqs-block-button-element, .btn) {
+  color: var(--auburn-dark-teal) !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.sqs-block-html a:not(.sqs-block-button-element, .btn):hover,
+.sqs-block-markdown a:not(.sqs-block-button-element, .btn):hover,
+.blog-item-content a:not(.sqs-block-button-element, .btn):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Visible keyboard focus everywhere (WCAG 2.2): dark teal on light grounds, white on dark ones. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--auburn-dark-teal) !important;
+  outline-offset: 2px !important;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────────────────────────── */
+.header,
+.header .header-announcement-bar-wrapper {
+  background-color: var(--auburn-white) !important;
+}
+
+.header {
+  border-bottom: var(--auburn-rule);
+  box-shadow: none !important;
+}
+
+.header-title-text a {
+  text-decoration: none !important;
+  font-family: var(--auburn-sans) !important;
+  font-weight: 400 !important;
+  color: var(--auburn-dark-teal) !important;
+}
+
+.header-nav-item a,
+.header-actions a {
+  color: var(--auburn-dark-teal) !important;
+  text-decoration: none;
+}
+
+.header-nav-item a:hover,
+.header-nav-item--active a {
+  text-decoration: underline !important;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
+}
+
+/* Mobile menu */
+.header-menu,
+.header-menu-bg {
+  background-color: var(--auburn-white) !important;
+}
+
+.header-menu-nav-item a {
+  color: var(--auburn-dark-teal) !important;
+}
+
+.header-burger-btn .top-bun,
+.header-burger-btn .patty,
+.header-burger-btn .bottom-bun {
+  background-color: var(--auburn-dark-teal) !important;
+}
+
+/* Announcement bar */
+.sqs-announcement-bar,
+.sqs-announcement-bar-dropzone .sqs-announcement-bar {
+  background-color: var(--auburn-dark-teal) !important;
+}
+
+.sqs-announcement-bar-text,
+.sqs-announcement-bar-text a,
+.sqs-announcement-bar-close {
+  color: var(--auburn-white) !important;
+}
+
+/* ── Buttons: square, flat, dark teal ────────────────────────────────────────────────────────── */
+.sqs-block-button-element,
+.sqs-button-element--primary,
+.sqs-button-element--secondary,
+.sqs-button-element--tertiary,
+.btn,
+.header-actions .btn,
+.newsletter-form-button,
+.form-submit-button,
+button[type='submit'] {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-family: var(--auburn-sans) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  text-decoration: none !important;
+  padding: 0.875rem 1.375rem !important; /* about 47 px tall: above the 44 px touch target */
+  line-height: 1.2 !important;
+}
+
+.sqs-button-element--primary,
+.sqs-block-button-element--medium.sqs-button-element--primary,
+.btn--primary,
+.newsletter-form-button,
+.form-submit-button,
+button[type='submit'] {
+  background-color: var(--auburn-dark-teal) !important;
+  border: 1px solid var(--auburn-dark-teal) !important;
+  color: var(--auburn-white) !important;
+}
+
+.sqs-button-element--secondary,
+.sqs-button-element--tertiary {
+  background-color: transparent !important;
+  border: 1px solid var(--auburn-dark-teal) !important;
+  color: var(--auburn-dark-teal) !important;
+}
+
+.sqs-block-button-element:hover,
+.btn:hover,
+.newsletter-form-button:hover,
+.form-submit-button:hover {
+  opacity: 1 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 0.2em;
+}
+
+/* ── Square and flat: no rounded corners, shadows or gradients ───────────────────────────────── */
+img,
+.sqs-block-image .image-block-wrapper,
+.image-block-outer-wrapper,
+.sqs-image-shape-container-element,
+.summary-thumbnail-container,
+.blog-item-image,
+.sqs-gallery-design-grid-slide,
+.list-item,
+.user-items-list-item-container {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+hr,
+.sqs-block-horizontalrule hr {
+  height: 0 !important;
+  border: 0 !important;
+  border-top: var(--auburn-rule) !important;
+  background: none !important;
+}
+
+/* ── Captions, dates and metadata in mono, like a survey sheet margin ────────────────────────── */
+.image-caption,
+.image-caption p,
+figcaption,
+.summary-metadata,
+.summary-metadata-item,
+.blog-meta-item,
+.blog-item-meta,
+.eventlist-meta {
+  font-family: var(--auburn-mono) !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--auburn-charcoal) !important;
+}
+
+.summary-title a,
+.blog-title a,
+.blog-item-title {
+  color: var(--auburn-dark-teal) !important;
+  font-weight: 400 !important;
+}
+
+/* ── Forms ───────────────────────────────────────────────────────────────────────────────────── */
+.form-wrapper input[type='text'],
+.form-wrapper input[type='email'],
+.form-wrapper input[type='tel'],
+.form-wrapper textarea,
+.form-wrapper select,
+.newsletter-form-field-element {
+  border: 1px solid var(--auburn-dark-teal) !important;
+  border-radius: 0 !important;
+  background-color: var(--auburn-white) !important;
+  color: var(--auburn-charcoal) !important;
+  box-shadow: none !important;
+}
+
+.form-wrapper label,
+.form-wrapper .title,
+.form-wrapper legend {
+  color: var(--auburn-dark-teal) !important;
+  font-weight: 400 !important;
+}
+
+/* ── Section bands (by each section's colour theme) ──────────────────────────────────────────── */
+
+/* White: the page ground. */
+.page-section[data-section-theme='white'] .section-background,
+.page-section[data-section-theme='white-bold'] .section-background {
+  background-color: var(--auburn-white) !important;
+}
+
+/* Light: light-teal band. Text stays charcoal / dark teal (7.29:1 and 5.41:1). */
+.page-section[data-section-theme='light'] .section-background,
+.page-section[data-section-theme='light-bold'] .section-background {
+  background-color: var(--auburn-light-teal) !important;
+}
+
+/* Dark: dark-teal feature band. White text (8.62:1), light-teal secondary text (5.41:1). */
+.page-section[data-section-theme='dark'] .section-background,
+.page-section[data-section-theme='dark-bold'] .section-background,
+.page-section[data-section-theme='black'] .section-background,
+.page-section[data-section-theme='black-bold'] .section-background {
+  background-color: var(--auburn-dark-teal) !important;
+}
+
+.page-section:is(
+  [data-section-theme='dark'],
+  [data-section-theme='dark-bold'],
+  [data-section-theme='black'],
+  [data-section-theme='black-bold']
+) {
+  color: var(--auburn-white);
+}
+
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  :is(h1, h2, h3, h4, p, li, .sqsrte-small, a:not(.sqs-block-button-element, .btn)) {
+  color: var(--auburn-white) !important;
+}
+
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  .image-caption {
+  color: var(--auburn-light-teal) !important;
+}
+
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  .sqs-block-html
+  h2 {
+  border-top-color: var(--auburn-light-teal);
+}
+
+/* On dark teal, the primary button turns white with a dark-teal label; the focus ring turns white. */
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  .sqs-button-element--primary {
+  background-color: var(--auburn-white) !important;
+  border-color: var(--auburn-white) !important;
+  color: var(--auburn-dark-teal) !important;
+}
+
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  :is(.sqs-button-element--secondary, .sqs-button-element--tertiary) {
+  border-color: var(--auburn-white) !important;
+  color: var(--auburn-white) !important;
+}
+
+.page-section:is(
+    [data-section-theme='dark'],
+    [data-section-theme='dark-bold'],
+    [data-section-theme='black'],
+    [data-section-theme='black-bold']
+  )
+  :focus-visible {
+  outline-color: var(--auburn-white) !important;
+}
+
+/* ── Footer: dark teal ───────────────────────────────────────────────────────────────────────── */
+#footer-sections .section-background,
+.footer-sections .section-background {
+  background-color: var(--auburn-dark-teal) !important;
+}
+
+#footer-sections,
+#footer-sections :is(h1, h2, h3, h4, p, li, a),
+.footer-sections :is(h1, h2, h3, h4, p, li, a) {
+  color: var(--auburn-white) !important;
+}
+
+#footer-sections .sqsrte-small,
+.footer-sections .sqsrte-small {
+  color: var(--auburn-light-teal) !important;
+}
+
+#footer-sections :focus-visible,
+.footer-sections :focus-visible {
+  outline-color: var(--auburn-white) !important;
+}
+
+/* ── Motion: nothing moves unless the visitor acts ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

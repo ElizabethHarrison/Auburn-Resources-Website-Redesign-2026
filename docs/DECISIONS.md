@@ -488,3 +488,15 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   Sanity seats and person records; the temporary dual-approver record is reduced to the role(s) its holder actually
   holds; and every approval recorded under this arrangement has been re-confirmed by the proper approver.
 
+## D-036 · Interim: restyle the current Squarespace site with the new design
+- **Date:** 8 Oct 2026 · **Status:** **Approved** by the owner (request of 8 Oct 2026). Interim; prepared, not applied.
+- **Decision:** while the new site waits on content approval and infrastructure, the current Squarespace (7.1) site may
+  be restyled with the "Survey Sheet" look using `squarespace/auburn-restyle.css` and `docs/SQUARESPACE-RESTYLE.md`:
+  brand palette only (D-031), square and flat, weight 400, section bands by section colour theme (D-032 rules: at most
+  one dark band, none before the footer, legal pages white, no orange on bands), visible focus, reduced motion.
+- **Limits:** appearance only. The restyled site has none of the new site's content safeguards, structure or
+  accessibility and performance work; its content stays the company's responsibility in Squarespace. The guide lists
+  old-site content the new site's rules hold back (HOLD wording, outdated offers, broken contact link) for the owner to
+  review.
+- **Unchanged:** the new site, its content rules, D-034 deployment and D-035.
+
