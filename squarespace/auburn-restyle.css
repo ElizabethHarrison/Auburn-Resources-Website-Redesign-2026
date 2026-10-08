@@ -11,6 +11,9 @@
  *
  * Squarespace's own stylesheet is loaded first and is very specific, so some rules need !important. That is
  * normal for Squarespace custom CSS; it is not allowed in the new site's own code.
+ *
+ * Squarespace compiles Custom CSS with LESS, which rejects :is() and :not() with a selector list ("Syntax error").
+ * Write plain selector lists and chained :not(a):not(b) instead; check with `lessc` before pasting.
  */
 
 /* ── Palette and type (company style guide, Nov 2019) ─────────────────────────────────────────── */
@@ -96,7 +99,10 @@ p.sqsrte-large {
 
 /* …and centred or right-aligned text keeps its alignment as a block. */
 .sqs-block-html p[style*='center'],
-.sqs-block-html :is(h1, h2, h3, h4)[style*='center'] {
+.sqs-block-html h1[style*='center'],
+.sqs-block-html h2[style*='center'],
+.sqs-block-html h3[style*='center'],
+.sqs-block-html h4[style*='center'] {
   margin-left: auto;
   margin-right: auto;
 }
@@ -106,18 +112,18 @@ p.sqsrte-large {
 }
 
 /* ── Links ───────────────────────────────────────────────────────────────────────────────────── */
-.sqs-block-html a:not(.sqs-block-button-element, .btn),
-.sqs-block-markdown a:not(.sqs-block-button-element, .btn),
-.blog-item-content a:not(.sqs-block-button-element, .btn) {
+.sqs-block-html a:not(.sqs-block-button-element):not(.btn),
+.sqs-block-markdown a:not(.sqs-block-button-element):not(.btn),
+.blog-item-content a:not(.sqs-block-button-element):not(.btn) {
   color: var(--auburn-dark-teal) !important;
   text-decoration: underline !important;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
-.sqs-block-html a:not(.sqs-block-button-element, .btn):hover,
-.sqs-block-markdown a:not(.sqs-block-button-element, .btn):hover,
-.blog-item-content a:not(.sqs-block-button-element, .btn):hover {
+.sqs-block-html a:not(.sqs-block-button-element):not(.btn):hover,
+.sqs-block-markdown a:not(.sqs-block-button-element):not(.btn):hover,
+.blog-item-content a:not(.sqs-block-button-element):not(.btn):hover {
   text-decoration-thickness: 2px;
 }
 
@@ -335,77 +341,88 @@ figcaption,
   background-color: var(--auburn-dark-teal) !important;
 }
 
-.page-section:is(
-  [data-section-theme='dark'],
-  [data-section-theme='dark-bold'],
-  [data-section-theme='black'],
-  [data-section-theme='black-bold']
-) {
+.page-section[data-section-theme='dark'],
+.page-section[data-section-theme='dark-bold'],
+.page-section[data-section-theme='black'],
+.page-section[data-section-theme='black-bold'] {
   color: var(--auburn-white);
 }
 
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  :is(h1, h2, h3, h4, p, li, .sqsrte-small, a:not(.sqs-block-button-element, .btn)) {
+.page-section[data-section-theme='dark'] h1,
+.page-section[data-section-theme='dark'] h2,
+.page-section[data-section-theme='dark'] h3,
+.page-section[data-section-theme='dark'] h4,
+.page-section[data-section-theme='dark'] p,
+.page-section[data-section-theme='dark'] li,
+.page-section[data-section-theme='dark'] .sqsrte-small,
+.page-section[data-section-theme='dark'] a:not(.sqs-block-button-element):not(.btn),
+.page-section[data-section-theme='dark-bold'] h1,
+.page-section[data-section-theme='dark-bold'] h2,
+.page-section[data-section-theme='dark-bold'] h3,
+.page-section[data-section-theme='dark-bold'] h4,
+.page-section[data-section-theme='dark-bold'] p,
+.page-section[data-section-theme='dark-bold'] li,
+.page-section[data-section-theme='dark-bold'] .sqsrte-small,
+.page-section[data-section-theme='dark-bold'] a:not(.sqs-block-button-element):not(.btn),
+.page-section[data-section-theme='black'] h1,
+.page-section[data-section-theme='black'] h2,
+.page-section[data-section-theme='black'] h3,
+.page-section[data-section-theme='black'] h4,
+.page-section[data-section-theme='black'] p,
+.page-section[data-section-theme='black'] li,
+.page-section[data-section-theme='black'] .sqsrte-small,
+.page-section[data-section-theme='black'] a:not(.sqs-block-button-element):not(.btn),
+.page-section[data-section-theme='black-bold'] h1,
+.page-section[data-section-theme='black-bold'] h2,
+.page-section[data-section-theme='black-bold'] h3,
+.page-section[data-section-theme='black-bold'] h4,
+.page-section[data-section-theme='black-bold'] p,
+.page-section[data-section-theme='black-bold'] li,
+.page-section[data-section-theme='black-bold'] .sqsrte-small,
+.page-section[data-section-theme='black-bold'] a:not(.sqs-block-button-element):not(.btn) {
   color: var(--auburn-white) !important;
 }
 
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  .image-caption {
+.page-section[data-section-theme='dark'] .image-caption,
+.page-section[data-section-theme='dark-bold'] .image-caption,
+.page-section[data-section-theme='black'] .image-caption,
+.page-section[data-section-theme='black-bold'] .image-caption {
   color: var(--auburn-light-teal) !important;
 }
 
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  .sqs-block-html
-  h2 {
+.page-section[data-section-theme='dark'] .sqs-block-html h2,
+.page-section[data-section-theme='dark-bold'] .sqs-block-html h2,
+.page-section[data-section-theme='black'] .sqs-block-html h2,
+.page-section[data-section-theme='black-bold'] .sqs-block-html h2 {
   border-top-color: var(--auburn-light-teal);
 }
 
 /* On dark teal, the primary button turns white with a dark-teal label; the focus ring turns white. */
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  .sqs-button-element--primary {
+.page-section[data-section-theme='dark'] .sqs-button-element--primary,
+.page-section[data-section-theme='dark-bold'] .sqs-button-element--primary,
+.page-section[data-section-theme='black'] .sqs-button-element--primary,
+.page-section[data-section-theme='black-bold'] .sqs-button-element--primary {
   background-color: var(--auburn-white) !important;
   border-color: var(--auburn-white) !important;
   color: var(--auburn-dark-teal) !important;
 }
 
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  :is(.sqs-button-element--secondary, .sqs-button-element--tertiary) {
+.page-section[data-section-theme='dark'] .sqs-button-element--secondary,
+.page-section[data-section-theme='dark'] .sqs-button-element--tertiary,
+.page-section[data-section-theme='dark-bold'] .sqs-button-element--secondary,
+.page-section[data-section-theme='dark-bold'] .sqs-button-element--tertiary,
+.page-section[data-section-theme='black'] .sqs-button-element--secondary,
+.page-section[data-section-theme='black'] .sqs-button-element--tertiary,
+.page-section[data-section-theme='black-bold'] .sqs-button-element--secondary,
+.page-section[data-section-theme='black-bold'] .sqs-button-element--tertiary {
   border-color: var(--auburn-white) !important;
   color: var(--auburn-white) !important;
 }
 
-.page-section:is(
-    [data-section-theme='dark'],
-    [data-section-theme='dark-bold'],
-    [data-section-theme='black'],
-    [data-section-theme='black-bold']
-  )
-  :focus-visible {
+.page-section[data-section-theme='dark'] :focus-visible,
+.page-section[data-section-theme='dark-bold'] :focus-visible,
+.page-section[data-section-theme='black'] :focus-visible,
+.page-section[data-section-theme='black-bold'] :focus-visible {
   outline-color: var(--auburn-white) !important;
 }
 
@@ -416,8 +433,20 @@ figcaption,
 }
 
 #footer-sections,
-#footer-sections :is(h1, h2, h3, h4, p, li, a),
-.footer-sections :is(h1, h2, h3, h4, p, li, a) {
+#footer-sections h1,
+#footer-sections h2,
+#footer-sections h3,
+#footer-sections h4,
+#footer-sections p,
+#footer-sections li,
+#footer-sections a,
+.footer-sections h1,
+.footer-sections h2,
+.footer-sections h3,
+.footer-sections h4,
+.footer-sections p,
+.footer-sections li,
+.footer-sections a {
   color: var(--auburn-white) !important;
 }
 
