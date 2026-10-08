@@ -175,10 +175,10 @@ textarea:focus-visible,
   color: var(--auburn-dark-teal) !important;
 }
 
-/* Dropdowns: white sheet with a dark-teal rule, left-aligned, like the new site's nav panels. */
+/* Dropdowns: light-teal sheet (owner's preference), square and flat. Dark teal on light teal is 5.41:1. */
 .header-nav-folder-content {
-  background-color: var(--auburn-white) !important;
-  border: var(--auburn-rule) !important;
+  background-color: var(--auburn-light-teal) !important;
+  border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   text-align: left !important;
