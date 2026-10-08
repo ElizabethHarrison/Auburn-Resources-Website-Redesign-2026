@@ -42,6 +42,7 @@ and date, and any resulting decision goes into `docs/DECISIONS.md`.
 | Q-58 | Page copy is approved as corporate content. Technical passages in page copy (How we explore; any geology in introductions) — approved by the company secretary alone, or also by the competent person? (`docs/APPROVAL-MATRIX.md`) | none | Project owner | |
 | Q-59 | PDF delivery at `/documents/[slug].pdf`: (A) copy approved PDFs from Sanity into the build at build time (recommended; replaces the "Worker proxy" line in CLAUDE.md §4.1), (B) Worker proxy, (C) private R2 storage, (D) PDFs in git? Nothing serves that path today, so no document can launch (`docs/PDF-ASSETS-FORMS.md` §2). | launch (documents) | Project owner | |
 | Q-60 | The footer strip "Get Auburn's announcements by email" is on every page and leads to an alerts page with no form. (A) hide it in production until alerts exist, (B) build the alerts form now (needs Q-11), (C) interim "email us to subscribe", (D) re-point it to the announcements register? (`docs/PDF-ASSETS-FORMS.md` §5) | launch | Project owner | |
+| Q-61 | Which four projects are Auburn's "district scale flagship projects" (DGR Global Annual Report 2026)? South Nicholson, Calgoa–Kolbar and Mt Abbott are candidates; Marodian and Ban Ban are named but no tenement of that name is listed; Victoria River Downs is cancelled; Tanumbirini and Hawkwood are not listed. (`docs/PORTFOLIO-DGR-AR-2026.md`) | launch | Project owner / competent person | |
 
 ## Company secretary
 
