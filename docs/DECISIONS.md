@@ -519,3 +519,13 @@ or **Superseded**. Change a decision by adding a new entry that supersedes it; d
   `/documents/` PDF addresses, CI budgets and axe checks (guide, last section).
 - **Owner actions:** subscribe the new site, move the domain inside Squarespace, keep email DNS records, keep the old
   site until its PDFs are saved (all marked ⚠️ in the guide; none done here).
+
+## D-038 · Redrawn logo and brand assets (interim, until the original masters arrive)
+- **Date:** 13 Oct 2026 · **Status:** **Approved** by the owner (request of 13 Oct 2026: "turn this into a high res logo
+  … create the full branding assets and different logo variations").
+- **Decision:** the 2019 logo is redrawn as vector artwork from the owner's supplied image: three waves in logo blue
+  `#1586E2` over the wordmark in logo navy `#012361`, set in URW Gothic Demi (the nearest openly licensed match; no
+  Century Gothic file is used or committed). Variants, PNG/PDF exports, icons, social images and a one-page brand sheet
+  are in `squarespace/brand/`. This changes D-031's provisional "no tracing" for Q-55 at the owner's request.
+- **Limits:** a redraw, not the designer's master; letterforms differ slightly from the original. Replace when the
+  original artwork is supplied (Q-55 stays open for that).
